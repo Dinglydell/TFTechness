@@ -4,6 +4,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import com.bioxx.tfc.api.HeatRaw;
+import com.bioxx.tfc.api.Metal;
 
 public class Material {
 	
@@ -16,24 +17,25 @@ public class Material {
 	public HeatRaw heatRaw;
 	public int tier;
 	public boolean gearOnly;
+	public String name;
+	public Metal metal;
 	
-	public Material(String name, Item unshaped, Item ingot, Item ingot2x, Item sheet, Item sheet2x, ItemStack gear,
-			int tier) {
-		this(name, unshaped, sheet2x, gear, tier);
-		this.ingot = ingot;
-		this.ingot2x = ingot2x;
-		this.sheet = sheet;
+	public Material(String name, ItemStack gear, int tier) {
 		this.heatRaw = TFTechness.heatMap.get(name);
 		this.gearOnly = false;
+		this.gear = gear;
+		this.name = name;
 	}
 	
-	public Material(String name, Item unshaped, Item sheet2x, ItemStack gear, int tier) {
+	public Material(String name, Item unshaped, Item sheet2x, ItemStack gear, int tier, Metal metal) {
 		this.gearOnly = true;
 		this.unshaped = unshaped;
 		this.tier = tier;
 		this.sheet2x = sheet2x;
 		this.gear = gear;
 		this.heatRaw = TFTechness.heatMap.get(name);
+		this.name = name;
+		this.metal = metal;
 	}
 	
 }

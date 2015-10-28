@@ -47,17 +47,29 @@ public class TFTechness {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		initHeatMap();
+		readConfig(event);
+		
+	}
+	
+	private void readConfig(FMLPreInitializationEvent event) {
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(),
 				"/TFTechness/Metals.cfg"));
 		config.load();
 		
 		for (Map.Entry<String, HeatRaw> entry : heatMap.entrySet()) {
-			ConfigCategory material = config.getCategory(entry.getKey());
+			String key = entry.getKey();
+			ConfigCategory material = config.getCategory(key);
+			
 			HeatRaw heat = entry.getValue();
-			double melt = material.get("MetlingPoint").getDouble(heat.meltTemp);
-			double sh = material.get("SpecificHeat").getDouble(heat.specificHeat);
+			logger.info(entry.getKey() + ": " + heat);
+			logger.info(material);
+			double melt = config.get(key, "MeltingPoint", heat.meltTemp).getDouble();
+			double sh = config.get(key, "SpecificHeat", heat.specificHeat).getDouble();
 			
 		}
+		
+		config.save();
+		
 	}
 	
 	private void initHeatMap() {
@@ -95,134 +107,68 @@ public class TFTechness {
 	}
 	
 	private void addMetals() {
-		addUnshaped();
-		addIngots();
-		addDoubleIngots();
-		addSheets();
-		addDoubleSheets();
-		registerMetals();
-		registerAlloys();
-		registerHeat();
-	}
-	
-	private void addUnshaped() {
-		TFTItems.invarUnshaped = new ItemMeltedMetal().setUnlocalizedName("InvarUnshaped");
-		TFTItems.mithrilUnshaped = new ItemMeltedMetal().setUnlocalizedName("MithrilUnshaped");
-		TFTItems.electrumUnshaped = new ItemMeltedMetal().setUnlocalizedName("ElectrumUnshaped");
-		TFTItems.enderiumUnshaped = new ItemMeltedMetal().setUnlocalizedName("EnderiumUnshaped");
-		TFTItems.signalumUnshaped = new ItemMeltedMetal().setUnlocalizedName("SignalumUnshaped");
-		
-		GameRegistry.registerItem(TFTItems.invarUnshaped, "Unshaped Invar");
-		GameRegistry.registerItem(TFTItems.mithrilUnshaped, "Unshaped Mana Infused Metal");
-		GameRegistry.registerItem(TFTItems.electrumUnshaped, "Unshaped Electrum");
-		GameRegistry.registerItem(TFTItems.enderiumUnshaped, "Unshaped Enderium");
-		GameRegistry.registerItem(TFTItems.signalumUnshaped, "Unshaped Signalum");
-	}
-	
-	private void addIngots() {
-		TFTItems.invarIngot = new ItemIngot().setUnlocalizedName("InvarIngot");
-		TFTItems.mithrilIngot = new ItemIngot().setUnlocalizedName("MithrilIngot");
-		TFTItems.electrumIngot = new ItemIngot().setUnlocalizedName("ElectrumIngot");
-		TFTItems.enderiumIngot = new ItemIngot().setUnlocalizedName("EnderiumIngot");
-		TFTItems.signalumIngot = new ItemIngot().setUnlocalizedName("SignalumIngot");
-		
-		GameRegistry.registerItem(TFTItems.invarIngot, "Invar Ingot");
-		GameRegistry.registerItem(TFTItems.mithrilIngot, "Mana Infused Ingot");
-		GameRegistry.registerItem(TFTItems.electrumIngot, "Electrum Ingot");
-		GameRegistry.registerItem(TFTItems.enderiumIngot, "Enderium Ingot");
-		GameRegistry.registerItem(TFTItems.signalumIngot, "Signalum Ingot");
-		
-		OreDictionary.registerOre("ingotInvar", TFTItems.invarIngot);
-		OreDictionary.registerOre("ingotMithril", TFTItems.mithrilIngot);
-		OreDictionary.registerOre("ingotElectrum", TFTItems.electrumIngot);
-		OreDictionary.registerOre("ingotEnderium", TFTItems.enderiumIngot);
-		OreDictionary.registerOre("ingotSignalum", TFTItems.signalumIngot);
-	}
-	
-	private void addDoubleIngots() {
-		TFTItems.invarIngot2x = ((ItemIngot) new ItemIngot().setUnlocalizedName("InvarIngot2x")).setSize(EnumSize.LARGE).setMetal("Invar",
-				200);
-		TFTItems.mithrilIngot2x = ((ItemIngot) new ItemIngot().setUnlocalizedName("MithrilIngot2x")).setSize(EnumSize.LARGE).setMetal("Mithril",
-				200);
-		TFTItems.electrumIngot2x = ((ItemIngot) new ItemIngot().setUnlocalizedName("ElectrumIngot2x")).setSize(EnumSize.LARGE).setMetal("Electrum",
-				200);
-		TFTItems.enderiumIngot2x = ((ItemIngot) new ItemIngot().setUnlocalizedName("EnderiumIngot2x")).setSize(EnumSize.LARGE).setMetal("Enderium",
-				200);
-		TFTItems.signalumIngot2x = ((ItemIngot) new ItemIngot().setUnlocalizedName("SignalumIngot2x")).setSize(EnumSize.LARGE).setMetal("Signalum",
-				200);
-		
-		GameRegistry.registerItem(TFTItems.invarIngot2x, "Double Invar Ingot");
-		GameRegistry.registerItem(TFTItems.mithrilIngot2x, "Double Mana Infused Ingot");
-		GameRegistry.registerItem(TFTItems.electrumIngot2x, "Double Electrum Ingot");
-		GameRegistry.registerItem(TFTItems.enderiumIngot2x, "Double Enderium Ingot");
-		GameRegistry.registerItem(TFTItems.signalumIngot2x, "Double Signalum Ingot");
-		
-		OreDictionary.registerOre("ingotDoubleInvar", TFTItems.invarIngot2x);
-		OreDictionary.registerOre("ingotDoubleMithril", TFTItems.mithrilIngot2x);
-		OreDictionary.registerOre("ingotDoubleElectrum", TFTItems.electrumIngot2x);
-		OreDictionary.registerOre("ingotDoubleEnderium", TFTItems.enderiumIngot2x);
-		OreDictionary.registerOre("ingotDoubleSignalum", TFTItems.signalumIngot2x);
-	}
-	
-	private void addSheets() {
-		TFTItems.invarSheet = ((ItemMetalSheet) new ItemMetalSheet(25).setUnlocalizedName("InvarSheet")).setMetal("Invar",
-				200);
-		TFTItems.mithrilSheet = ((ItemMetalSheet) new ItemMetalSheet(26).setUnlocalizedName("MithrilSheet")).setMetal("Mithril",
-				200);
-		TFTItems.electrumSheet = ((ItemMetalSheet) new ItemMetalSheet(27).setUnlocalizedName("ElectrumSheet")).setMetal("Electrum",
-				200);
-		TFTItems.enderiumSheet = ((ItemMetalSheet) new ItemMetalSheet(28).setUnlocalizedName("EnderiumSheet")).setMetal("Enderium",
-				200);
-		TFTItems.signalumSheet = ((ItemMetalSheet) new ItemMetalSheet(29).setUnlocalizedName("SignalumSheet")).setMetal("Signalum",
-				200);
-		
-		GameRegistry.registerItem(TFTItems.invarSheet, "Invar Sheet");
-		GameRegistry.registerItem(TFTItems.mithrilSheet, "Mana Infused Sheet");
-		GameRegistry.registerItem(TFTItems.electrumSheet, "Electrum Sheet");
-		GameRegistry.registerItem(TFTItems.enderiumSheet, "Enderium Sheet");
-		GameRegistry.registerItem(TFTItems.signalumSheet, "Signalum Sheet");
-		
-		OreDictionary.registerOre("plateInvar", TFTItems.invarSheet);
-		OreDictionary.registerOre("plateMithril", TFTItems.mithrilSheet);
-		OreDictionary.registerOre("plateElectrum", TFTItems.electrumSheet);
-		OreDictionary.registerOre("plateEnderium", TFTItems.enderiumSheet);
-		OreDictionary.registerOre("plateSignalum", TFTItems.signalumSheet);
-		
-	}
-	
-	private void addDoubleSheets() {
-		TFTItems.invarSheet2x = ((ItemMetalSheet) new ItemMetalSheet(25).setUnlocalizedName("InvarSheet2x")).setMetal("Invar",
-				400);
-		TFTItems.mithrilSheet2x = ((ItemMetalSheet) new ItemMetalSheet(26).setUnlocalizedName("MithrilSheet2x")).setMetal("Mithril",
-				400);
-		TFTItems.electrumSheet2x = ((ItemMetalSheet) new ItemMetalSheet(27).setUnlocalizedName("ElectrumSheet2x")).setMetal("Electrum",
-				400);
-		TFTItems.enderiumSheet2x = ((ItemMetalSheet) new ItemMetalSheet(28).setUnlocalizedName("EnderiumSheet2x")).setMetal("Enderium",
-				400);
-		TFTItems.signalumSheet2x = ((ItemMetalSheet) new ItemMetalSheet(29).setUnlocalizedName("SignalumSheet2x")).setMetal("Signalum",
-				400);
-		
-		GameRegistry.registerItem(TFTItems.invarSheet2x, "Invar Double Sheet");
-		GameRegistry.registerItem(TFTItems.mithrilSheet2x, "Mana Infused Double Sheet");
-		GameRegistry.registerItem(TFTItems.electrumSheet2x, "Electrum Double Sheet");
-		GameRegistry.registerItem(TFTItems.enderiumSheet2x, "Enderium Double Sheet");
-		GameRegistry.registerItem(TFTItems.signalumSheet2x, "Signalum Double Sheet");
-		
-		OreDictionary.registerOre("plateDoubleInvar", TFTItems.invarSheet2x);
-		OreDictionary.registerOre("plateDoubleMithril", TFTItems.mithrilSheet2x);
-		OreDictionary.registerOre("plateDoubleElectrum", TFTItems.electrumSheet2x);
-		OreDictionary.registerOre("plateDoubleEnderium", TFTItems.enderiumSheet2x);
-		OreDictionary.registerOre("plateDoubleSignalum", TFTItems.signalumSheet2x);
-		
-	}
-	
-	private void registerHeat() {
-		HeatRegistry manager = HeatRegistry.getInstance();
-		
 		materials = getMaterials();
-		for (int i = 0; i < materials.length; i++) {
-			registerMetalHeat(manager, materials[i]);
+		for (Material mat : materials) {
+			if (!mat.gearOnly) {
+				addUnshaped(mat);
+				addIngots(mat);
+				addDoubleIngots(mat);
+				addSheets(mat);
+				addDoubleSheets(mat);
+				registerMetal(mat);
+			}
+			registerHeat(mat);
 		}
+		registerAlloys();
+		
+	}
+	
+	private void addUnshaped(Material mat) {
+		mat.unshaped = new ItemMeltedMetal().setUnlocalizedName(mat.name + "Unshaped");
+		
+		TFTItems.unshaped.put(mat.name, mat.unshaped);
+		GameRegistry.registerItem(mat.unshaped, "Unshaped " + mat.name);
+	}
+	
+	private void addIngots(Material mat) {
+		mat.ingot = new ItemIngot().setUnlocalizedName(mat.name + "Ingot");
+		
+		TFTItems.ingots.put(mat.name, mat.ingot);
+		GameRegistry.registerItem(mat.ingot, mat.name + " Ingot");
+		OreDictionary.registerOre("ingot" + mat.name, mat.ingot);
+		
+	}
+	
+	private void addDoubleIngots(Material mat) {
+		mat.ingot2x = ((ItemIngot) new ItemIngot().setUnlocalizedName(mat.name + "Ingot2x")).setSize(EnumSize.LARGE).setMetal(mat.name,
+				200);
+		
+		TFTItems.ingots2x.put(mat.name, mat.ingot2x);
+		GameRegistry.registerItem(mat.ingot2x, "Double " + mat.name + " Ingot");
+		OreDictionary.registerOre("ingotDouble" + mat.name, mat.ingot2x);
+	}
+	
+	private void addSheets(Material mat) {
+		mat.sheet = ((ItemMetalSheet) new ItemMetalSheet(25 /* what even is this number */).setUnlocalizedName(mat.name
+				+ "Sheet")).setMetal(mat.name, 200);
+		
+		TFTItems.sheets.put(mat.name, mat.sheet);
+		GameRegistry.registerItem(mat.sheet, mat.name + " Sheet");
+		OreDictionary.registerOre("plate" + mat.name, mat.sheet);
+	}
+	
+	private void addDoubleSheets(Material mat) {
+		mat.sheet2x = ((ItemMetalSheet) new ItemMetalSheet(25).setUnlocalizedName(mat.name + "Sheet2x")).setMetal(mat.name,
+				400);
+		
+		TFTItems.sheets2x.put(mat.name, mat.sheet2x);
+		GameRegistry.registerItem(mat.sheet2x, mat.name + " Double Sheet");
+		OreDictionary.registerOre("plateDouble" + mat.name, mat.sheet2x);
+	}
+	
+	private void registerHeat(Material mat) {
+		HeatRegistry manager = HeatRegistry.getInstance();
+		registerMetalHeat(manager, mat);
 		
 	}
 	
@@ -244,37 +190,27 @@ public class TFTechness {
 	
 	private void registerAlloys() {
 		// Invar
-		Alloy invar = new Alloy(TFTMetals.invar, Alloy.EnumTier.TierIV);
+		Alloy invar = new Alloy(TFTMetals.metals.get("Invar"), Alloy.EnumTier.TierIV);
 		invar.addIngred(Global.WROUGHTIRON, 61.00f, 67.00f);
 		invar.addIngred(Global.NICKEL, 33.00f, 39.00f);
 		AlloyManager.INSTANCE.addAlloy(invar);
 		
 		// Electrum
-		Alloy electrum = new Alloy(TFTMetals.electrum, Alloy.EnumTier.TierIII);
+		Alloy electrum = new Alloy(TFTMetals.metals.get("Electrum"), Alloy.EnumTier.TierIII);
 		electrum.addIngred(Global.GOLD, 50.00f, 60.00f);
 		electrum.addIngred(Global.SILVER, 40.00f, 50.00f);
 		AlloyManager.INSTANCE.addAlloy(electrum);
 	}
 	
-	private void registerMetals() {
-		TFTMetals.invar = new Metal("Invar", TFTItems.invarUnshaped, TFTItems.invarIngot);
-		TFTMetals.mithril = new Metal("Mithril", TFTItems.mithrilUnshaped, TFTItems.mithrilIngot);
-		TFTMetals.electrum = new Metal("Electrum", TFTItems.electrumUnshaped, TFTItems.electrumIngot);
-		TFTMetals.enderium = new Metal("Enderium", TFTItems.enderiumUnshaped, TFTItems.enderiumIngot);
-		TFTMetals.signalum = new Metal("Signalum", TFTItems.signalumUnshaped, TFTItems.signalumIngot);
-		
-		MetalRegistry.instance.addMetal(TFTMetals.invar, Alloy.EnumTier.TierIV);
-		MetalRegistry.instance.addMetal(TFTMetals.mithril, Alloy.EnumTier.TierIV);
-		MetalRegistry.instance.addMetal(TFTMetals.electrum, Alloy.EnumTier.TierV);
-		MetalRegistry.instance.addMetal(TFTMetals.enderium, Alloy.EnumTier.TierVI);
-		MetalRegistry.instance.addMetal(TFTMetals.signalum, Alloy.EnumTier.TierV);
+	private void registerMetal(Material mat) {
+		mat.metal = new Metal(mat.name, mat.unshaped, mat.ingot);
+		MetalRegistry.instance.addMetal(mat.metal, Alloy.EnumTier.values()[mat.tier]);
 		
 	}
 	
 	private void removeGearRecipes(RemoveBatch batch) {
-		// TODO: Invar*, Electrum*, Enderium*, Mana infused (mithril)*, signalum, lumium
+		// TODO: Invar*, Electrum*, Enderium*, Mana infused (mithril)*, signalum*, lumium
 		// *done, but untextured
-		materials = getMaterials();
 		for (int i = 0; i < materials.length; i++) {
 			batch.addCrafting(materials[i].gear);
 		}
@@ -283,26 +219,26 @@ public class TFTechness {
 	
 	private Material[] getMaterials() {
 		return new Material[] {
-		new Material("Gold", TFCItems.goldUnshaped, TFCItems.goldSheet2x, TFItems.gearGold, 2),
+		new Material("Gold", TFCItems.goldUnshaped, TFCItems.goldSheet2x, TFItems.gearGold, 2, Global.GOLD),
 				new Material("WroughtIron", TFCItems.wroughtIronUnshaped, TFCItems.wroughtIronSheet2x,
-						TFItems.gearIron, 3),
-				new Material("Copper", TFCItems.copperUnshaped, TFCItems.copperSheet2x, TFItems.gearCopper, 1),
-				new Material("Tin", TFCItems.tinUnshaped, TFCItems.tinSheet2x, TFItems.gearTin, 0),
-				new Material("Silver", TFCItems.silverUnshaped, TFCItems.silverSheet2x, TFItems.gearSilver, 2),
-				new Material("Lead", TFCItems.leadUnshaped, TFCItems.leadSheet2x, TFItems.gearLead, 2),
-				new Material("Nickel", TFCItems.nickelUnshaped, TFCItems.nickelSheet2x, TFItems.gearNickel, 4),
-				new Material("Platinum", TFCItems.platinumUnshaped, TFCItems.platinumSheet2x, TFItems.gearPlatinum, 3),
-				new Material("Bronze", TFCItems.bronzeUnshaped, TFCItems.bronzeSheet2x, TFItems.gearBronze, 2),
-				new Material("Invar", TFTItems.invarUnshaped, TFTItems.invarIngot, TFTItems.invarIngot2x,
-						TFTItems.invarSheet, TFTItems.invarSheet2x, TFItems.gearInvar, 4),
-				new Material("Mithril", TFTItems.mithrilUnshaped, TFTItems.mithrilIngot, TFTItems.mithrilIngot2x,
-						TFTItems.mithrilSheet, TFTItems.mithrilSheet2x, TFItems.gearMithril, 4),
-				new Material("Electrum", TFTItems.electrumUnshaped, TFTItems.electrumIngot, TFTItems.electrumIngot2x,
-						TFTItems.electrumSheet, TFTItems.electrumSheet2x, TFItems.gearElectrum, 5),
-				new Material("Enderium", TFTItems.enderiumUnshaped, TFTItems.enderiumIngot, TFTItems.enderiumIngot2x,
-						TFTItems.enderiumSheet, TFTItems.enderiumSheet2x, TFItems.gearEnderium, 6),
-				new Material("Signalum", TFTItems.signalumUnshaped, TFTItems.signalumIngot, TFTItems.signalumIngot2x,
-						TFTItems.signalumSheet, TFTItems.signalumSheet2x, TFItems.gearSignalum, 5)
+						TFItems.gearIron, 3, Global.WROUGHTIRON),
+				new Material("Copper", TFCItems.copperUnshaped, TFCItems.copperSheet2x, TFItems.gearCopper, 1,
+						Global.COPPER),
+				new Material("Tin", TFCItems.tinUnshaped, TFCItems.tinSheet2x, TFItems.gearTin, 0, Global.TIN),
+				new Material("Silver", TFCItems.silverUnshaped, TFCItems.silverSheet2x, TFItems.gearSilver, 2,
+						Global.SILVER),
+				new Material("Lead", TFCItems.leadUnshaped, TFCItems.leadSheet2x, TFItems.gearLead, 2, Global.LEAD),
+				new Material("Nickel", TFCItems.nickelUnshaped, TFCItems.nickelSheet2x, TFItems.gearNickel, 4,
+						Global.NICKEL),
+				new Material("Platinum", TFCItems.platinumUnshaped, TFCItems.platinumSheet2x, TFItems.gearPlatinum, 3,
+						Global.PLATINUM),
+				new Material("Bronze", TFCItems.bronzeUnshaped, TFCItems.bronzeSheet2x, TFItems.gearBronze, 2,
+						Global.BRONZE),
+				new Material("Invar", TFItems.gearInvar, 4),
+				new Material("Mithril", TFItems.gearMithril, 4),
+				new Material("Electrum", TFItems.gearElectrum, 5),
+				new Material("Enderium", TFItems.gearEnderium, 6),
+				new Material("Signalum", TFItems.gearSignalum, 5)
 		};
 	}
 }
