@@ -1,0 +1,20 @@
+[
+{
+  "modid": "TFTechness",
+  "name": "TFCraft Tech Stuff",
+  "description": "TFCraftnifies tech recipes",
+  "version": "0.1",
+  "mcversion": "1.7.10",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Dinglydell", "Dinlydell", "ThatGuyCalledDing", "Dingliddle", "Dingle Dangle Scarecrow", "The DingBat"],
+  "credits": "People",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": [
+        "terrafirmacraft",
+        "ThermalFoundation",
+        "ThermalExpansion"
+  ]
+}
+]
