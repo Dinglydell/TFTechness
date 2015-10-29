@@ -3,6 +3,7 @@ package dinglydell.tftechness;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.bioxx.tfc.Core.Metal.Alloy;
 import com.bioxx.tfc.api.HeatRaw;
 import com.bioxx.tfc.api.Metal;
 
@@ -19,12 +20,15 @@ public class Material {
 	public boolean gearOnly;
 	public String name;
 	public Metal metal;
+	public Alloy.EnumTier alloyTier;
 	
-	public Material(String name, ItemStack gear, int tier) {
+	public Material(String name, ItemStack gear, int tier, Alloy.EnumTier alloyTier) {
 		this.heatRaw = TFTechness.heatMap.get(name);
 		this.gearOnly = false;
 		this.gear = gear;
 		this.name = name;
+		this.tier = tier;
+		this.alloyTier = alloyTier;
 	}
 	
 	public Material(String name, Item unshaped, Item sheet2x, ItemStack gear, int tier, Metal metal) {

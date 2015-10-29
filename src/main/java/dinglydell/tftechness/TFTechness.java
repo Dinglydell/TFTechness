@@ -118,8 +118,8 @@ public class TFTechness {
 				registerMetal(mat);
 			}
 			registerHeat(mat);
+			registerAlloy(mat);
 		}
-		registerAlloys();
 		
 	}
 	
@@ -188,23 +188,34 @@ public class TFTechness {
 		
 	}
 	
-	private void registerAlloys() {
-		// Invar
-		Alloy invar = new Alloy(TFTMetals.metals.get("Invar"), Alloy.EnumTier.TierIV);
-		invar.addIngred(Global.WROUGHTIRON, 61.00f, 67.00f);
-		invar.addIngred(Global.NICKEL, 33.00f, 39.00f);
-		AlloyManager.INSTANCE.addAlloy(invar);
+	private void registerAlloy(Material material) {
 		
-		// Electrum
-		Alloy electrum = new Alloy(TFTMetals.metals.get("Electrum"), Alloy.EnumTier.TierIII);
-		electrum.addIngred(Global.GOLD, 50.00f, 60.00f);
-		electrum.addIngred(Global.SILVER, 40.00f, 50.00f);
-		AlloyManager.INSTANCE.addAlloy(electrum);
+		if (material instanceof MaterialAlloy) {
+			MaterialAlloy mat = (MaterialAlloy) material;
+			Alloy alloy = new Alloy(mat.metal, mat.alloyTier);
+			for (AlloyIngred ing : mat.alloy) {
+				alloy.addIngred(MetalRegistry.instance.getMetalFromString(ing.name), ing.min, ing.max);
+			}
+			AlloyManager.INSTANCE.addAlloy(alloy);
+		}
+		
+		// // Invar
+		// Alloy invar = new Alloy(TFTMetals.metals.get("Invar"), mats.get(mats.in));
+		// invar.addIngred(Global.WROUGHTIRON, 61.00f, 67.00f);
+		// invar.addIngred(Global.NICKEL, 33.00f, 39.00f);
+		// AlloyManager.INSTANCE.addAlloy(invar);
+		//
+		// // Electrum
+		// Alloy electrum = new Alloy(TFTMetals.metals.get("Electrum"), Alloy.EnumTier.TierIII);
+		// electrum.addIngred(Global.GOLD, 50.00f, 60.00f);
+		// electrum.addIngred(Global.SILVER, 40.00f, 50.00f);
+		// AlloyManager.INSTANCE.addAlloy(electrum);
 	}
 	
 	private void registerMetal(Material mat) {
 		mat.metal = new Metal(mat.name, mat.unshaped, mat.ingot);
-		MetalRegistry.instance.addMetal(mat.metal, Alloy.EnumTier.values()[mat.tier]);
+		TFTMetals.metals.put(mat.name, mat.metal);
+		MetalRegistry.instance.addMetal(mat.metal, mat.alloyTier);
 		
 	}
 	
@@ -220,25 +231,53 @@ public class TFTechness {
 	private Material[] getMaterials() {
 		return new Material[] {
 		new Material("Gold", TFCItems.goldUnshaped, TFCItems.goldSheet2x, TFItems.gearGold, 2, Global.GOLD),
-				new Material("WroughtIron", TFCItems.wroughtIronUnshaped, TFCItems.wroughtIronSheet2x,
-						TFItems.gearIron, 3, Global.WROUGHTIRON),
-				new Material("Copper", TFCItems.copperUnshaped, TFCItems.copperSheet2x, TFItems.gearCopper, 1,
+				new Material("WroughtIron",
+						TFCItems.wroughtIronUnshaped,
+						TFCItems.wroughtIronSheet2x,
+						TFItems.gearIron,
+						3,
+						Global.WROUGHTIRON),
+				new Material("Copper",
+						TFCItems.copperUnshaped,
+						TFCItems.copperSheet2x,
+						TFItems.gearCopper,
+						1,
 						Global.COPPER),
 				new Material("Tin", TFCItems.tinUnshaped, TFCItems.tinSheet2x, TFItems.gearTin, 0, Global.TIN),
-				new Material("Silver", TFCItems.silverUnshaped, TFCItems.silverSheet2x, TFItems.gearSilver, 2,
+				new Material("Silver",
+						TFCItems.silverUnshaped,
+						TFCItems.silverSheet2x,
+						TFItems.gearSilver,
+						2,
 						Global.SILVER),
 				new Material("Lead", TFCItems.leadUnshaped, TFCItems.leadSheet2x, TFItems.gearLead, 2, Global.LEAD),
-				new Material("Nickel", TFCItems.nickelUnshaped, TFCItems.nickelSheet2x, TFItems.gearNickel, 4,
+				new Material("Nickel",
+						TFCItems.nickelUnshaped,
+						TFCItems.nickelSheet2x,
+						TFItems.gearNickel,
+						4,
 						Global.NICKEL),
-				new Material("Platinum", TFCItems.platinumUnshaped, TFCItems.platinumSheet2x, TFItems.gearPlatinum, 3,
+				new Material("Platinum",
+						TFCItems.platinumUnshaped,
+						TFCItems.platinumSheet2x,
+						TFItems.gearPlatinum,
+						3,
 						Global.PLATINUM),
-				new Material("Bronze", TFCItems.bronzeUnshaped, TFCItems.bronzeSheet2x, TFItems.gearBronze, 2,
+				new Material("Bronze",
+						TFCItems.bronzeUnshaped,
+						TFCItems.bronzeSheet2x,
+						TFItems.gearBronze,
+						2,
 						Global.BRONZE),
-				new Material("Invar", TFItems.gearInvar, 4),
-				new Material("Mithril", TFItems.gearMithril, 4),
-				new Material("Electrum", TFItems.gearElectrum, 5),
-				new Material("Enderium", TFItems.gearEnderium, 6),
-				new Material("Signalum", TFItems.gearSignalum, 5)
+				new MaterialAlloy("Invar", TFItems.gearInvar, 4, Alloy.EnumTier.TierIII, new AlloyIngred[] {
+						new AlloyIngred("Wrought Iron", 61.00f, 67.00f), new AlloyIngred("Nickel", 33.00f, 39.00f)
+				}),
+				new Material("Mithril", TFItems.gearMithril, 4, Alloy.EnumTier.TierIII),
+				new MaterialAlloy("Electrum", TFItems.gearElectrum, 5, Alloy.EnumTier.TierIV, new AlloyIngred[] {
+						new AlloyIngred("Gold", 50.00f, 60.00f), new AlloyIngred("Silver", 40.00f, 50.00f)
+				}),
+				new Material("Enderium", TFItems.gearEnderium, 6, Alloy.EnumTier.TierV),
+				new Material("Signalum", TFItems.gearSignalum, 5, Alloy.EnumTier.TierIV)
 		};
 	}
 }
