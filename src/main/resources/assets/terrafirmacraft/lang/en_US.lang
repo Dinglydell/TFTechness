@@ -4,3 +4,22 @@ item.InvarIngot.name=Invar Ingot
 item.ElectrumIngot.name=Electrum Ingot
 item.MithrilIngot.name=Mana Infused Ingot
 item.EnderiumIngot.name=Enderium Ingot
+item.SignalumIngot.name=Signalum Ingot
+
+item.InvarIngot2x.name=Invar Double Ingot
+item.ElectrumIngot2x.name=Electrum Double Ingot
+item.MithrilIngot2x.name=Mithril Double Ingot
+item.EnderiumIngot2x.name=Enderium Double Ingot
+item.SignalumIngot2x.name=Signalum Double Ingot
+
+item.InvarSheet.name=Invar Sheet
+item.ElectrumSheet.name=Electrum Sheet
+item.MithrilSheet.name=Mithril Sheet
+item.EnderiumSheet.name=Enderium Sheet
+item.SignalumSheet.name=Signalum Sheet
+
+item.InvarSheet2x.name=Invar Double Sheet
+item.ElectrumSheet2x.name=Electrum Double Sheet
+item.MithrilSheet2x.name=Mithril Double Sheet
+item.EnderiumSheet2x.name=Enderium Double Sheet
+item.SignalumSheet2x.name=Signalum Double Sheet
