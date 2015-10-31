@@ -1,4 +1,4 @@
-package dinglydell.tftechness;
+package dinglydell.tftechness.recipe;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,6 +13,8 @@ import com.bioxx.tfc.api.Crafting.PlanRecipe;
 import com.bioxx.tfc.api.Enums.RuleEnum;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import dinglydell.tftechness.Material;
+import dinglydell.tftechness.TFTechness;
 
 public class AnvilRecipeHandler {
 	
@@ -40,7 +42,9 @@ public class AnvilRecipeHandler {
 				addSheetRecipe(manager, mat.ingot2x, mat.sheet, mat.tier);
 				addDoubleSheetRecipe(manager, mat.sheet, mat.sheet2x, mat.tier);
 			}
-			addGearRecipe(manager, mat.sheet2x, mat.gear, mat.tier);
+			if (RecipeConfig.gearsEnabled) {
+				addGearRecipe(manager, mat.sheet2x, mat.gear, mat.tier);
+			}
 		}
 	}
 	
@@ -48,7 +52,9 @@ public class AnvilRecipeHandler {
 		// Double ingots require an anvil 1 tier lower than the material tier.
 		AnvilReq req = AnvilReq.getReqFromInt(tier - 1);
 		
-		manager.addWeldRecipe(new AnvilRecipe(new ItemStack(ingot), new ItemStack(ingot), req,
+		manager.addWeldRecipe(new AnvilRecipe(new ItemStack(ingot),
+				new ItemStack(ingot),
+				req,
 				new ItemStack(ingot2x, 1)));
 	}
 	
@@ -69,8 +75,11 @@ public class AnvilRecipeHandler {
 	private void addGearRecipe(AnvilManager manager, Item material, ItemStack gear, int tier) {
 		// Whichever is largest - the material tier or tier 3 (wrought iron)
 		AnvilReq req = AnvilReq.getReqFromInt(Math.max(3, tier));
-		manager.addRecipe(new AnvilRecipe(new ItemStack(material), new ItemStack(TFCItems.wroughtIronIngot), "gear",
-				req, gear));
+		manager.addRecipe(new AnvilRecipe(new ItemStack(material),
+				new ItemStack(TFCItems.wroughtIronIngot),
+				"gear",
+				req,
+				gear));
 	}
 	
 }

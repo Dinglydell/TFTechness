@@ -7,12 +7,12 @@ import java.util.Map;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.logging.log4j.LogManager;
 
+import cofh.thermalexpansion.block.TEBlocks;
 import cofh.thermalfoundation.item.TFItems;
 
 import com.bioxx.tfc.Core.Metal.Alloy;
@@ -35,6 +35,9 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import dinglydell.tftechness.recipe.AnvilRecipeHandler;
+import dinglydell.tftechness.recipe.RecipeConfig;
+import dinglydell.tftechness.recipe.RemoveBatch;
 
 @Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation")
 public class TFTechness {
@@ -56,13 +59,15 @@ public class TFTechness {
 				"/TFTechness/Metals.cfg"));
 		config.load();
 		
+		config.addCustomCategoryComment("recipes",
+				"true: TFTechness changes the recipe, false: TFTechness leave it alone.");
+		RecipeConfig.gearsEnabled = config.getBoolean("gears", "recipes", true, "");
+		RecipeConfig.tanksEnabled = config.getBoolean("portableTanks", "recipes", true, "");
+		
 		for (Map.Entry<String, HeatRaw> entry : heatMap.entrySet()) {
 			String key = entry.getKey();
-			ConfigCategory material = config.getCategory(key);
 			
 			HeatRaw heat = entry.getValue();
-			logger.info(entry.getKey() + ": " + heat);
-			logger.info(material);
 			double melt = config.get(key, "MeltingPoint", heat.meltTemp).getDouble();
 			double sh = config.get(key, "SpecificHeat", heat.specificHeat).getDouble();
 			heat = new HeatRaw(sh, melt);
@@ -82,6 +87,7 @@ public class TFTechness {
 		MinecraftForge.EVENT_BUS.register(new AnvilRecipeHandler());
 		RemoveBatch batch = new RemoveBatch();
 		removeGearRecipes(batch);
+		removeTankRecipes(batch);
 		batch.Execute();
 		
 	}
@@ -202,8 +208,17 @@ public class TFTechness {
 	private void removeGearRecipes(RemoveBatch batch) {
 		// TODO: Invar*, Electrum*, Enderium*, Mana infused (mithril)*, signalum*, lumium*
 		// *done, but untextured
-		for (int i = 0; i < materials.length; i++) {
-			batch.addCrafting(materials[i].gear);
+		if (RecipeConfig.gearsEnabled) {
+			for (int i = 0; i < materials.length; i++) {
+				batch.addCrafting(materials[i].gear);
+			}
+		}
+		
+	}
+	
+	private void removeTankRecipes(RemoveBatch batch) {
+		if (RecipeConfig.tanksEnabled) {
+			batch.addCrafting(new ItemStack(Item.getItemFromBlock(TEBlocks.blockTank), 1));
 		}
 		
 	}

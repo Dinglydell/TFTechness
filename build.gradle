@@ -44,6 +44,9 @@ dependencies {
 	compile files (
 		"lib/ThermalFoundation-[1.7.10]1.2.0-102-dev.jar"
 	)
+	compile files (
+		"lib/ThermalExpansion-[1.7.10]4.0.3B1-218-dev.jar"
+	)
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
