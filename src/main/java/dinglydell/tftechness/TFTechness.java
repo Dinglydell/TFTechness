@@ -72,26 +72,6 @@ public class TFTechness {
 		
 	}
 	
-	private void initHeatMap() {
-		// Stock TFC
-		heatMap.put("Gold", new HeatRaw(0.6, 1060));
-		heatMap.put("WroughtIron", new HeatRaw(0.35, 1535));
-		heatMap.put("Copper", new HeatRaw(0.35, 1080));
-		heatMap.put("Tin", new HeatRaw(0.14, 230));
-		heatMap.put("Silver", new HeatRaw(0.48, 961));
-		heatMap.put("Lead", new HeatRaw(0.22, 328));
-		heatMap.put("Nickel", new HeatRaw(0.48, 1453));
-		heatMap.put("Platinum", new HeatRaw(0.35, 1730));
-		heatMap.put("Bronze", new HeatRaw(0.35, 950));
-		
-		// TF
-		heatMap.put("Invar", new HeatRaw(0.52, 1700));
-		heatMap.put("Mithril", new HeatRaw(0.9, 660));
-		heatMap.put("Electrum", new HeatRaw(0.181, 650));
-		heatMap.put("Enderium", new HeatRaw(0.5, 1700));
-		heatMap.put("Signalum", new HeatRaw(0.45, 1300));
-	}
-	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		addMetals();
@@ -220,12 +200,33 @@ public class TFTechness {
 	}
 	
 	private void removeGearRecipes(RemoveBatch batch) {
-		// TODO: Invar*, Electrum*, Enderium*, Mana infused (mithril)*, signalum*, lumium
+		// TODO: Invar*, Electrum*, Enderium*, Mana infused (mithril)*, signalum*, lumium*
 		// *done, but untextured
 		for (int i = 0; i < materials.length; i++) {
 			batch.addCrafting(materials[i].gear);
 		}
 		
+	}
+	
+	private void initHeatMap() {
+		// Stock TFC
+		heatMap.put("Gold", new HeatRaw(0.6, 1060));
+		heatMap.put("WroughtIron", new HeatRaw(0.35, 1535));
+		heatMap.put("Copper", new HeatRaw(0.35, 1080));
+		heatMap.put("Tin", new HeatRaw(0.14, 230));
+		heatMap.put("Silver", new HeatRaw(0.48, 961));
+		heatMap.put("Lead", new HeatRaw(0.22, 328));
+		heatMap.put("Nickel", new HeatRaw(0.48, 1453));
+		heatMap.put("Platinum", new HeatRaw(0.35, 1730));
+		heatMap.put("Bronze", new HeatRaw(0.35, 950));
+		
+		// TF
+		heatMap.put("Invar", new HeatRaw(0.52, 1700));
+		heatMap.put("Mithril", new HeatRaw(0.9, 660));
+		heatMap.put("Electrum", new HeatRaw(0.181, 650));
+		heatMap.put("Enderium", new HeatRaw(0.5, 1700));
+		heatMap.put("Signalum", new HeatRaw(0.45, 1300));
+		heatMap.put("Lumium", new HeatRaw(0.35, 1200));
 	}
 	
 	private Material[] getMaterials() {
@@ -277,7 +278,8 @@ public class TFTechness {
 						new AlloyIngred("Gold", 50.00f, 60.00f), new AlloyIngred("Silver", 40.00f, 50.00f)
 				}),
 				new Material("Enderium", TFItems.gearEnderium, 6, Alloy.EnumTier.TierV),
-				new Material("Signalum", TFItems.gearSignalum, 5, Alloy.EnumTier.TierIV)
+				new Material("Signalum", TFItems.gearSignalum, 5, Alloy.EnumTier.TierIV),
+				new Material("Lumium", TFItems.gearLumium, 5, Alloy.EnumTier.TierIV)
 		};
 	}
 }

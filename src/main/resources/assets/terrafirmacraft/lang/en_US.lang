@@ -1,25 +1,36 @@
 gui.plans.gear=Gear
 
+item.InvarUnshaped.name=Unshaped: Invar
+item.ElectrumUnshaped.name=Unshaped: Electrum
+item.MithrilUnshaped.name=Unshaped: Mana Infused
+item.EnderiumUnshaped.name=Unshaped: Enderium
+item.SignalumUnshaped.name=Unshaped: Signalum
+item.LumiumUnshaped.name=Unshaped: Lumium
+
 item.InvarIngot.name=Invar Ingot
 item.ElectrumIngot.name=Electrum Ingot
 item.MithrilIngot.name=Mana Infused Ingot
 item.EnderiumIngot.name=Enderium Ingot
 item.SignalumIngot.name=Signalum Ingot
+item.LumiumIngot.name=Lumium Ingot
 
 item.InvarIngot2x.name=Invar Double Ingot
 item.ElectrumIngot2x.name=Electrum Double Ingot
 item.MithrilIngot2x.name=Mithril Double Ingot
 item.EnderiumIngot2x.name=Enderium Double Ingot
 item.SignalumIngot2x.name=Signalum Double Ingot
+item.LumiumIngot2x.name=Lumium Double Ingot
 
 item.InvarSheet.name=Invar Sheet
 item.ElectrumSheet.name=Electrum Sheet
 item.MithrilSheet.name=Mithril Sheet
 item.EnderiumSheet.name=Enderium Sheet
 item.SignalumSheet.name=Signalum Sheet
+item.LumiumSheet.name=Lumium Sheet
 
 item.InvarSheet2x.name=Invar Double Sheet
 item.ElectrumSheet2x.name=Electrum Double Sheet
 item.MithrilSheet2x.name=Mithril Double Sheet
 item.EnderiumSheet2x.name=Enderium Double Sheet
 item.SignalumSheet2x.name=Signalum Double Sheet
+item.LumiumSheet2x.name=Lumium Double Sheet
