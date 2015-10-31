@@ -65,7 +65,7 @@ public class TFTechness {
 			logger.info(material);
 			double melt = config.get(key, "MeltingPoint", heat.meltTemp).getDouble();
 			double sh = config.get(key, "SpecificHeat", heat.specificHeat).getDouble();
-			
+			heat = new HeatRaw(sh, melt);
 		}
 		
 		config.save();
