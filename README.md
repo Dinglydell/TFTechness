@@ -1,8 +1,12 @@
 # TFTechness
 For all those unfortunate enough to stumble across this terribleness:
+
 Get out.
+
 Go.
+
 Before it's too late, just go.
+
 
 On your own head be it.
 
