@@ -13,6 +13,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.LogManager;
 
 import cofh.thermalexpansion.block.TEBlocks;
+import cofh.thermalexpansion.block.tank.BlockTank;
 import cofh.thermalfoundation.item.TFItems;
 
 import com.bioxx.tfc.Core.Metal.Alloy;
@@ -35,17 +36,26 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import dinglydell.tftechness.block.BlockTankFrame;
+import dinglydell.tftechness.block.ItemBlockTankFrame;
+import dinglydell.tftechness.block.TFTBlocks;
+import dinglydell.tftechness.item.TFTItems;
+import dinglydell.tftechness.metal.AlloyIngred;
+import dinglydell.tftechness.metal.Material;
+import dinglydell.tftechness.metal.MaterialAlloy;
+import dinglydell.tftechness.metal.TFTMetals;
 import dinglydell.tftechness.recipe.AnvilRecipeHandler;
 import dinglydell.tftechness.recipe.RecipeConfig;
 import dinglydell.tftechness.recipe.RemoveBatch;
 
-@Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation")
+@Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion")
 public class TFTechness {
 	public static final String MODID = "TFTechness";
 	public static final String VERSION = "0.1";
 	public static org.apache.logging.log4j.Logger logger = LogManager.getLogger("TFTechness");
 	public static Material[] materials;
 	public static Map<String, HeatRaw> heatMap = new HashMap();
+	public static Map<String, Material> materialMap;
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -55,31 +65,60 @@ public class TFTechness {
 	}
 	
 	private void readConfig(FMLPreInitializationEvent event) {
-		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(),
-				"/TFTechness/Metals.cfg"));
-		config.load();
-		
-		config.addCustomCategoryComment("recipes",
-				"true: TFTechness changes the recipe, false: TFTechness leave it alone.");
-		RecipeConfig.gearsEnabled = config.getBoolean("gears", "recipes", true, "");
-		RecipeConfig.tanksEnabled = config.getBoolean("portableTanks", "recipes", true, "");
+		logger.info("Loading config");
+		Configuration metalConfig = new Configuration(new File(event.getModConfigurationDirectory(),
+				"/TFTechness/Metals.cfg"), true);
+		metalConfig.load();
 		
 		for (Map.Entry<String, HeatRaw> entry : heatMap.entrySet()) {
 			String key = entry.getKey();
 			
 			HeatRaw heat = entry.getValue();
-			double melt = config.get(key, "MeltingPoint", heat.meltTemp).getDouble();
-			double sh = config.get(key, "SpecificHeat", heat.specificHeat).getDouble();
+			double melt = metalConfig.get(key, "MeltingPoint", heat.meltTemp).getDouble();
+			double sh = metalConfig.get(key, "SpecificHeat", heat.specificHeat).getDouble();
 			heat = new HeatRaw(sh, melt);
 		}
 		
-		config.save();
+		metalConfig.save();
 		
+		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(),
+				"/TFTechness/General.cfg"), true);
+		config.load();
+		config.addCustomCategoryComment("Recipes",
+				"true: TFTechness changes the recipe, false: TFTechness leave it alone.");
+		RecipeConfig.gearsEnabled = config.getBoolean("gears", "Recipes", true, "");
+		RecipeConfig.tanksEnabled = config.getBoolean("portableTanks", "Recipes", true, "");
+		config.save();
 	}
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		addMetals();
+		addTanks();
+	}
+	
+	private void addTanks() {
+		TFTBlocks.tankFrame = new BlockTankFrame();
+		
+		GameRegistry.registerBlock(TFTBlocks.tankFrame, ItemBlockTankFrame.class, "Tank");
+		
+		// Goes through all the tank types & stages and creates an itemstack for each one
+		BlockTank.Types[] types = BlockTank.Types.values();
+		BlockTankFrame.Stages[] stages = BlockTankFrame.Stages.values();
+		for (int i = 0; i < types.length; i++) {
+			BlockTank.Types t = types[i];
+			for (int j = 0; j < stages.length; j++) {
+				BlockTankFrame.Stages s = stages[j];
+				
+				String name = t.name() + s.name();
+				ItemStack frame = new ItemStack(TFTBlocks.tankFrame, 1, BlockTankFrame.getMeta(t, s));
+				
+				BlockTankFrame.itemStacks.put(name, frame);
+				
+				GameRegistry.registerCustomItemStack("tank" + name, frame);
+			}
+		}
+		
 	}
 	
 	@EventHandler
@@ -94,6 +133,7 @@ public class TFTechness {
 	
 	private void addMetals() {
 		materials = getMaterials();
+		materialMap = getMatMap();
 		for (Material mat : materials) {
 			if (!mat.gearOnly) {
 				addUnshaped(mat);
@@ -218,7 +258,10 @@ public class TFTechness {
 	
 	private void removeTankRecipes(RemoveBatch batch) {
 		if (RecipeConfig.tanksEnabled) {
-			batch.addCrafting(new ItemStack(Item.getItemFromBlock(TEBlocks.blockTank), 1));
+			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1, BlockTank.Types.BASIC.ordinal()));
+			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1, BlockTank.Types.HARDENED.ordinal()));
+			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1, BlockTank.Types.REINFORCED.ordinal()));
+			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1, BlockTank.Types.RESONANT.ordinal()));
 		}
 		
 	}
@@ -242,6 +285,14 @@ public class TFTechness {
 		heatMap.put("Enderium", new HeatRaw(0.5, 1700));
 		heatMap.put("Signalum", new HeatRaw(0.45, 1300));
 		heatMap.put("Lumium", new HeatRaw(0.35, 1200));
+	}
+	
+	private Map<String, Material> getMatMap() {
+		Map<String, Material> m = new HashMap();
+		for (Material mat : materials) {
+			m.put(mat.name, mat);
+		}
+		return m;
 	}
 	
 	private Material[] getMaterials() {

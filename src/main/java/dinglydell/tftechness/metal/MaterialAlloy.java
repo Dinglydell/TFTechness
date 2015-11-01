@@ -1,4 +1,4 @@
-package dinglydell.tftechness;
+package dinglydell.tftechness.metal;
 
 import net.minecraft.item.ItemStack;
 

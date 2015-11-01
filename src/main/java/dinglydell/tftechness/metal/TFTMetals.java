@@ -1,4 +1,4 @@
-package dinglydell.tftechness;
+package dinglydell.tftechness.metal;
 
 import java.util.HashMap;
 import java.util.Map;

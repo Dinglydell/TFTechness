@@ -1,4 +1,4 @@
-package dinglydell.tftechness;
+package dinglydell.tftechness.metal;
 
 public class AlloyIngred {
 	public String name;

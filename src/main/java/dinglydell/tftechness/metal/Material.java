@@ -1,4 +1,4 @@
-package dinglydell.tftechness;
+package dinglydell.tftechness.metal;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -6,6 +6,8 @@ import net.minecraft.item.ItemStack;
 import com.bioxx.tfc.Core.Metal.Alloy;
 import com.bioxx.tfc.api.HeatRaw;
 import com.bioxx.tfc.api.Metal;
+
+import dinglydell.tftechness.TFTechness;
 
 public class Material {
 	

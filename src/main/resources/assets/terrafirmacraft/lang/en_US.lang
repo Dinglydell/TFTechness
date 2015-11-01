@@ -1,8 +1,9 @@
 gui.plans.gear=Gear
+gui.plans.tank=Portable Tank
 
 item.InvarUnshaped.name=Unshaped: Invar
 item.ElectrumUnshaped.name=Unshaped: Electrum
-item.MithrilUnshaped.name=Unshaped: Mana Infused
+item.MithrilUnshaped.name=Unshaped: Mana Infused Metal
 item.EnderiumUnshaped.name=Unshaped: Enderium
 item.SignalumUnshaped.name=Unshaped: Signalum
 item.LumiumUnshaped.name=Unshaped: Lumium
