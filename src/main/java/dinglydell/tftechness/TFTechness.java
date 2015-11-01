@@ -44,6 +44,7 @@ import dinglydell.tftechness.metal.AlloyIngred;
 import dinglydell.tftechness.metal.Material;
 import dinglydell.tftechness.metal.MaterialAlloy;
 import dinglydell.tftechness.metal.TFTMetals;
+import dinglydell.tftechness.metal.TankMap;
 import dinglydell.tftechness.recipe.AnvilRecipeHandler;
 import dinglydell.tftechness.recipe.RecipeConfig;
 import dinglydell.tftechness.recipe.RemoveBatch;
@@ -56,6 +57,7 @@ public class TFTechness {
 	public static Material[] materials;
 	public static Map<String, HeatRaw> heatMap = new HashMap();
 	public static Map<String, Material> materialMap;
+	public static TankMap[] tankMap;
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -98,6 +100,14 @@ public class TFTechness {
 	}
 	
 	private void addTanks() {
+		tankMap = getTanks();
+		
+		registerTanks();
+		registerTankHeat();
+		
+	}
+	
+	private void registerTanks() {
 		TFTBlocks.tankFrame = new BlockTankFrame();
 		
 		GameRegistry.registerBlock(TFTBlocks.tankFrame, ItemBlockTankFrame.class, "Tank");
@@ -105,8 +115,10 @@ public class TFTechness {
 		// Goes through all the tank types & stages and creates an itemstack for each one
 		BlockTank.Types[] types = BlockTank.Types.values();
 		BlockTankFrame.Stages[] stages = BlockTankFrame.Stages.values();
+		int tankMapIndex = 0;
 		for (int i = 0; i < types.length; i++) {
 			BlockTank.Types t = types[i];
+			
 			for (int j = 0; j < stages.length; j++) {
 				BlockTankFrame.Stages s = stages[j];
 				
@@ -116,9 +128,23 @@ public class TFTechness {
 				BlockTankFrame.itemStacks.put(name, frame);
 				
 				GameRegistry.registerCustomItemStack("tank" + name, frame);
+				
 			}
+			
 		}
 		
+	}
+	
+	private void registerTankHeat() {
+		HeatRegistry manager = HeatRegistry.getInstance();
+		
+		for (TankMap t : tankMap) {
+			for (BlockTankFrame.Stages s : BlockTankFrame.Stages.values()) {
+				ItemStack frame = BlockTankFrame.getItemStack(t.type, s);
+				manager.addIndex(new HeatIndex(frame, t.heatRaw));
+			}
+			
+		}
 	}
 	
 	@EventHandler
@@ -285,6 +311,19 @@ public class TFTechness {
 		heatMap.put("Enderium", new HeatRaw(0.5, 1700));
 		heatMap.put("Signalum", new HeatRaw(0.45, 1300));
 		heatMap.put("Lumium", new HeatRaw(0.35, 1200));
+	}
+	
+	private TankMap[] getTanks() {
+		return new TankMap[] {
+		new TankMap("Copper", BlockTank.Types.BASIC, BlockTank.tankBasic),
+				new TankMap("Invar", BlockTank.Types.HARDENED, BlockTank.tankHardened),
+				new TankMap(new ItemStack(TEBlocks.blockGlass, 1),
+						5,
+						BlockTank.Types.REINFORCED,
+						BlockTank.tankReinforced,
+						TFTechness.heatMap.get("Invar")),
+				new TankMap("Enderium", BlockTank.Types.RESONANT, BlockTank.tankResonant)
+		};
 	}
 	
 	private Map<String, Material> getMatMap() {

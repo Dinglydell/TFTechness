@@ -5,9 +5,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
-import cofh.thermalexpansion.block.TEBlocks;
-import cofh.thermalexpansion.block.tank.BlockTank;
 
+import com.bioxx.tfc.api.HeatIndex;
+import com.bioxx.tfc.api.HeatRaw;
+import com.bioxx.tfc.api.HeatRegistry;
 import com.bioxx.tfc.api.TFCItems;
 import com.bioxx.tfc.api.Crafting.AnvilManager;
 import com.bioxx.tfc.api.Crafting.AnvilRecipe;
@@ -28,11 +29,11 @@ public class AnvilRecipeHandler {
 	@SubscribeEvent(receiveCanceled = true)
 	public void onServerWorldTick(WorldEvent.Load event) {
 		World world = event.world;
-		if (world.provider.dimensionId == 0 && world.getWorldInfo().getSeed() != wSeed) {
+		long newSeed = world.getWorldInfo().getSeed();
+		if (world.provider.dimensionId == 0 && newSeed != wSeed && newSeed != 0) {
 			AnvilManager.world = world;
 			addRecipes();
 			wSeed = world.getWorldInfo().getSeed();
-			TFTechness.logger.info(wSeed);
 		}
 	}
 	
@@ -48,7 +49,6 @@ public class AnvilRecipeHandler {
 		for (Material mat : TFTechness.materials) {
 			if (!mat.gearOnly) {
 				addDoubleIngotRecipe(manager, mat.ingot, mat.ingot2x, mat.tier);
-				TFTechness.logger.info(mat.metal);
 				addSheetRecipe(manager, mat.ingot2x, mat.sheet, mat.tier);
 				addDoubleSheetRecipe(manager, mat.sheet, mat.sheet2x, mat.tier);
 			}
@@ -62,21 +62,16 @@ public class AnvilRecipeHandler {
 	}
 	
 	private void addTankRecipes(AnvilManager manager) {
-		TankMap[] tanks = new TankMap[] {
-		new TankMap("Copper", BlockTank.Types.BASIC, BlockTank.tankBasic),
-				new TankMap("Invar", BlockTank.Types.HARDENED, BlockTank.tankHardened),
-				new TankMap(new ItemStack(TEBlocks.blockGlass, 1),
-						5,
-						BlockTank.Types.REINFORCED,
-						BlockTank.tankReinforced),
-				new TankMap("Enderium", BlockTank.Types.RESONANT, BlockTank.tankResonant)
-		};
-		
+		TankMap[] tanks = TFTechness.tankMap;
+		// I feel like I'm being very bad by trying to do this here...
+		HeatRegistry heat = HeatRegistry.getInstance();
 		for (int i = 0; i < tanks.length; i++) {
 			TankMap t = tanks[i];
 			ItemStack unf = BlockTankFrame.getItemStack(t.type, BlockTankFrame.Stages.unfinished);
 			ItemStack frame = BlockTankFrame.getItemStack(t.type, BlockTankFrame.Stages.frame);
-			
+			HeatRaw raw = t.heatRaw;
+			TFTechness.logger.info(i + ": { melt: " + raw.meltTemp + ", sh: " + raw.specificHeat + " }");
+			heat.addIndex(new HeatIndex(unf, raw));
 			// If the anvil requirement for the recipe involving lead is smaller than lead tier, use
 			// lead tier
 			AnvilReq leadReq = AnvilReq.getReqFromInt(Math.max(t.req.Tier, TFTechness.materialMap.get("Lead").tier));
