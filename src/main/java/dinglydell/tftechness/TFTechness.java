@@ -239,6 +239,7 @@ public class TFTechness {
 	
 	private void registerMetalHeat(HeatRegistry manager, Material mat) {
 		if (!mat.gearOnly) {
+			addHeat(manager, mat.unshaped, mat.heatRaw, mat.unshaped, 1);
 			addHeat(manager, mat.ingot, mat.heatRaw, mat.unshaped, 1);
 			addHeat(manager, mat.ingot2x, mat.heatRaw, mat.unshaped, 2);
 			addHeat(manager, mat.sheet, mat.heatRaw, mat.unshaped, 2);
