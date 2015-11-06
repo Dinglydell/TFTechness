@@ -26,7 +26,6 @@ import com.bioxx.tfc.api.HeatIndex;
 import com.bioxx.tfc.api.HeatRaw;
 import com.bioxx.tfc.api.HeatRegistry;
 import com.bioxx.tfc.api.Metal;
-import com.bioxx.tfc.api.TFCBlocks;
 import com.bioxx.tfc.api.TFCItems;
 import com.bioxx.tfc.api.Constant.Global;
 import com.bioxx.tfc.api.Enums.EnumSize;
@@ -67,14 +66,14 @@ public class TFTechness {
 		initHeatMap();
 		readConfig(event);
 		addMetals();
-		fixSheets();
+		addSheetBlocks();
 		
 	}
 	
-	private void fixSheets() {
-		TFCBlocks.metalSheet = new BlockTFTMetalSheet().setBlockName("MetalSheet").setHardness(80);
+	private void addSheetBlocks() {
+		TFTBlocks.metalSheet = new BlockTFTMetalSheet().setBlockName("MetalSheet").setHardness(80);
 		
-		GameRegistry.registerBlock(TFCBlocks.metalSheet, "MetalSheet");
+		GameRegistry.registerBlock(TFTBlocks.metalSheet, "MetalSheet");
 	}
 	
 	private void readConfig(FMLPreInitializationEvent event) {
@@ -178,6 +177,7 @@ public class TFTechness {
 				addDoubleIngots(mat);
 				registerMetal(mat);
 				int id = MetalSnatcher.getIdFromMetal(mat.metal);
+				logger.info(mat.name + ": " + id);
 				addSheets(mat, id);
 				addDoubleSheets(mat, id);
 			}

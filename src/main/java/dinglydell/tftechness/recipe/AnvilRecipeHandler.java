@@ -64,9 +64,6 @@ public class AnvilRecipeHandler {
 			TankMap t = tanks[i];
 			ItemStack unf = BlockTankFrame.getItemStack(t.type, BlockTankFrame.Stages.unfinished);
 			ItemStack frame = BlockTankFrame.getItemStack(t.type, BlockTankFrame.Stages.frame);
-			TFTechness.logger.info(t.finished);
-			TFTechness.logger.info(unf);
-			TFTechness.logger.info(frame);
 			// If the anvil requirement for the recipe involving lead is smaller than lead tier, use
 			// lead tier
 			AnvilReq leadReq = AnvilReq.getReqFromInt(Math.max(t.req.Tier, TFTechness.materialMap.get("Lead").tier));

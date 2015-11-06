@@ -40,7 +40,6 @@ public class RemoveBatch {
 					found = OreDictionary.itemMatches(output, crafting.get(i), false);
 				}
 				if (found) {
-					TFTechness.logger.info("Removed.");
 					iterator.remove();
 				}
 			}

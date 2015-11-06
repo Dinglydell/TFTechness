@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import com.bioxx.tfc.Core.Metal.MetalRegistry;
 import com.bioxx.tfc.api.Metal;
 
+/** Nasty stuff happens here */
 public class MetalSnatcher {
 	
 	// If your metals are stored in a map with a string key, why would you use an integer ID?

@@ -1,20 +1,29 @@
 package dinglydell.tftechness.block;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 import com.bioxx.tfc.Reference;
 import com.bioxx.tfc.Blocks.BlockMetalSheet;
 import com.bioxx.tfc.api.Metal;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.metal.MetalSnatcher;
+import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 
 public class BlockTFTMetalSheet extends BlockMetalSheet {
+	public Map<String, IIcon> icons = new HashMap();
 	
 	public BlockTFTMetalSheet() {
 		super();
-		icons = new IIcon[MetalSnatcher.getMetals().size()];
 		
 	}
 	
@@ -23,9 +32,23 @@ public class BlockTFTMetalSheet extends BlockMetalSheet {
 		TFTechness.logger.info(MetalSnatcher.getMetals().size());
 		int i = 0;
 		for (Metal m : MetalSnatcher.getMetalsAsArray()) {
-			icons[i] = registerer.registerIcon(Reference.MOD_ID + ":" + "metal/" + m.name);
+			icons.put(m.name, registerer.registerIcon(Reference.MOD_ID + ":" + "metal/" + m.name));
 			i++;
 		}
-		
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIcon getIcon(IBlockAccess access, int i, int j, int k, int meta) {
+		TETFTMetalSheet te = (TETFTMetalSheet) access.getTileEntity(i, j, k);
+		if (te != null)
+			return icons.get(te.metal);
+		else
+			return icons.get("Tin");
+	}
+	
+	@Override
+	public TileEntity createNewTileEntity(World var1, int var2) {
+		return new TETFTMetalSheet();
 	}
 }
