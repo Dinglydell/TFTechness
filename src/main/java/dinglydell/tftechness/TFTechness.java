@@ -67,7 +67,6 @@ public class TFTechness {
 		initHeatMap();
 		readConfig(event);
 		addMetals();
-		addTanks();
 		fixSheets();
 		
 	}
@@ -107,7 +106,8 @@ public class TFTechness {
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		
+		// Requires some TE init
+		addTanks();
 	}
 	
 	private void addTanks() {
@@ -328,14 +328,12 @@ public class TFTechness {
 	
 	private TankMap[] getTanks() {
 		return new TankMap[] {
-		new TankMap("Copper", BlockTank.Types.BASIC, BlockTank.tankBasic),
-				new TankMap("Invar", BlockTank.Types.HARDENED, BlockTank.tankHardened),
+				new TankMap("Copper", BlockTank.Types.BASIC),
+				new TankMap("Invar", BlockTank.Types.HARDENED),
 				new TankMap(new ItemStack(TEBlocks.blockGlass, 1),
 						5,
 						BlockTank.Types.REINFORCED,
-						BlockTank.tankReinforced,
-						TFTechness.heatMap.get("Invar")),
-				new TankMap("Enderium", BlockTank.Types.RESONANT, BlockTank.tankResonant)
+						TFTechness.heatMap.get("Invar")), new TankMap("Enderium", BlockTank.Types.RESONANT)
 		};
 	}
 	
