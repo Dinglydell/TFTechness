@@ -26,6 +26,7 @@ import com.bioxx.tfc.api.HeatIndex;
 import com.bioxx.tfc.api.HeatRaw;
 import com.bioxx.tfc.api.HeatRegistry;
 import com.bioxx.tfc.api.Metal;
+import com.bioxx.tfc.api.TFCBlocks;
 import com.bioxx.tfc.api.TFCItems;
 import com.bioxx.tfc.api.Constant.Global;
 import com.bioxx.tfc.api.Enums.EnumSize;
@@ -36,6 +37,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import dinglydell.tftechness.block.BlockTFTMetalSheet;
 import dinglydell.tftechness.block.BlockTankFrame;
 import dinglydell.tftechness.block.ItemBlockTankFrame;
 import dinglydell.tftechness.block.TFTBlocks;
@@ -43,6 +45,7 @@ import dinglydell.tftechness.item.TFTItems;
 import dinglydell.tftechness.metal.AlloyIngred;
 import dinglydell.tftechness.metal.Material;
 import dinglydell.tftechness.metal.MaterialAlloy;
+import dinglydell.tftechness.metal.MetalSnatcher;
 import dinglydell.tftechness.metal.TFTMetals;
 import dinglydell.tftechness.metal.TankMap;
 import dinglydell.tftechness.recipe.AnvilRecipeHandler;
@@ -63,7 +66,16 @@ public class TFTechness {
 	public void preInit(FMLPreInitializationEvent event) {
 		initHeatMap();
 		readConfig(event);
+		addMetals();
+		addTanks();
+		fixSheets();
 		
+	}
+	
+	private void fixSheets() {
+		TFCBlocks.metalSheet = new BlockTFTMetalSheet().setBlockName("MetalSheet").setHardness(80);
+		
+		GameRegistry.registerBlock(TFCBlocks.metalSheet, "MetalSheet");
 	}
 	
 	private void readConfig(FMLPreInitializationEvent event) {
@@ -95,8 +107,7 @@ public class TFTechness {
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		addMetals();
-		addTanks();
+		
 	}
 	
 	private void addTanks() {
@@ -141,7 +152,7 @@ public class TFTechness {
 		for (TankMap t : tankMap) {
 			for (BlockTankFrame.Stages s : BlockTankFrame.Stages.values()) {
 				ItemStack frame = BlockTankFrame.getItemStack(t.type, s);
-				manager.addIndex(new HeatIndex(frame, t.heatRaw));
+				manager.addIndex(new HeatIndex(frame, t.heatRaw, frame));
 			}
 			
 		}
@@ -165,9 +176,10 @@ public class TFTechness {
 				addUnshaped(mat);
 				addIngots(mat);
 				addDoubleIngots(mat);
-				addSheets(mat);
-				addDoubleSheets(mat);
 				registerMetal(mat);
+				int id = MetalSnatcher.getIdFromMetal(mat.metal);
+				addSheets(mat, id);
+				addDoubleSheets(mat, id);
 			}
 			registerHeat(mat);
 			registerAlloy(mat);
@@ -200,17 +212,18 @@ public class TFTechness {
 		OreDictionary.registerOre("ingotDouble" + mat.name, mat.ingot2x);
 	}
 	
-	private void addSheets(Material mat) {
-		mat.sheet = ((ItemMetalSheet) new ItemMetalSheet(25 /* what even is this number */).setUnlocalizedName(mat.name
-				+ "Sheet")).setMetal(mat.name, 200);
+	private void addSheets(Material mat, int id) {
+		mat.sheet = ((ItemMetalSheet) new ItemMetalSheet(id).setUnlocalizedName(mat.name + "Sheet")).setMetal(mat.name,
+				200);
 		
 		TFTItems.sheets.put(mat.name, mat.sheet);
 		GameRegistry.registerItem(mat.sheet, mat.name + " Sheet");
 		OreDictionary.registerOre("plate" + mat.name, mat.sheet);
+		
 	}
 	
-	private void addDoubleSheets(Material mat) {
-		mat.sheet2x = ((ItemMetalSheet) new ItemMetalSheet(25).setUnlocalizedName(mat.name + "Sheet2x")).setMetal(mat.name,
+	private void addDoubleSheets(Material mat, int id) {
+		mat.sheet2x = ((ItemMetalSheet) new ItemMetalSheet(id).setUnlocalizedName(mat.name + "Sheet2x")).setMetal(mat.name,
 				400);
 		
 		TFTItems.sheets2x.put(mat.name, mat.sheet2x);

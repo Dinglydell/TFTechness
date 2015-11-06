@@ -141,6 +141,16 @@ public class BlockTankFrame extends Block {
 		return meta % nStages;
 	}
 	
+	public static BlockTank.Types getType(int meta) {
+		return BlockTank.Types.values()[meta / Stages.values().length];
+	}
+	
+	public static Stages getStage(int meta) {
+		Stages[] vals = Stages.values();
+		int nStages = vals.length;
+		return vals[meta % nStages];
+	}
+	
 	public static ItemStack getItemStack(Types t, Stages s) {
 		return itemStacks.get(t.name() + s.name());
 	}
