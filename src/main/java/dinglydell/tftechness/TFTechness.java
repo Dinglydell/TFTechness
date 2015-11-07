@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -16,6 +17,7 @@ import cofh.thermalexpansion.block.TEBlocks;
 import cofh.thermalexpansion.block.tank.BlockTank;
 import cofh.thermalfoundation.item.TFItems;
 
+import com.bioxx.tfc.Core.Recipes;
 import com.bioxx.tfc.Core.Metal.Alloy;
 import com.bioxx.tfc.Core.Metal.AlloyManager;
 import com.bioxx.tfc.Core.Metal.MetalRegistry;
@@ -112,6 +114,55 @@ public class TFTechness {
 	public void init(FMLInitializationEvent event) {
 		// Requires some TE init
 		addTanks();
+		
+	}
+	
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new AnvilRecipeHandler());
+		RemoveBatch batch = new RemoveBatch();
+		removeGearRecipes(batch);
+		removeTankRecipes(batch);
+		batch.Execute();
+		
+		addRecipes();
+		
+	}
+	
+	private void addRecipes() {
+		unshapedMetalRecipes();
+		tankRecipes();
+		
+	}
+	
+	private void tankRecipes() {
+		for (int i = 0; i < tankMap.length; i++) {
+			TankMap t = tankMap[i];
+			ItemStack frame = BlockTankFrame.getItemStack(t.type, BlockTankFrame.Stages.frame);
+			// Finished tanks are made by surrounding a tank frame with 4 glass blocks
+			GameRegistry.addRecipe(t.finished, " G ", "GFG", " G ", 'G', new ItemStack(Blocks.glass, 1), 'F', frame);
+			if (i > 0) {
+				TankMap prev = tankMap[i - 1];
+				// Finished tanks can be made with previous tier finished + sheet
+				GameRegistry.addShapelessRecipe(t.finished, prev.finished, t.sheet2x);
+			}
+		}
+		
+	}
+	
+	private void unshapedMetalRecipes() {
+		for (Material m : materials) {
+			if (!m.gearOnly) {
+				// Ingot => Unshaped
+				GameRegistry.addShapelessRecipe(new ItemStack(m.unshaped, 1, 0),
+						Recipes.getStackNoTemp(new ItemStack(m.ingot, 1)),
+						new ItemStack(TFCItems.ceramicMold, 1, 1));
+				// Unshaped => Ingot
+				GameRegistry.addShapelessRecipe(new ItemStack(m.ingot, 1, 0),
+						Recipes.getStackNoTemp(new ItemStack(m.unshaped, 1)));
+			}
+		}
+		
 	}
 	
 	private void addTanks() {
@@ -160,16 +211,6 @@ public class TFTechness {
 			}
 			
 		}
-	}
-	
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(new AnvilRecipeHandler());
-		RemoveBatch batch = new RemoveBatch();
-		removeGearRecipes(batch);
-		removeTankRecipes(batch);
-		batch.Execute();
-		
 	}
 	
 	private void addMetals() {

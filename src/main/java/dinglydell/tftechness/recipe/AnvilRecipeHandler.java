@@ -1,6 +1,5 @@
 package dinglydell.tftechness.recipe;
 
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -69,8 +68,9 @@ public class AnvilRecipeHandler {
 			AnvilReq leadReq = AnvilReq.getReqFromInt(Math.max(t.req.Tier, TFTechness.materialMap.get("Lead").tier));
 			// Frame is made from unfinished + lead ingot
 			manager.addWeldRecipe(new AnvilRecipe(unf, new ItemStack(TFCItems.leadIngot, 1), leadReq, frame));
-			// Finished tank is made from frame glass block
-			manager.addWeldRecipe(new AnvilRecipe(frame, new ItemStack(Blocks.glass, 1), t.req, t.finished));
+			// // (old) Finished tank is made from frame + glass block
+			// manager.addWeldRecipe(new AnvilRecipe(frame, new ItemStack(Blocks.glass, 1), t.req,
+			// t.finished));
 			if (i == 0) {
 				// basic tier unfinished is made from working a sheet
 				manager.addRecipe(new AnvilRecipe(t.sheet2x, null, "tank", t.req, unf));
@@ -89,8 +89,9 @@ public class AnvilRecipeHandler {
 				
 				// non-basic tier frame can be made from previous tier frame + sheet
 				manager.addWeldRecipe(new AnvilRecipe(prevFrame, t.sheet2x, t.req, frame));
-				// non-basic tier finished can be made from previous tier finished + sheet
-				manager.addWeldRecipe(new AnvilRecipe(prev.finished, t.sheet2x, t.req, t.finished));
+				// // (old) non-basic tier finished can be made from previous tier finished + sheet
+				// manager.addWeldRecipe(new AnvilRecipe(prev.finished, t.sheet2x, t.req,
+				// t.finished));
 			}
 			
 		}
