@@ -4,12 +4,12 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -73,6 +73,25 @@ public class TFTechness {
 		
 	}
 	
+	@EventHandler
+	public void init(FMLInitializationEvent event) {
+		// Requires some TE init
+		addTanks();
+		
+	}
+	
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new AnvilRecipeHandler());
+		RemoveBatch batch = new RemoveBatch();
+		removeGearRecipes(batch);
+		removeTankRecipes(batch);
+		batch.Execute();
+		
+		addRecipes();
+		
+	}
+	
 	private void registerTileEntities() {
 		GameRegistry.registerTileEntity(TETFTMetalSheet.class, "TFTMetalSheet");
 	}
@@ -110,25 +129,6 @@ public class TFTechness {
 		config.save();
 	}
 	
-	@EventHandler
-	public void init(FMLInitializationEvent event) {
-		// Requires some TE init
-		addTanks();
-		
-	}
-	
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(new AnvilRecipeHandler());
-		RemoveBatch batch = new RemoveBatch();
-		removeGearRecipes(batch);
-		removeTankRecipes(batch);
-		batch.Execute();
-		
-		addRecipes();
-		
-	}
-	
 	private void addRecipes() {
 		unshapedMetalRecipes();
 		tankRecipes();
@@ -138,9 +138,12 @@ public class TFTechness {
 	private void tankRecipes() {
 		for (int i = 0; i < tankMap.length; i++) {
 			TankMap t = tankMap[i];
+			logger.info(i + ": " + t);
 			ItemStack frame = BlockTankFrame.getItemStack(t.type, BlockTankFrame.Stages.frame);
 			// Finished tanks are made by surrounding a tank frame with 4 glass blocks
-			GameRegistry.addRecipe(t.finished, " G ", "GFG", " G ", 'G', new ItemStack(Blocks.glass, 1), 'F', frame);
+			GameRegistry.addRecipe(new ShapedOreRecipe(t.finished, new Object[] {
+					" G ", "GFG", " G ", Character.valueOf('G'), "blockGlass", Character.valueOf('F'), frame
+			}));
 			if (i > 0) {
 				TankMap prev = tankMap[i - 1];
 				// Finished tanks can be made with previous tier finished + sheet
@@ -176,7 +179,7 @@ public class TFTechness {
 	private void registerTanks() {
 		TFTBlocks.tankFrame = new BlockTankFrame();
 		
-		GameRegistry.registerBlock(TFTBlocks.tankFrame, ItemBlockTankFrame.class, "Tank");
+		GameRegistry.registerBlock(TFTBlocks.tankFrame, ItemBlockTankFrame.class, "TankFrame");
 		
 		// Goes through all the tank types & stages and creates an itemstack for each one
 		BlockTank.Types[] types = BlockTank.Types.values();
