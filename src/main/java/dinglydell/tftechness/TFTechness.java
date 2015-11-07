@@ -21,7 +21,6 @@ import com.bioxx.tfc.Core.Metal.AlloyManager;
 import com.bioxx.tfc.Core.Metal.MetalRegistry;
 import com.bioxx.tfc.Items.ItemIngot;
 import com.bioxx.tfc.Items.ItemMeltedMetal;
-import com.bioxx.tfc.Items.ItemMetalSheet;
 import com.bioxx.tfc.api.HeatIndex;
 import com.bioxx.tfc.api.HeatRaw;
 import com.bioxx.tfc.api.HeatRegistry;
@@ -40,16 +39,17 @@ import dinglydell.tftechness.block.BlockTFTMetalSheet;
 import dinglydell.tftechness.block.BlockTankFrame;
 import dinglydell.tftechness.block.ItemBlockTankFrame;
 import dinglydell.tftechness.block.TFTBlocks;
+import dinglydell.tftechness.item.ItemTFTMetalSheet;
 import dinglydell.tftechness.item.TFTItems;
 import dinglydell.tftechness.metal.AlloyIngred;
 import dinglydell.tftechness.metal.Material;
 import dinglydell.tftechness.metal.MaterialAlloy;
-import dinglydell.tftechness.metal.MetalSnatcher;
 import dinglydell.tftechness.metal.TFTMetals;
 import dinglydell.tftechness.metal.TankMap;
 import dinglydell.tftechness.recipe.AnvilRecipeHandler;
 import dinglydell.tftechness.recipe.RecipeConfig;
 import dinglydell.tftechness.recipe.RemoveBatch;
+import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 
 @Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion")
 public class TFTechness {
@@ -67,7 +67,12 @@ public class TFTechness {
 		readConfig(event);
 		addMetals();
 		addSheetBlocks();
+		registerTileEntities();
 		
+	}
+	
+	private void registerTileEntities() {
+		GameRegistry.registerTileEntity(TETFTMetalSheet.class, "TFTMetalSheet");
 	}
 	
 	private void addSheetBlocks() {
@@ -176,10 +181,8 @@ public class TFTechness {
 				addIngots(mat);
 				addDoubleIngots(mat);
 				registerMetal(mat);
-				int id = MetalSnatcher.getIdFromMetal(mat.metal);
-				logger.info(mat.name + ": " + id);
-				addSheets(mat, id);
-				addDoubleSheets(mat, id);
+				addSheets(mat);
+				addDoubleSheets(mat);
 			}
 			registerHeat(mat);
 			registerAlloy(mat);
@@ -212,8 +215,8 @@ public class TFTechness {
 		OreDictionary.registerOre("ingotDouble" + mat.name, mat.ingot2x);
 	}
 	
-	private void addSheets(Material mat, int id) {
-		mat.sheet = ((ItemMetalSheet) new ItemMetalSheet(id).setUnlocalizedName(mat.name + "Sheet")).setMetal(mat.name,
+	private void addSheets(Material mat) {
+		mat.sheet = ((ItemTFTMetalSheet) new ItemTFTMetalSheet(mat.name).setUnlocalizedName(mat.name + "Sheet")).setMetal(mat.name,
 				200);
 		
 		TFTItems.sheets.put(mat.name, mat.sheet);
@@ -222,8 +225,8 @@ public class TFTechness {
 		
 	}
 	
-	private void addDoubleSheets(Material mat, int id) {
-		mat.sheet2x = ((ItemMetalSheet) new ItemMetalSheet(id).setUnlocalizedName(mat.name + "Sheet2x")).setMetal(mat.name,
+	private void addDoubleSheets(Material mat) {
+		mat.sheet2x = ((ItemTFTMetalSheet) new ItemTFTMetalSheet(mat.name).setUnlocalizedName(mat.name + "Sheet2x")).setMetal(mat.name,
 				400);
 		
 		TFTItems.sheets2x.put(mat.name, mat.sheet2x);

@@ -8,7 +8,7 @@ public class TETFTMetalSheet extends TEMetalSheet {
 	public String metal;
 	
 	public TETFTMetalSheet() {
-		
+		metal = "Tin";
 	}
 	
 	@Override

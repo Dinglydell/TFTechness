@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import com.bioxx.tfc.Items.ItemMetalSheet;
-import com.bioxx.tfc.TileEntities.TEMetalSheet;
 
 import dinglydell.tftechness.block.TFTBlocks;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
@@ -23,11 +22,15 @@ public class ItemTFTMetalSheet extends ItemMetalSheet {
 	public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int x, int y, int z,
 			int side, float hitX, float hitY, float hitZ) {
 		boolean success = super.onItemUse(itemstack, entityplayer, world, x, y, z, side, hitX, hitY, hitZ);
-		if (success && isValid(world, x, y, z)) {
-			int[] sides = sidesMap[side];
+		int[] sides = sidesMap[side];
+		if (world.getBlock(x, y, z) != TFTBlocks.metalSheet && valid(world, sides[0] + x, sides[1] + y, sides[2] + z)) {
 			world.setBlock(sides[0] + x, sides[1] + y, sides[2] + z, TFTBlocks.metalSheet);
 			TETFTMetalSheet te = (TETFTMetalSheet) world.getTileEntity(sides[0] + x, sides[1] + y, sides[2] + z);
 			te.metal = this.metal;
+			te.sheetStack = itemstack.copy();
+			te.sheetStack.stackSize = 1;
+			te.toggleBySide(flipSide(side), true);
+			success = true;
 		}
 		return success;
 	}
@@ -35,14 +38,19 @@ public class ItemTFTMetalSheet extends ItemMetalSheet {
 	@Override
 	public boolean isValid(World world, int i, int j, int k) {
 		Block block = world.getBlock(i, j, k);
-		if (block.isAir(world, i, j, k))
-			return true;
 		if (block == TFTBlocks.metalSheet && world.getTileEntity(i, j, k) instanceof TETFTMetalSheet) {
-			TEMetalSheet te = (TEMetalSheet) world.getTileEntity(i, j, k);
-			if (te.metalID == this.metalID)
+			TETFTMetalSheet te = (TETFTMetalSheet) world.getTileEntity(i, j, k);
+			if (this.metal.equals(te.metal))
 				return true;
 		}
 		return false;
 	}
 	
+	public boolean valid(World world, int i, int j, int k) {
+		Block block = world.getBlock(i, j, k);
+		if (block.isAir(world, i, j, k))
+			return true;
+		
+		return isValid(world, i, j, k);
+	}
 }
