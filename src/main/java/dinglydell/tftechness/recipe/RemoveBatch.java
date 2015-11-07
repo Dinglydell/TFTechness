@@ -23,10 +23,7 @@ public class RemoveBatch {
 	}
 	
 	private void ExecuteCrafting() {
-		TFTechness.logger.info("Hello!");
-		for (int i = 0; i < crafting.size(); i++) {
-			TFTechness.logger.info(crafting.get(i));
-		}
+		TFTechness.logger.info("Removing recipes");
 		Iterator<IRecipe> iterator = CraftingManager.getInstance().getRecipeList().iterator();
 		while (iterator.hasNext()) {
 			IRecipe recipe = iterator.next();

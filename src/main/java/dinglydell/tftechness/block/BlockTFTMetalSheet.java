@@ -16,7 +16,6 @@ import com.bioxx.tfc.api.Metal;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.metal.MetalSnatcher;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 
@@ -39,10 +38,8 @@ public class BlockTFTMetalSheet extends BlockMetalSheet {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(IBlockAccess access, int i, int j, int k, int meta) {
-		TFTechness.logger.info("getIconTE");
 		TETFTMetalSheet te = (TETFTMetalSheet) access.getTileEntity(i, j, k);
 		if (te != null) {
-			TFTechness.logger.info(te.metal);
 			return icons.get(te.metal);
 		} else {
 			return icons.get("Tin");
@@ -56,7 +53,7 @@ public class BlockTFTMetalSheet extends BlockMetalSheet {
 	
 	@Override
 	public IIcon getIcon(int side, int meta) {
-		TFTechness.logger.info("getIconMeta");
+		;
 		return icons.get("Tin");
 	}
 }
