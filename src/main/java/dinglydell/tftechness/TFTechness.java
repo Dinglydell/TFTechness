@@ -50,6 +50,7 @@ import dinglydell.tftechness.metal.TFTMetals;
 import dinglydell.tftechness.metal.TankMap;
 import dinglydell.tftechness.recipe.AnvilRecipeHandler;
 import dinglydell.tftechness.recipe.RecipeConfig;
+import dinglydell.tftechness.recipe.RecipeShapelessUpgrade;
 import dinglydell.tftechness.recipe.RemoveBatch;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 
@@ -147,7 +148,9 @@ public class TFTechness {
 			if (i > 0) {
 				TankMap prev = tankMap[i - 1];
 				// Finished tanks can be made with previous tier finished + sheet
-				GameRegistry.addShapelessRecipe(t.finished, prev.finished, t.sheet2x);
+				GameRegistry.addRecipe(new RecipeShapelessUpgrade(t.finished, prev.finished, new Object[] {
+						prev.finished, t.sheet2x
+				}));
 			}
 		}
 		
