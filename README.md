@@ -24,7 +24,7 @@ Features so far:
 * Removed ThermalExpansion portable tank recipes
 * Portable tanks are crafted in several stages: 
 * Working a copper sheet will produce an unfinished portable tank frame
-* Copper sheet + lead ingot = portable tank frame *(wip)*
-* portable tank frame + glass = portable tank *(wip)*
-* Portable tanks can be upgraded with an appropriate double sheet (or hardened glass block) + previous tier tank
-* This works with frames & unfinished frames
+* Welding unfinished portable tank frame with a lead ingot makes a portable tank frame
+* portable tank frame surrounded with glass in the crafting table creates a portable tank
+* Portable tanks can be upgraded with an appropriate double sheet (or hardened glass block) crafted with previous tier tank
+* This works with welding frames & unfinished frames
