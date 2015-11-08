@@ -167,7 +167,7 @@ public class TFTechness {
 					"  r", " S ", "r  ", Character.valueOf('S'), "rodSilver", Character.valueOf('r'), "dustRedstone"
 			}));
 			GameRegistry.addRecipe(new ShapedOreRecipe(TEItems.powerCoilGold, new Object[] {
-					"  r", " G ", "r  ", Character.valueOf('S'), "rodGold", Character.valueOf('r'), "dustRedstone"
+					"  r", " G ", "r  ", Character.valueOf('G'), "rodGold", Character.valueOf('r'), "dustRedstone"
 			}));
 		}
 		
