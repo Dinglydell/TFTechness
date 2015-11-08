@@ -12,6 +12,7 @@ public class TFTItems {
 	public static Map<String, Item> ingots2x = new HashMap();
 	public static Map<String, Item> sheets = new HashMap();
 	public static Map<String, Item> sheets2x = new HashMap();
+	public static Map<String, Item> rods = new HashMap();
 	
 	// I have no idea if it's a standard to have these statically defined as they were (as most
 	// other mods I've seen seem to do), but I got frustrated with having to add each thing

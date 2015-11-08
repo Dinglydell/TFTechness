@@ -17,31 +17,57 @@ public class Material {
 	public Item sheet2x;
 	public Item unshaped;
 	public ItemStack gear;
+	public Item rod;
+	public ItemStack nugget;
+	
 	public HeatRaw heatRaw;
 	public int tier;
 	public boolean gearOnly;
 	public String name;
 	public Metal metal;
 	public Alloy.EnumTier alloyTier;
+	public String oreName;
 	
-	public Material(String name, ItemStack gear, int tier, Alloy.EnumTier alloyTier) {
+	private Material(String name, ItemStack gear, int tier, ItemStack nugget, boolean gearOnly) {
+		this.gearOnly = gearOnly;
 		this.heatRaw = TFTechness.heatMap.get(name);
-		this.gearOnly = false;
 		this.gear = gear;
 		this.name = name;
+		this.oreName = name;
 		this.tier = tier;
+		this.nugget = nugget;
+	}
+	
+	public Material(String name, ItemStack gear, int tier, Alloy.EnumTier alloyTier, ItemStack nugget) {
+		this(name, gear, tier, nugget, false);
 		this.alloyTier = alloyTier;
 	}
 	
-	public Material(String name, Item unshaped, Item sheet2x, ItemStack gear, int tier, Metal metal) {
-		this.gearOnly = true;
+	public Material(String name,
+			Item unshaped,
+			Item ingot,
+			Item sheet2x,
+			ItemStack gear,
+			int tier,
+			Metal metal,
+			ItemStack nugget) {
+		this(name, gear, tier, nugget, true);
 		this.unshaped = unshaped;
-		this.tier = tier;
+		this.ingot = ingot;
 		this.sheet2x = sheet2x;
-		this.gear = gear;
-		this.heatRaw = TFTechness.heatMap.get(name);
-		this.name = name;
 		this.metal = metal;
 	}
 	
+	public Material(String name,
+			String oreName,
+			Item unshaped,
+			Item ingot,
+			Item sheet2x,
+			ItemStack gear,
+			int tier,
+			Metal metal,
+			ItemStack nugget) {
+		this(name, unshaped, ingot, sheet2x, gear, tier, metal, nugget);
+		this.oreName = oreName;
+	}
 }

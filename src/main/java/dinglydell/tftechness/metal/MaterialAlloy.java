@@ -8,8 +8,13 @@ public class MaterialAlloy extends Material {
 	
 	public AlloyIngred[] alloy;
 	
-	public MaterialAlloy(String name, ItemStack gear, int tier, EnumTier alloyTier, AlloyIngred[] alloy) {
-		super(name, gear, tier, alloyTier);
+	public MaterialAlloy(String name,
+			ItemStack gear,
+			int tier,
+			EnumTier alloyTier,
+			AlloyIngred[] alloy,
+			ItemStack nugget) {
+		super(name, gear, tier, alloyTier, nugget);
 		this.alloy = alloy;
 	}
 	

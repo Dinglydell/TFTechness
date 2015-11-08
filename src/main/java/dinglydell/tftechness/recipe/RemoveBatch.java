@@ -6,15 +6,18 @@ import java.util.Iterator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraftforge.oredict.OreDictionary;
 import dinglydell.tftechness.TFTechness;
 
 public class RemoveBatch {
-	private ArrayList<ItemStack> crafting = new ArrayList<ItemStack>();
+	private ArrayList<BatchCraftingItem> crafting = new ArrayList<BatchCraftingItem>();
 	
-	public void addCrafting(ItemStack item) {
-		crafting.add(item);
+	public void addCrafting(ItemStack output) {
+		crafting.add(new BatchCraftingItem(output));
 		
+	}
+	
+	public void addCrafting(ItemStack output, ItemStack[] inputs) {
+		crafting.add(new BatchCraftingItem(output, inputs));
 	}
 	
 	public void Execute() {
@@ -34,7 +37,9 @@ public class RemoveBatch {
 			if (output != null) {
 				boolean found = false;
 				for (int i = 0; i < crafting.size() && !found; i++) {
-					found = OreDictionary.itemMatches(output, crafting.get(i), false);
+					
+					found = crafting.get(i).matches(output, recipe);
+					
 				}
 				if (found) {
 					iterator.remove();

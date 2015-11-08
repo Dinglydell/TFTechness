@@ -12,3 +12,19 @@ tile.TFTechness.tank.resonant.frame.name=Resonant Portable Tank Frame
 
 tile.TFTechness.tank.creative.unfinished.name=Unfinished Creative Portable Tank Frame
 tile.TFTechness.tank.creative.frame.name=Creative Portable Tank Frame
+
+item.SilverRod.name=Silver Rod
+item.GoldRod.name=Gold Rod
+item.InvarRod.name=Invar Rod
+item.TinRod.name=Tin Rod
+item.PlatinumRod.name=Platinum Rod
+item.WroughtIronRod.name=Wrought Iron Rod
+item.LeadRod.name=Lead Rod
+item.EnderiumRod.name=Enderium Rod
+item.NickelRod.name=Nickel Rod
+item.LumiumRod.name=Lumium Rod
+item.CopperRod.name=Copper Rod
+item.MithrilRod.name=Mana Infused Rod
+item.ElectrumRod.name=Electrum Rod
+item.SignalumRod.name=Signalum Rod
+item.BronzeRod.name=Bronze Rod

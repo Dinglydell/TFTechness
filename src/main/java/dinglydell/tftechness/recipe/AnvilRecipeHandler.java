@@ -21,6 +21,10 @@ import dinglydell.tftechness.metal.TankMap;
 public class AnvilRecipeHandler {
 	
 	public long wSeed = Long.MIN_VALUE;
+	public static final String gearPlan = "gear";
+	public static final String tankPlan = "tank";
+	public static final String rodPlan = "rod";
+	public static final String sheetPlan = "sheet";
 	
 	@SubscribeEvent(receiveCanceled = true)
 	public void onServerWorldTick(WorldEvent.Load event) {
@@ -36,11 +40,14 @@ public class AnvilRecipeHandler {
 	private void addRecipes() {
 		TFTechness.logger.info("Adding anvil recipes.");
 		AnvilManager manager = AnvilManager.getInstance();
-		manager.addPlan("gear", new PlanRecipe(new RuleEnum[] {
+		manager.addPlan(gearPlan, new PlanRecipe(new RuleEnum[] {
 				RuleEnum.UPSETANY, RuleEnum.BENDANY, RuleEnum.PUNCHLAST
 		}));
-		manager.addPlan("tank", new PlanRecipe(new RuleEnum[] {
+		manager.addPlan(tankPlan, new PlanRecipe(new RuleEnum[] {
 				RuleEnum.DRAWTHIRDFROMLAST, RuleEnum.BENDSECONDFROMLAST, RuleEnum.PUNCHLAST
+		}));
+		manager.addPlan(rodPlan, new PlanRecipe(new RuleEnum[] {
+				RuleEnum.HITLAST, RuleEnum.BENDSECONDFROMLAST, RuleEnum.BENDLAST
 		}));
 		for (Material mat : TFTechness.materials) {
 			if (!mat.gearOnly) {
@@ -48,6 +55,7 @@ public class AnvilRecipeHandler {
 				addSheetRecipe(manager, mat.ingot2x, mat.sheet, mat.tier);
 				addDoubleSheetRecipe(manager, mat.sheet, mat.sheet2x, mat.tier);
 			}
+			addRodRecipe(manager, mat.rod, mat.ingot, mat.tier);
 			if (RecipeConfig.gearsEnabled) {
 				addGearRecipe(manager, mat.sheet2x, mat.gear, mat.tier);
 			}
@@ -55,6 +63,12 @@ public class AnvilRecipeHandler {
 		if (RecipeConfig.tanksEnabled) {
 			addTankRecipes(manager);
 		}
+	}
+	
+	private void addRodRecipe(AnvilManager manager, Item rod, Item ingot, int tier) {
+		AnvilReq req = AnvilReq.getReqFromInt(tier);
+		manager.addRecipe(new AnvilRecipe(new ItemStack(ingot), null, rodPlan, req, new ItemStack(rod)));
+		
 	}
 	
 	private void addTankRecipes(AnvilManager manager) {
@@ -73,7 +87,7 @@ public class AnvilRecipeHandler {
 			// t.finished));
 			if (i == 0) {
 				// basic tier unfinished is made from working a sheet
-				manager.addRecipe(new AnvilRecipe(t.sheet2x, null, "tank", t.req, unf));
+				manager.addRecipe(new AnvilRecipe(t.sheet2x, null, tankPlan, t.req, unf));
 			} else {
 				TankMap prev = tanks[i - 1];
 				
@@ -83,7 +97,7 @@ public class AnvilRecipeHandler {
 				manager.addWeldRecipe(new AnvilRecipe(prevUnf, t.sheet2x, t.req, unf));
 				if (i == 1) {
 					// 2nd tier unfinished can also be made from sheet + previous tier sheet
-					manager.addRecipe(new AnvilRecipe(t.sheet2x, prev.sheet2x, "tank", t.req, unf));
+					manager.addRecipe(new AnvilRecipe(t.sheet2x, prev.sheet2x, tankPlan, t.req, unf));
 					
 				}
 				
@@ -110,7 +124,7 @@ public class AnvilRecipeHandler {
 	
 	private void addSheetRecipe(AnvilManager manager, Item ingot2x, Item sheet, int tier) {
 		AnvilReq req = AnvilReq.getReqFromInt(tier);
-		manager.addRecipe(new AnvilRecipe(new ItemStack(ingot2x), null, "sheet", req, new ItemStack(sheet)));
+		manager.addRecipe(new AnvilRecipe(new ItemStack(ingot2x), null, sheetPlan, req, new ItemStack(sheet)));
 		
 	}
 	
@@ -124,7 +138,7 @@ public class AnvilRecipeHandler {
 		AnvilReq req = AnvilReq.getReqFromInt(Math.max(3, tier));
 		manager.addRecipe(new AnvilRecipe(new ItemStack(material),
 				new ItemStack(TFCItems.wroughtIronIngot),
-				"gear",
+				gearPlan,
 				req,
 				gear));
 	}
