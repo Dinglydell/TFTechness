@@ -44,6 +44,9 @@ import dinglydell.tftechness.block.BlockTFTMetalSheet;
 import dinglydell.tftechness.block.BlockTankFrame;
 import dinglydell.tftechness.block.ItemBlockTankFrame;
 import dinglydell.tftechness.block.TFTBlocks;
+import dinglydell.tftechness.block.machine.BlockTFTMachine;
+import dinglydell.tftechness.block.machine.ItemBlockTFTMachine;
+import dinglydell.tftechness.block.machine.TileTFTExtruder;
 import dinglydell.tftechness.item.ItemRod;
 import dinglydell.tftechness.item.ItemTFTMetalSheet;
 import dinglydell.tftechness.item.TFTItems;
@@ -73,7 +76,7 @@ public class TFTechness {
 		initHeatMap();
 		readConfig(event);
 		addMetals();
-		addSheetBlocks();
+		addBlocks();
 		registerTileEntities();
 		registerRecipeTypes();
 		
@@ -105,6 +108,8 @@ public class TFTechness {
 	
 	private void registerTileEntities() {
 		GameRegistry.registerTileEntity(TETFTMetalSheet.class, "TFTMetalSheet");
+		
+		GameRegistry.registerTileEntity(TileTFTExtruder.class, "Extruder");
 	}
 	
 	private void registerRecipeTypes() {
@@ -113,6 +118,21 @@ public class TFTechness {
 				RecipeSorter.Category.SHAPELESS,
 				"before:forge:shapelessore");
 		
+	}
+	
+	private void addBlocks() {
+		addMachines();
+		addSheetBlocks();
+		
+	}
+	
+	private void addMachines() {
+		TFTBlocks.machine = new BlockTFTMachine().setBlockName("Machine");
+		
+		BlockTFTMachine.extruder = new ItemStack(TFTBlocks.machine, 1, BlockTFTMachine.Types.EXTRUDER.ordinal());
+		GameRegistry.registerCustomItemStack("extruder", BlockTFTMachine.extruder);
+		
+		GameRegistry.registerBlock(TFTBlocks.machine, ItemBlockTFTMachine.class, "machine");
 	}
 	
 	private void addSheetBlocks() {

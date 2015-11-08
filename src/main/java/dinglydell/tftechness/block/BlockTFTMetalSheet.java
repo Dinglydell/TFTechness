@@ -53,7 +53,6 @@ public class BlockTFTMetalSheet extends BlockMetalSheet {
 	
 	@Override
 	public IIcon getIcon(int side, int meta) {
-		;
 		return icons.get("Tin");
 	}
 }
