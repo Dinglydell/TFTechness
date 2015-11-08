@@ -346,6 +346,7 @@ public class TFTechness {
 			addHeat(manager, mat.sheet, mat.heatRaw, mat.unshaped, 2);
 			addHeat(manager, mat.sheet2x, mat.heatRaw, mat.unshaped, 4);
 		}
+		addHeat(manager, mat.rod, mat.heatRaw, mat.unshaped, 1);
 		addHeat(manager, mat.gear.getItem(), mat.heatRaw, mat.unshaped, 4);
 		
 	}
