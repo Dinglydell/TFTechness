@@ -49,6 +49,7 @@ import dinglydell.tftechness.block.machine.ItemBlockTFTMachine;
 import dinglydell.tftechness.block.machine.TileTFTExtruder;
 import dinglydell.tftechness.item.ItemRod;
 import dinglydell.tftechness.item.ItemTFTMetalSheet;
+import dinglydell.tftechness.item.TFCMeta;
 import dinglydell.tftechness.item.TFTItems;
 import dinglydell.tftechness.metal.AlloyIngred;
 import dinglydell.tftechness.metal.Material;
@@ -75,10 +76,16 @@ public class TFTechness {
 	public void preInit(FMLPreInitializationEvent event) {
 		initHeatMap();
 		readConfig(event);
+		getTFCMetaItems();
 		addMetals();
 		addBlocks();
 		registerTileEntities();
 		registerRecipeTypes();
+		
+	}
+	
+	private void getTFCMetaItems() {
+		TFCMeta.salt = new ItemStack(TFCItems.powder, 1, 9);
 		
 	}
 	
