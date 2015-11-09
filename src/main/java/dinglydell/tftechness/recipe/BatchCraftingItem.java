@@ -7,7 +7,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.OreDictionary;
-import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.util.OreDict;
 
 public class BatchCraftingItem {
@@ -30,7 +29,6 @@ public class BatchCraftingItem {
 		}
 		
 		if (inputs != null && match) {
-			TFTechness.logger.info("Classname: " + recipe.getClass().getName());
 			if (recipe instanceof ShapedRecipes) {
 				ShapedRecipes shaped = (ShapedRecipes) recipe;
 				
