@@ -304,14 +304,14 @@ public class TFTechness {
 		mat.unshaped = new ItemMeltedMetal().setUnlocalizedName(mat.name + "Unshaped");
 		
 		TFTItems.unshaped.put(mat.name, mat.unshaped);
-		GameRegistry.registerItem(mat.unshaped, "Unshaped " + mat.name);
+		GameRegistry.registerItem(mat.unshaped, "Unshaped" + mat.name);
 	}
 	
 	private void addIngots(Material mat) {
 		mat.ingot = new ItemIngot().setUnlocalizedName(mat.name + "Ingot");
 		
 		TFTItems.ingots.put(mat.name, mat.ingot);
-		GameRegistry.registerItem(mat.ingot, mat.name + " Ingot");
+		GameRegistry.registerItem(mat.ingot, mat.name + "Ingot");
 		OreDictionary.registerOre("ingot" + mat.name, mat.ingot);
 		
 	}
@@ -321,7 +321,7 @@ public class TFTechness {
 				200);
 		
 		TFTItems.ingots2x.put(mat.name, mat.ingot2x);
-		GameRegistry.registerItem(mat.ingot2x, "Double " + mat.name + " Ingot");
+		GameRegistry.registerItem(mat.ingot2x, mat.name + "Ingot2x");
 		OreDictionary.registerOre("ingotDouble" + mat.name, mat.ingot2x);
 	}
 	
@@ -330,7 +330,7 @@ public class TFTechness {
 				200);
 		
 		TFTItems.sheets.put(mat.name, mat.sheet);
-		GameRegistry.registerItem(mat.sheet, mat.name + " Sheet");
+		GameRegistry.registerItem(mat.sheet, mat.name + "Sheet");
 		OreDictionary.registerOre("plate" + mat.name, mat.sheet);
 		
 	}
@@ -340,7 +340,7 @@ public class TFTechness {
 				400);
 		
 		TFTItems.sheets2x.put(mat.name, mat.sheet2x);
-		GameRegistry.registerItem(mat.sheet2x, mat.name + " Double Sheet");
+		GameRegistry.registerItem(mat.sheet2x, mat.name + "Sheet2x");
 		OreDictionary.registerOre("plateDouble" + mat.name, mat.sheet2x);
 	}
 	
@@ -348,7 +348,7 @@ public class TFTechness {
 		mat.rod = new ItemRod(mat.metal.name).setUnlocalizedName(mat.name + "Rod");
 		
 		TFTItems.rods.put(mat.name, mat.rod);
-		GameRegistry.registerItem(mat.rod, mat.name + " Rod");
+		GameRegistry.registerItem(mat.rod, mat.name + "Rod");
 		OreDictionary.registerOre("rod" + mat.name, mat.rod);
 	}
 	
