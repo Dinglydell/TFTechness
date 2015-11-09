@@ -3,12 +3,19 @@ package dinglydell.tftechness.block.machine;
 import java.util.List;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import cofh.api.tileentity.ISidedTexture;
+import cofh.core.block.BlockCoFHBase;
+import cofh.core.render.IconRegistry;
+import cofh.lib.util.helpers.StringHelper;
 import cofh.thermalexpansion.block.BlockTEBase;
 import cofh.thermalexpansion.block.machine.TileMachineBase;
 import cofh.thermalexpansion.util.ReconfigurableHelper;
@@ -67,6 +74,55 @@ public class BlockTFTMachine extends BlockTEBase {
 	}
 	
 	@Override
+	public void registerBlockIcons(IIconRegister reg) {
+		IconRegistry.addIcon("TFTMachineBottom", "thermalexpansion:machine/Machine_Bottom", reg);
+		IconRegistry.addIcon("TFTMachineTop", "thermalexpansion:machine/Machine_Top", reg);
+		IconRegistry.addIcon("TFTMachineSide", "thermalexpansion:machine/Machine_Side", reg);
+		for (int i = 0; i < Types.values().length; i++) {
+			String titleName = StringHelper.titleCase(Types.values()[i].name().toLowerCase());
+			IconRegistry.addIcon("TFTMachineFace" + i, "thermalexpansion:machine/Machine_Face_" + titleName, reg);
+			IconRegistry.addIcon("TFTMachineActive" + i, "thermalexpansion:machine/Machine_Active_" + titleName, reg);
+		}
+		IconRegistry.addIcon("Config_0", "thermalexpansion:config/Config_None", reg);
+		IconRegistry.addIcon("Config_1", "thermalexpansion:config/Config_Blue", reg);
+		IconRegistry.addIcon("Config_2", "thermalexpansion:config/Config_Red", reg);
+		IconRegistry.addIcon("Config_3", "thermalexpansion:config/Config_Yellow", reg);
+		IconRegistry.addIcon("Config_4", "thermalexpansion:config/Config_Orange", reg);
+		IconRegistry.addIcon("Config_5", "thermalexpansion:config/Config_Green", reg);
+		IconRegistry.addIcon("Config_6", "thermalexpansion:config/Config_Purple", reg);
+		IconRegistry.addIcon("Config_7", "thermalexpansion:config/Config_Open", reg);
+		
+		IconRegistry.addIcon("Config_CB_0", "thermalexpansion:config/Config_None", reg);
+		IconRegistry.addIcon("Config_CB_1", "thermalexpansion:config/Config_Blue_CB", reg);
+		IconRegistry.addIcon("Config_CB_2", "thermalexpansion:config/Config_Red_CB", reg);
+		IconRegistry.addIcon("Config_CB_3", "thermalexpansion:config/Config_Yellow_CB", reg);
+		IconRegistry.addIcon("Config_CB_4", "thermalexpansion:config/Config_Orange_CB", reg);
+		IconRegistry.addIcon("Config_CB_5", "thermalexpansion:config/Config_Green_CB", reg);
+		IconRegistry.addIcon("Config_CB_6", "thermalexpansion:config/Config_Purple_CB", reg);
+		IconRegistry.addIcon("Config_CB_7", "thermalexpansion:config/Config_Open", reg);
+		
+	}
+	
+	@Override
+	public IIcon getIcon(int side, int meta) {
+		if (side == 0) {
+			return IconRegistry.getIcon("TFTMachineBottom");
+		}
+		if (side == 1) {
+			return IconRegistry.getIcon("TFTMachineTop");
+		}
+		return side != 3 ? IconRegistry.getIcon("TFTMachineSide") : IconRegistry.getIcon("TFTMachineFace" + meta);
+		
+	}
+	
+	@Override
+	public IIcon getIcon(IBlockAccess paramIBlockAccess, int x, int y, int z, int side) {
+		
+		ISidedTexture sidedTexture = (ISidedTexture) paramIBlockAccess.getTileEntity(x, y, z);
+		return sidedTexture == null ? null : sidedTexture.getTexture(side, BlockCoFHBase.renderPass);
+	}
+	
+	@Override
 	public boolean initialize() {
 		return false;
 	}
@@ -75,4 +131,5 @@ public class BlockTFTMachine extends BlockTEBase {
 	public boolean postInit() {
 		return false;
 	}
+	
 }
