@@ -46,7 +46,6 @@ import dinglydell.tftechness.block.ItemBlockTankFrame;
 import dinglydell.tftechness.block.TFTBlocks;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.block.machine.ItemBlockTFTMachine;
-import dinglydell.tftechness.block.machine.TileTFTExtruder;
 import dinglydell.tftechness.item.ItemRod;
 import dinglydell.tftechness.item.ItemTFTMetalSheet;
 import dinglydell.tftechness.item.TFCMeta;
@@ -61,6 +60,7 @@ import dinglydell.tftechness.recipe.RecipeConfig;
 import dinglydell.tftechness.recipe.RecipeShapelessUpgrade;
 import dinglydell.tftechness.recipe.RemoveBatch;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
+import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 
 @Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion")
 public class TFTechness {

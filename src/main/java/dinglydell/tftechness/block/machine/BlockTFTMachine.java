@@ -14,6 +14,7 @@ import cofh.thermalexpansion.block.machine.TileMachineBase;
 import cofh.thermalexpansion.util.ReconfigurableHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 
 public class BlockTFTMachine extends BlockTEBase {
 	
