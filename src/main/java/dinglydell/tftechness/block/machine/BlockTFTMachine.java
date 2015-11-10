@@ -26,7 +26,6 @@ import cofh.thermalexpansion.block.machine.TileMachineBase;
 import cofh.thermalexpansion.util.ReconfigurableHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 
 public class BlockTFTMachine extends BlockTEBase {
@@ -158,8 +157,8 @@ public class BlockTFTMachine extends BlockTEBase {
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(IBlockAccess access, int x, int y, int z, int side) {
-		TFTechness.logger.info("getIcon Side");
 		ISidedTexture sidedTexture = (ISidedTexture) access.getTileEntity(x, y, z);
 		return sidedTexture == null ? null : sidedTexture.getTexture(side, BlockCoFHBase.renderPass);
 	}
@@ -172,6 +171,27 @@ public class BlockTFTMachine extends BlockTEBase {
 	@Override
 	public boolean postInit() {
 		return false;
+	}
+	
+	@Override
+	public boolean isNormalCube(IBlockAccess paramIBlockAccess, int paramInt1, int paramInt2, int paramInt3) {
+		return false;
+	}
+	
+	@Override
+	public boolean isSideSolid(IBlockAccess paramIBlockAccess, int paramInt1, int paramInt2, int paramInt3,
+			ForgeDirection paramForgeDirection) {
+		
+		return true;
+	}
+	
+	public boolean canRenderInPass(int pass) {
+		BlockCoFHBase.renderPass = pass;
+		return pass < 2;
+	}
+	
+	public boolean isOpaqueCube() {
+		return true;
 	}
 	
 }

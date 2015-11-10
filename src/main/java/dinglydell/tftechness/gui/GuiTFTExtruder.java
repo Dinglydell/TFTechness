@@ -18,7 +18,9 @@ public class GuiTFTExtruder extends GuiExtruder {
 	
 	static final int slotOutputIndex = 2;
 	ElementBase slotOutput;
+	ElementBase slotOutputRed;
 	ElementBase slotOutput2;
+	ElementBase slotOutput2Yellow;
 	
 	public GuiTFTExtruder(InventoryPlayer inv, TileTFTExtruder te) {
 		super(inv, te);
@@ -33,13 +35,18 @@ public class GuiTFTExtruder extends GuiExtruder {
 		Slot s = (Slot) this.inventorySlots.inventorySlots.get(2);
 		slotOutput = elements.get(slotOutputIndex);
 		((ElementSlotOverlay) slotOutput.setPosition(80, 40)).setSlotInfo(3, 0, 2);
-		this.slotOutput2 = addElement(new ElementSlotOverlay(this, 80, 59).setSlotInfo(3, 0, 2));
+		slotOutputRed = addElement(new ElementSlotOverlay(this, 80, 40).setSlotInfo(1, 0, 2));
+		slotOutput2 = addElement(new ElementSlotOverlay(this, 80, 59).setSlotInfo(3, 0, 2));
+		slotOutput2Yellow = addElement(new ElementSlotOverlay(this, 80, 59).setSlotInfo(2, 0, 2));
 		
 	}
 	
 	protected void updateElementInformation() {
 		super.updateElementInformation();
-		this.slotOutput2.setVisible(tile.hasSide(2));
+		this.slotOutput.setVisible(tile.hasSide(4));
+		this.slotOutputRed.setVisible(tile.hasSide(2));
+		this.slotOutput2.setVisible(tile.hasSide(4));
+		this.slotOutput2Yellow.setVisible(tile.hasSide(3));
 		
 	}
 	
