@@ -5,6 +5,8 @@ import java.util.List;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -12,15 +14,19 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.IFluidHandler;
 import cofh.api.tileentity.ISidedTexture;
 import cofh.core.block.BlockCoFHBase;
 import cofh.core.render.IconRegistry;
+import cofh.lib.util.helpers.BlockHelper;
+import cofh.lib.util.helpers.FluidHelper;
 import cofh.lib.util.helpers.StringHelper;
 import cofh.thermalexpansion.block.BlockTEBase;
 import cofh.thermalexpansion.block.machine.TileMachineBase;
 import cofh.thermalexpansion.util.ReconfigurableHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 
 public class BlockTFTMachine extends BlockTEBase {
@@ -56,6 +62,42 @@ public class BlockTFTMachine extends BlockTEBase {
 		for (int i = 0; i < nBlocks; i++) {
 			subItems.add(new ItemStack(this, 1, i));
 		}
+		
+	}
+	
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase ent, ItemStack it) {
+		if (it.stackTagCompound != null) {
+			TileMachineBase te = (TileMachineBase) world.getTileEntity(x, y, z);
+			
+			te.readAugmentsFromNBT(it.stackTagCompound);
+			te.installAugments();
+			te.setEnergyStored(it.stackTagCompound.getInteger("Energy"));
+			
+			int i = BlockHelper.determineXZPlaceFacing(ent);
+			int j = ReconfigurableHelper.getFacing(it);
+			byte[] arrayOfByte = ReconfigurableHelper.getSideCache(it, te.getDefaultSides());
+			
+			te.sideCache[0] = arrayOfByte[0];
+			te.sideCache[1] = arrayOfByte[1];
+			te.sideCache[i] = 0;
+			te.sideCache[BlockHelper.getLeftSide(i)] = arrayOfByte[BlockHelper.getLeftSide(j)];
+			te.sideCache[BlockHelper.getRightSide(i)] = arrayOfByte[BlockHelper.getRightSide(j)];
+			te.sideCache[BlockHelper.getOppositeSide(i)] = arrayOfByte[BlockHelper.getOppositeSide(j)];
+		}
+		
+		super.onBlockPlacedBy(world, x, y, z, ent, it);
+	}
+	
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer p, int meta, float sideX,
+			float sideY, float sideZ) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof IFluidHandler && FluidHelper.fillHandlerWithContainer(world, (IFluidHandler) te, p)) {
+			return true;
+		}
+		return super.onBlockActivated(world, x, y, z, p, meta, sideX, sideY, sideZ);
+		
 	}
 	
 	@Override
@@ -116,9 +158,9 @@ public class BlockTFTMachine extends BlockTEBase {
 	}
 	
 	@Override
-	public IIcon getIcon(IBlockAccess paramIBlockAccess, int x, int y, int z, int side) {
-		
-		ISidedTexture sidedTexture = (ISidedTexture) paramIBlockAccess.getTileEntity(x, y, z);
+	public IIcon getIcon(IBlockAccess access, int x, int y, int z, int side) {
+		TFTechness.logger.info("getIcon Side");
+		ISidedTexture sidedTexture = (ISidedTexture) access.getTileEntity(x, y, z);
 		return sidedTexture == null ? null : sidedTexture.getTexture(side, BlockCoFHBase.renderPass);
 	}
 	
