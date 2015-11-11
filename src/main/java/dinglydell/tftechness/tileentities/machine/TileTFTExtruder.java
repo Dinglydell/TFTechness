@@ -19,6 +19,7 @@ import cofh.thermalexpansion.block.machine.TileMachineBase;
 import com.bioxx.tfc.api.TFCBlocks;
 import com.bioxx.tfc.api.TFCFluids;
 
+import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.gui.GuiTFTExtruder;
 import dinglydell.tftechness.gui.container.ContainerTFTExtruder;
@@ -86,6 +87,10 @@ public class TileTFTExtruder extends TileExtruder {
 		
 		sideConfig = defaultSideConfig;
 		
+	}
+	
+	public String getName() {
+		return "tile." + TFTechness.MODID + ".machine.extruder.name";
 	}
 	
 	@Override

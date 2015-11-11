@@ -34,8 +34,17 @@ public class ItemBlockTFTMachine extends ItemTerraBlock implements IEquipable {
 		}
 		SecurityHelper.addAccessInformation(it, info);
 		
-		info.add(StringHelper.getInfoText("info" + TFTechness.MODID + ".machine."
-				+ BlockTFTMachine.Types.values()[ItemHelper.getItemDamage(it)].name().toLowerCase()));
+		info.add(StringHelper.getInfoText("info" + TFTechness.MODID + ".machine." + getName(it)));
+	}
+	
+	protected String getName(ItemStack it) {
+		return BlockTFTMachine.Types.values()[ItemHelper.getItemDamage(it)].name().toLowerCase();
+	}
+	
+	@Override
+	public String getUnlocalizedName(ItemStack it) {
+		return "tile." + TFTechness.MODID + ".machine." + getName(it);
+		
 	}
 	
 	@Override
