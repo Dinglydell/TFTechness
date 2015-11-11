@@ -17,6 +17,8 @@ tile.TFTechness.tank.creative.frame.name=Creative Portable Tank Frame
 tile.TFTechness.machine.extruder.name=Igneous Extruder
 
 
+info.TFTechness.machine.extruder=Mixes salty or fresh water with lava - Can produce salt
+
 item.SilverRod.name=Silver Rod
 item.GoldRod.name=Gold Rod
 item.InvarRod.name=Invar Rod

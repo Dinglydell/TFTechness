@@ -15,6 +15,7 @@ import com.bioxx.tfc.api.Enums.RuleEnum;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.BlockTankFrame;
+import dinglydell.tftechness.config.RecipeConfig;
 import dinglydell.tftechness.metal.Material;
 import dinglydell.tftechness.metal.TankMap;
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -16,8 +17,12 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import org.apache.logging.log4j.LogManager;
 
 import cofh.thermalexpansion.block.TEBlocks;
+import cofh.thermalexpansion.block.machine.BlockMachine;
 import cofh.thermalexpansion.block.tank.BlockTank;
 import cofh.thermalexpansion.item.TEItems;
+import cofh.thermalexpansion.plugins.nei.handlers.NEIRecipeWrapper;
+import cofh.thermalexpansion.util.crafting.RecipeMachine;
+import cofh.thermalexpansion.util.crafting.TECraftingHandler;
 import cofh.thermalfoundation.item.TFItems;
 
 import com.bioxx.tfc.Core.Recipes;
@@ -46,6 +51,8 @@ import dinglydell.tftechness.block.ItemBlockTankFrame;
 import dinglydell.tftechness.block.TFTBlocks;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.block.machine.ItemBlockTFTMachine;
+import dinglydell.tftechness.config.MachineConfig;
+import dinglydell.tftechness.config.RecipeConfig;
 import dinglydell.tftechness.item.ItemRod;
 import dinglydell.tftechness.item.ItemTFTMetalSheet;
 import dinglydell.tftechness.item.TFCMeta;
@@ -56,9 +63,9 @@ import dinglydell.tftechness.metal.MaterialAlloy;
 import dinglydell.tftechness.metal.TFTMetals;
 import dinglydell.tftechness.metal.TankMap;
 import dinglydell.tftechness.recipe.AnvilRecipeHandler;
-import dinglydell.tftechness.recipe.RecipeConfig;
 import dinglydell.tftechness.recipe.RecipeShapelessUpgrade;
 import dinglydell.tftechness.recipe.RemoveBatch;
+import dinglydell.tftechness.recipe.TFTCraftingHandler;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 
@@ -103,6 +110,7 @@ public class TFTechness {
 		
 		removeTankRecipes(batch);
 		removeCoilRecipes(batch);
+		removeMachineRecipes(batch);
 		for (Material m : materials) {
 			removeGearRecipes(batch, m);
 			removeNuggetIngotRecipes(batch, m);
@@ -136,10 +144,13 @@ public class TFTechness {
 	private void addMachines() {
 		TFTBlocks.machine = new BlockTFTMachine().setBlockName("Machine");
 		
-		BlockTFTMachine.extruder = new ItemStack(TFTBlocks.machine, 1, BlockTFTMachine.Types.EXTRUDER.ordinal());
+		GameRegistry.registerBlock(TFTBlocks.machine, ItemBlockTFTMachine.class, "machine");
+		
+		BlockTFTMachine.extruder = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
+				1,
+				BlockTFTMachine.Types.EXTRUDER.ordinal()));
 		GameRegistry.registerCustomItemStack("extruder", BlockTFTMachine.extruder);
 		
-		GameRegistry.registerBlock(TFTBlocks.machine, ItemBlockTFTMachine.class, "machine");
 	}
 	
 	private void addSheetBlocks() {
@@ -173,6 +184,17 @@ public class TFTechness {
 		RecipeConfig.gearsEnabled = config.getBoolean("gears", "Recipes", true, "");
 		RecipeConfig.tanksEnabled = config.getBoolean("portableTanks", "Recipes", true, "");
 		RecipeConfig.coilsEnabled = config.getBoolean("redstoneCoils", "Recipes", true, "");
+		RecipeConfig.upgradeCrafting = config.getBoolean("upgradeCrafting",
+				"Recipes",
+				true,
+				"ThermalExpansion machine upgrades.");
+		
+		config.addCustomCategoryComment("Machines",
+				"TFTechness changes some the way some ThermalExpansion machines work. (eg, makes the machine use TFC water instead of vanilla). Use this to disable the TFTechness versions and use ThermalExpansion.");
+		MachineConfig.extruderEnabled = config.getBoolean("extruder",
+				"Machines",
+				true,
+				"Accepts salt water, fresh water and TFC lava and produces salt when salt water is consumed.");
 		config.save();
 	}
 	
@@ -183,6 +205,40 @@ public class TFTechness {
 		}
 		tankRecipes();
 		coilRecipes();
+		machineRecipes();
+	}
+	
+	private void machineRecipes() {
+		ItemStack[] augs = new ItemStack[] {};
+		String machineFrame = "thermalexpansion:machineFrame";
+		if (MachineConfig.extruderEnabled) {
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.extruder, augs, new Object[] {
+					" p ",
+					"gFg",
+					"cSc",
+					Character.valueOf('p'),
+					Blocks.piston,
+					Character.valueOf('g'),
+					"blockGlass",
+					Character.valueOf('F'),
+					machineFrame,
+					Character.valueOf('c'),
+					"gearCopper",
+					Character.valueOf('S'),
+					TEItems.pneumaticServo
+			}));
+			
+			if (RecipeConfig.upgradeCrafting) {
+				TFTCraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.extruder);
+			} else {
+				TECraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.extruder);
+			}
+			
+			TECraftingHandler.addSecureRecipe(BlockTFTMachine.extruder);
+		} else if (RecipeConfig.upgradeCrafting) {
+			TFTCraftingHandler.addMachineUpgradeRecipes(BlockMachine.extruder);
+		}
+		
 	}
 	
 	private void coilRecipes() {
@@ -436,6 +492,12 @@ public class TFTechness {
 			batch.addCrafting(TEItems.powerCoilElectrum);
 			batch.addCrafting(TEItems.powerCoilSilver);
 			batch.addCrafting(TEItems.powerCoilGold);
+		}
+	}
+	
+	private void removeMachineRecipes(RemoveBatch batch) {
+		if (MachineConfig.extruderEnabled) {
+			batch.addCrafting(BlockMachine.extruder);
 		}
 	}
 	

@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -40,6 +41,13 @@ public class BlockTFTMachine extends BlockTEBase {
 		super(Material.iron);
 		this.setHardness(15.0f);
 		this.setResistance(25.0f);
+	}
+	
+	@Override
+	public void getSubBlocks(Item it, CreativeTabs creat, List list) {
+		for (int i = 0; i < Types.values().length; i++) {
+			list.add(ItemBlockTFTMachine.setDefaultTag(new ItemStack(it, 1, i)));
+		}
 	}
 	
 	@Override
