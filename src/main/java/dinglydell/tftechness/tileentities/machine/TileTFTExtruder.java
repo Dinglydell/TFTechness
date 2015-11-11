@@ -19,7 +19,6 @@ import cofh.thermalexpansion.block.machine.TileMachineBase;
 import com.bioxx.tfc.api.TFCBlocks;
 import com.bioxx.tfc.api.TFCFluids;
 
-import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.gui.GuiTFTExtruder;
 import dinglydell.tftechness.gui.container.ContainerTFTExtruder;
@@ -161,11 +160,9 @@ public class TileTFTExtruder extends TileExtruder {
 		if (this.augmentAutoOutput) {
 			if (this.inventory[0] != null) {
 				try {
-					TFTechness.logger.info("level: " + this.level);
 					for (int i = outputTracker; i < outputTracker + 6; i++) {
 						int j = i % 6;
-						TFTechness.logger.info(j + ": " + this.sideCache[j]);
-						if (this.sideCache[j] == 2 || this.sideCache[j] == 4
+						if ((this.sideCache[j] == 2 || this.sideCache[j] == 4)
 								&& transferItem(0, TileMachineBase.AUTO_TRANSFER[this.level], j)) {
 							outputTracker = j;
 							break;
@@ -178,7 +175,7 @@ public class TileTFTExtruder extends TileExtruder {
 			if (this.inventory[1] != null) {
 				for (int i = outputTrackerSecondary; i < outputTrackerSecondary + 6; i++) {
 					int j = i % 6;
-					if (this.sideCache[j] == 3 || this.sideCache[j] == 4
+					if ((this.sideCache[j] == 3 || this.sideCache[j] == 4)
 							&& transferItem(1, TileMachineBase.AUTO_TRANSFER[this.level], j)) {
 						outputTrackerSecondary = j;
 						break;

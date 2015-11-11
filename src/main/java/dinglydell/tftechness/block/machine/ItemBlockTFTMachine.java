@@ -1,18 +1,41 @@
 package dinglydell.tftechness.block.machine;
 
+import java.util.List;
+
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import cofh.lib.util.helpers.ItemHelper;
+import cofh.lib.util.helpers.SecurityHelper;
+import cofh.lib.util.helpers.StringHelper;
 
 import com.bioxx.tfc.Items.ItemBlocks.ItemTerraBlock;
 import com.bioxx.tfc.api.Enums.EnumSize;
 import com.bioxx.tfc.api.Enums.EnumWeight;
 import com.bioxx.tfc.api.Interfaces.IEquipable;
 
+import dinglydell.tftechness.TFTechness;
+
 public class ItemBlockTFTMachine extends ItemTerraBlock implements IEquipable {
 	
 	public ItemBlockTFTMachine(Block block) {
 		super(block);
 		
+	}
+	
+	@Override
+	public void func_77624_a(ItemStack it, EntityPlayer player, List info, boolean flag) {
+		SecurityHelper.addOwnerInformation(it, info);
+		if ((StringHelper.displayShiftForDetail) && (!StringHelper.isShiftKeyDown())) {
+			info.add(StringHelper.shiftForDetails());
+		}
+		if (!StringHelper.isShiftKeyDown()) {
+			return;
+		}
+		SecurityHelper.addAccessInformation(it, info);
+		
+		info.add(StringHelper.getInfoText("info" + TFTechness.MODID + ".machine."
+				+ BlockTFTMachine.Types.values()[ItemHelper.getItemDamage(it)].name().toLowerCase()));
 	}
 	
 	@Override
