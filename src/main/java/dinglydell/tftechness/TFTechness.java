@@ -67,6 +67,7 @@ import dinglydell.tftechness.recipe.RecipeShapelessUpgrade;
 import dinglydell.tftechness.recipe.RemoveBatch;
 import dinglydell.tftechness.recipe.TFTCraftingHandler;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
+import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 
 @Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion")
@@ -125,6 +126,8 @@ public class TFTechness {
 		GameRegistry.registerTileEntity(TETFTMetalSheet.class, "TFTMetalSheet");
 		
 		GameRegistry.registerTileEntity(TileTFTExtruder.class, "Extruder");
+		
+		GameRegistry.registerTileEntity(TileTFTAccumulator.class, "Accumulator");
 	}
 	
 	private void registerRecipeTypes() {
