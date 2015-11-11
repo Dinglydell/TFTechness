@@ -5,6 +5,9 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+
 import cofh.api.tileentity.IRedstoneControl;
 import cofh.lib.util.helpers.EnergyHelper;
 import cofh.lib.util.helpers.ItemHelper;
@@ -86,8 +89,7 @@ public class ItemBlockTFTMachine extends ItemTerraBlock implements IEquipable {
 	
 	@Override
 	public void onEquippedRender() {
-		// GL11.glRotatef(-90f, 1f, 0f, 0f);
-		// GL11.glTranslatef(-0.5f, -0.5f, -0.3f);
+		GL11.glRotatef(90f, 0f, -1f, 0f);
 	}
 	
 	// some methods from te ItemBlockMachine tweaked for tft machines
