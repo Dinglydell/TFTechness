@@ -151,6 +151,10 @@ public class TFTechness {
 				BlockTFTMachine.Types.EXTRUDER.ordinal()));
 		GameRegistry.registerCustomItemStack("extruder", BlockTFTMachine.extruder);
 		
+		BlockTFTMachine.accumulator = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
+				1,
+				BlockTFTMachine.Types.ACCUMULATOR.ordinal()));
+		
 	}
 	
 	private void addSheetBlocks() {

@@ -27,14 +27,16 @@ import cofh.thermalexpansion.block.machine.TileMachineBase;
 import cofh.thermalexpansion.util.ReconfigurableHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 
 public class BlockTFTMachine extends BlockTEBase {
 	
 	public static ItemStack extruder;
+	public static ItemStack accumulator;
 	
 	public enum Types {
-		EXTRUDER
+		EXTRUDER, ACCUMULATOR
 	}
 	
 	public BlockTFTMachine() {
@@ -58,6 +60,9 @@ public class BlockTFTMachine extends BlockTEBase {
 		switch (Types.values()[meta]) {
 			case EXTRUDER:
 				return new TileTFTExtruder();
+			case ACCUMULATOR:
+				return new TileTFTAccumulator();
+				
 		}
 		return null;
 		
