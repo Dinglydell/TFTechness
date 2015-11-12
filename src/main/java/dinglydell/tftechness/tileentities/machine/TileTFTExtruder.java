@@ -9,7 +9,6 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import cofh.api.energy.EnergyStorage;
-import cofh.core.render.IconRegistry;
 import cofh.core.util.fluid.FluidTankAdv;
 import cofh.lib.util.helpers.ItemHelper;
 import cofh.thermalexpansion.block.machine.BlockMachine;
@@ -82,8 +81,8 @@ public class TileTFTExtruder extends TileExtruder {
 		outputItems[1] = new ItemStack(TFCBlocks.stoneIgEx);
 		// outputItems[2] = new ItemStack(Blocks.obsidian);
 		secondaryOutput = ItemHelper.cloneStack(TFCMeta.salt, 1);
-		this.energyConfig = defaultEnergyConfig[BlockMachine.Types.EXTRUDER.ordinal()].copy();
-		this.energyStorage = new EnergyStorage(0, 0);
+		energyConfig = defaultEnergyConfig[BlockMachine.Types.EXTRUDER.ordinal()].copy();
+		energyStorage = new EnergyStorage(0, 0);
 		
 		sideConfig = defaultSideConfig;
 		
@@ -231,9 +230,7 @@ public class TileTFTExtruder extends TileExtruder {
 		if (render != 0 || side < 2) {
 			return super.getTexture(side, render);
 		}
-		return this.isActive ? IconRegistry.getIcon("TFTMachineActive", getType())
-				: side != this.facing ? IconRegistry.getIcon("TFTMachineSide") : IconRegistry.getIcon("TFTMachineFace",
-						getType());
+		return TileTFTMachine.getTexture(this, side, render);
 	}
 	
 }

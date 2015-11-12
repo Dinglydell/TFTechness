@@ -87,7 +87,7 @@ public class TFTechness {
 		getTFCMetaItems();
 		addMetals();
 		addBlocks();
-		registerTileEntities();
+		
 		registerRecipeTypes();
 		
 	}
@@ -101,7 +101,7 @@ public class TFTechness {
 	public void init(FMLInitializationEvent event) {
 		// Requires some TE init
 		addTanks();
-		
+		registerTileEntities();
 	}
 	
 	@EventHandler
