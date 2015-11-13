@@ -8,6 +8,7 @@ import cofh.thermalexpansion.gui.element.ElementSlotOverlay;
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.gui.container.ContainerTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
+import dinglydell.tftechness.tileentities.machine.TileTFTMachine.Colours;
 
 public class GuiTFTExtruder extends GuiExtruder {
 	
@@ -32,10 +33,10 @@ public class GuiTFTExtruder extends GuiExtruder {
 	public void initGui() {
 		super.initGui();
 		slotOutput = elements.get(slotOutputIndex);
-		((ElementSlotOverlay) slotOutput.setPosition(80, 40)).setSlotInfo(3, 0, 2);
-		slotOutputRed = addElement(new ElementSlotOverlay(this, 80, 40).setSlotInfo(1, 0, 2));
-		slotOutput2 = addElement(new ElementSlotOverlay(this, 80, 59).setSlotInfo(3, 0, 2));
-		slotOutput2Yellow = addElement(new ElementSlotOverlay(this, 80, 59).setSlotInfo(2, 0, 2));
+		((ElementSlotOverlay) slotOutput.setPosition(80, 40)).setSlotInfo(Colours.orange.gui(), 0, 2);
+		slotOutputRed = addElement(new ElementSlotOverlay(this, 80, 40).setSlotInfo(Colours.red.gui(), 0, 2));
+		slotOutput2 = addElement(new ElementSlotOverlay(this, 80, 59).setSlotInfo(Colours.orange.gui(), 0, 2));
+		slotOutput2Yellow = addElement(new ElementSlotOverlay(this, 80, 59).setSlotInfo(Colours.yellow.gui(), 0, 2));
 		
 	}
 	

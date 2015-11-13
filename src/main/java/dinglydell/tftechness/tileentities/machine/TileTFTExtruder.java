@@ -23,6 +23,7 @@ import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.gui.GuiTFTExtruder;
 import dinglydell.tftechness.gui.container.ContainerTFTExtruder;
 import dinglydell.tftechness.item.TFCMeta;
+import dinglydell.tftechness.tileentities.machine.TileTFTMachine.Colours;
 
 public class TileTFTExtruder extends TileExtruder {
 	
@@ -58,7 +59,12 @@ public class TileTFTExtruder extends TileExtruder {
 				true, true, true, true, false
 		};
 		defaultSideConfig.sideTex = new int[] {
-				0, 1, 2, 3, 4, 7
+				Colours.none.ordinal(),
+				Colours.blue.ordinal(),
+				Colours.red.ordinal(),
+				Colours.yellow.ordinal(),
+				Colours.orange.ordinal(),
+				Colours.grey.ordinal()
 		};
 		defaultSideConfig.defaultSides = new byte[] {
 				3, 1, 2, 2, 2, 2
