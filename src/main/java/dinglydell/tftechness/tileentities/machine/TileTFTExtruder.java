@@ -154,7 +154,7 @@ public class TileTFTExtruder extends TileExtruder {
 			this.level = f.getByte(this);
 			f.setAccessible(false);
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 	

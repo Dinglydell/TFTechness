@@ -1,7 +1,6 @@
 package dinglydell.tftechness.gui;
 
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import cofh.lib.gui.element.ElementBase;
 import cofh.thermalexpansion.gui.client.machine.GuiExtruder;
@@ -32,7 +31,6 @@ public class GuiTFTExtruder extends GuiExtruder {
 	@Override
 	public void initGui() {
 		super.initGui();
-		Slot s = (Slot) this.inventorySlots.inventorySlots.get(2);
 		slotOutput = elements.get(slotOutputIndex);
 		((ElementSlotOverlay) slotOutput.setPosition(80, 40)).setSlotInfo(3, 0, 2);
 		slotOutputRed = addElement(new ElementSlotOverlay(this, 80, 40).setSlotInfo(1, 0, 2));
