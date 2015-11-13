@@ -8,8 +8,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidContainerRegistry.FluidContainerData;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -35,6 +41,7 @@ import com.bioxx.tfc.api.HeatIndex;
 import com.bioxx.tfc.api.HeatRaw;
 import com.bioxx.tfc.api.HeatRegistry;
 import com.bioxx.tfc.api.Metal;
+import com.bioxx.tfc.api.TFCFluids;
 import com.bioxx.tfc.api.TFCItems;
 import com.bioxx.tfc.api.Constant.Global;
 import com.bioxx.tfc.api.Enums.EnumSize;
@@ -55,6 +62,7 @@ import dinglydell.tftechness.config.MachineConfig;
 import dinglydell.tftechness.config.RecipeConfig;
 import dinglydell.tftechness.item.ItemRod;
 import dinglydell.tftechness.item.ItemTFTMetalSheet;
+import dinglydell.tftechness.item.ItemTFTSteelBucket;
 import dinglydell.tftechness.item.TFCMeta;
 import dinglydell.tftechness.item.TFTItems;
 import dinglydell.tftechness.metal.AlloyIngred;
@@ -66,6 +74,7 @@ import dinglydell.tftechness.recipe.AnvilRecipeHandler;
 import dinglydell.tftechness.recipe.RecipeShapelessUpgrade;
 import dinglydell.tftechness.recipe.RemoveBatch;
 import dinglydell.tftechness.recipe.TFTCraftingHandler;
+import dinglydell.tftechness.render.item.RenderBucket;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
@@ -86,6 +95,7 @@ public class TFTechness {
 		readConfig(event);
 		getTFCMetaItems();
 		addMetals();
+		
 		addBlocks();
 		
 		registerRecipeTypes();
@@ -101,6 +111,7 @@ public class TFTechness {
 	public void init(FMLInitializationEvent event) {
 		// Requires some TE init
 		addTanks();
+		addBuckets();
 		registerTileEntities();
 	}
 	
@@ -136,6 +147,26 @@ public class TFTechness {
 				RecipeSorter.Category.SHAPELESS,
 				"before:forge:shapelessore");
 		
+	}
+	
+	private void addBuckets() {
+		RenderBucket bucketRenderer = new RenderBucket();
+		for (FluidContainerData fcd : FluidContainerRegistry.getRegisteredFluidContainerData()) {
+			Fluid fluid = fcd.fluid.getFluid();
+			if (fcd.emptyContainer.getItem() == Items.bucket
+					&& !(fluid == FluidRegistry.WATER || fluid == FluidRegistry.LAVA || fluid == TFCFluids.LAVA
+							|| fluid == TFCFluids.FRESHWATER || fluid == TFCFluids.SALTWATER)) {
+				IIcon icon = fcd.filledContainer.getItem().getIconFromDamage(fcd.filledContainer.getItemDamage());
+				Item bucket = new ItemTFTSteelBucket(fcd.fluid.getFluid().getBlock()).setIcon(icon).setUnlocalizedName("steelBucket"
+						+ fcd.fluid.getUnlocalizedName());
+				
+				TFTItems.buckets.put(fcd.fluid.getUnlocalizedName(), bucket);
+				
+				GameRegistry.registerItem(bucket, "tftBucket" + fcd.fluid.getUnlocalizedName());
+				
+				MinecraftForgeClient.registerItemRenderer(bucket, bucketRenderer);
+			}
+		}
 	}
 	
 	private void addBlocks() {
