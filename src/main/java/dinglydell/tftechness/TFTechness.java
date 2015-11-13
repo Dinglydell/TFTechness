@@ -202,6 +202,10 @@ public class TFTechness {
 				"Machines",
 				true,
 				"Accepts salt water, fresh water and TFC lava and produces salt when salt water is consumed.");
+		MachineConfig.accumulatorEnabled = config.getBoolean("accumulator",
+				"Machines",
+				true,
+				"Produces fresh or salt water instead of vanilla water. Cannot passively produce salt water.");
 		config.save();
 	}
 	
@@ -244,6 +248,37 @@ public class TFTechness {
 			TECraftingHandler.addSecureRecipe(BlockTFTMachine.extruder);
 		} else if (RecipeConfig.upgradeCrafting) {
 			TFTCraftingHandler.addMachineUpgradeRecipes(BlockMachine.extruder);
+		}
+		Object[] accumulator = new Object[] {
+				" b ",
+				"gFg",
+				"cSc",
+				Character.valueOf('b'),
+				TFCItems.redSteelBucketEmpty,
+				Character.valueOf('g'),
+				"blockGlass",
+				Character.valueOf('F'),
+				machineFrame,
+				Character.valueOf('c'),
+				"gearCopper",
+				Character.valueOf('S'),
+				TEItems.pneumaticServo
+		};
+		
+		if (MachineConfig.accumulatorEnabled) {
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.accumulator, augs, accumulator));
+			if (RecipeConfig.upgradeCrafting) {
+				TFTCraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.accumulator);
+			} else {
+				TECraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.accumulator);
+			}
+			
+			TECraftingHandler.addSecureRecipe(BlockTFTMachine.extruder);
+		} else {
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockMachine.accumulator, augs, accumulator));
+			if (RecipeConfig.upgradeCrafting) {
+				TFTCraftingHandler.addMachineUpgradeRecipes(BlockMachine.accumulator);
+			}
 		}
 		
 	}
@@ -456,18 +491,6 @@ public class TFTechness {
 			}
 			AlloyManager.INSTANCE.addAlloy(alloy);
 		}
-		
-		// // Invar
-		// Alloy invar = new Alloy(TFTMetals.metals.get("Invar"), mats.get(mats.in));
-		// invar.addIngred(Global.WROUGHTIRON, 61.00f, 67.00f);
-		// invar.addIngred(Global.NICKEL, 33.00f, 39.00f);
-		// AlloyManager.INSTANCE.addAlloy(invar);
-		//
-		// // Electrum
-		// Alloy electrum = new Alloy(TFTMetals.metals.get("Electrum"), Alloy.EnumTier.TierIII);
-		// electrum.addIngred(Global.GOLD, 50.00f, 60.00f);
-		// electrum.addIngred(Global.SILVER, 40.00f, 50.00f);
-		// AlloyManager.INSTANCE.addAlloy(electrum);
 	}
 	
 	private void registerMetal(Material mat) {
@@ -506,6 +529,8 @@ public class TFTechness {
 		if (MachineConfig.extruderEnabled) {
 			batch.addCrafting(BlockMachine.extruder);
 		}
+		
+		batch.addCrafting(BlockMachine.accumulator);
 	}
 	
 	private void removeNuggetIngotRecipes(RemoveBatch batch, Material m) {
