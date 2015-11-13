@@ -34,16 +34,14 @@ public class TileTFTExtruder extends TileExtruder {
 		defaultSideConfig = new SideConfig();
 		defaultSideConfig.numConfig = 6;
 		defaultSideConfig.slotGroups = new int[][] {
-				new int[0], {
+				new int[0], new int[0], {
 					0
 				}, {
-						1, 2
+					1
 				}, {
-					3
+						0, 1
 				}, {
-						1, 2, 3
-				}, {
-						0, 1, 2, 3
+						0, 1
 				}
 		};
 		defaultSideConfig.allowInsertionSide = new boolean[] {
