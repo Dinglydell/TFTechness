@@ -157,12 +157,13 @@ public class TFTechness {
 					&& !(fluid == FluidRegistry.WATER || fluid == FluidRegistry.LAVA || fluid == TFCFluids.LAVA
 							|| fluid == TFCFluids.FRESHWATER || fluid == TFCFluids.SALTWATER)) {
 				IIcon icon = fcd.filledContainer.getItem().getIconFromDamage(fcd.filledContainer.getItemDamage());
-				Item bucket = new ItemTFTSteelBucket(fcd.fluid.getFluid().getBlock()).setIcon(icon).setUnlocalizedName("steelBucket"
-						+ fcd.fluid.getUnlocalizedName());
+				ItemTFTSteelBucket bucket = new ItemTFTSteelBucket(fluid).setIcon(icon);
 				
 				TFTItems.buckets.put(fcd.fluid.getUnlocalizedName(), bucket);
 				
-				GameRegistry.registerItem(bucket, "tftBucket" + fcd.fluid.getUnlocalizedName());
+				GameRegistry.registerItem(bucket, "bucket." + fcd.fluid.getUnlocalizedName());
+				
+				FluidContainerRegistry.registerFluidContainer(fcd.fluid, new ItemStack(bucket), bucket.getEmpty());
 				
 				MinecraftForgeClient.registerItemRenderer(bucket, bucketRenderer);
 			}

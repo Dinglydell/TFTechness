@@ -52,7 +52,7 @@ public class ItemBlockTFTMachine extends ItemTerraBlock implements IEquipable {
 	}
 	
 	@Override
-	public String getUnlocalizedNameInefficiently(ItemStack it) {
+	public String getItemStackDisplayName(ItemStack it) {
 		return StringHelper.localize(getUnlocalizedName(it))
 				+ " ("
 				+ StringHelper.localize(new StringBuilder().append("info.thermalexpansion.").append(ItemBlockMachine.NAMES[getLevel(it)]).toString())
