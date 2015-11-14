@@ -157,7 +157,7 @@ public class TFTechness {
 					&& !(fluid == FluidRegistry.WATER || fluid == FluidRegistry.LAVA || fluid == TFCFluids.LAVA
 							|| fluid == TFCFluids.FRESHWATER || fluid == TFCFluids.SALTWATER)) {
 				IIcon icon = fcd.filledContainer.getItem().getIconFromDamage(fcd.filledContainer.getItemDamage());
-				ItemTFTSteelBucket bucket = new ItemTFTSteelBucket(fluid).setIcon(icon);
+				ItemTFTSteelBucket bucket = new ItemTFTSteelBucket(fluid, fcd.filledContainer);
 				
 				TFTItems.buckets.put(fcd.fluid.getUnlocalizedName(), bucket);
 				

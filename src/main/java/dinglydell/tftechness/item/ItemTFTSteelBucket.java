@@ -18,9 +18,11 @@ public class ItemTFTSteelBucket extends ItemSteelBucket {
 	public static final int tempThreshold = 1000;
 	
 	protected String fluidName;
+	protected ItemStack ironBucket;
 	protected ItemStack empty;
+	protected boolean upsideDown;
 	
-	public ItemTFTSteelBucket(Fluid f) {
+	public ItemTFTSteelBucket(Fluid f, ItemStack filledContainer) {
 		super(f.getBlock());
 		if (f.getTemperature() < tempThreshold) {
 			empty = new ItemStack(TFCItems.redSteelBucketEmpty);
@@ -29,13 +31,19 @@ public class ItemTFTSteelBucket extends ItemSteelBucket {
 			empty = new ItemStack(TFCItems.blueSteelBucketEmpty);
 			setUnlocalizedName("blueSteelBucket.name");
 		}
+		ironBucket = filledContainer;
 		fluidName = f.getUnlocalizedName();
+	}
+	
+	public ItemTFTSteelBucket(Fluid f, ItemStack filledContainer, boolean upsideDown) {
+		this(f, filledContainer);
+		this.upsideDown = upsideDown;
 	}
 	
 	@Override
 	public void registerIcons(IIconRegister reg) {
-		IconRegistry.addIcon(RenderBucket.blueSteelIcon, TFTechness.MODID + ":items/blueSteelBucket", reg);
-		IconRegistry.addIcon(RenderBucket.redSteelIcon, TFTechness.MODID + ":items/redSteelBucket", reg);
+		IconRegistry.addIcon(RenderBucket.blueSteelIcon, TFTechness.MODID + ":blueSteelBucket", reg);
+		IconRegistry.addIcon(RenderBucket.redSteelIcon, TFTechness.MODID + ":redSteelBucket", reg);
 	}
 	
 	@Override
@@ -49,9 +57,9 @@ public class ItemTFTSteelBucket extends ItemSteelBucket {
 		return empty;
 	}
 	
-	public ItemTFTSteelBucket setIcon(IIcon icon) {
-		itemIcon = icon;
-		return this;
+	@Override
+	public IIcon getIconFromDamage(int meta) {
+		return ironBucket.getIconIndex();
 	}
 	
 	public String getFluidName() {
@@ -62,4 +70,7 @@ public class ItemTFTSteelBucket extends ItemSteelBucket {
 		return empty;
 	}
 	
+	public boolean isUpsideDown() {
+		return upsideDown;
+	}
 }
