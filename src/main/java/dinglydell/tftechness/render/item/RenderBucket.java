@@ -6,14 +6,19 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
+
+import org.lwjgl.opengl.GL11;
+
 import cofh.core.render.IconRegistry;
 import cofh.core.render.RenderUtils;
+import cofh.lib.render.RenderHelper;
 import dinglydell.tftechness.item.ItemTFTSteelBucket;
 
 public class RenderBucket implements IItemRenderer {
 	
 	public static final String redSteelIcon = "TFTRedSteelBucket";
 	public static final String blueSteelIcon = "TFTBlueSteelBucket";
+	public static final float thickness = 0.0625F;
 	
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -22,30 +27,17 @@ public class RenderBucket implements IItemRenderer {
 	
 	@Override
 	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
-		return false;
+		return helper == ItemRendererHelper.ENTITY_BOBBING || helper == ItemRendererHelper.ENTITY_ROTATION;
 	}
 	
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 		RenderUtils.preItemRender();
-		
-		// if (type.equals(IItemRenderer.ItemRenderType.ENTITY)) {
-		// GL11.glRotated(180.0D, 0.0D, 0.0D, 1.0D);
-		// GL11.glRotated(90.0D, 0.0D, 1.0D, 0.0D);
-		// GL11.glScaled(0.75D, 0.75D, 0.75D);
-		// GL11.glTranslated(-0.5D, -0.6D, 0.0D);
-		// } else if (type.equals(IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON)) {
-		// GL11.glTranslated(1.0D, 1.0D, 0.0D);
-		// GL11.glRotated(180.0D, 0.0D, 0.0D, 1.0D);
-		// } else if (type.equals(IItemRenderer.ItemRenderType.EQUIPPED)) {
-		// GL11.glRotated(180.0D, 0.0D, 0.0D, 1.0D);
-		// GL11.glTranslated(-1.0D, -1.0D, 0.0D);
-		// }
-		
-		RenderItem renderItem = RenderItem.getInstance();
-		
+		if (type.equals(ItemRenderType.ENTITY)) {
+			GL11.glTranslatef(-0.5F, -0.3F, thickness / 2.0F);
+		}
 		IIcon icon = item.getIconIndex();
-		renderItem.renderIcon(0, 0, icon, 16, 16);
+		renderIcon(icon, type);
 		FluidStack f = FluidContainerRegistry.getFluidForFilledItem(item);
 		
 		if (f.getFluid().getTemperature() < ItemTFTSteelBucket.tempThreshold) {
@@ -53,8 +45,17 @@ public class RenderBucket implements IItemRenderer {
 		} else {
 			icon = IconRegistry.getIcon(blueSteelIcon);
 		}
-		renderItem.renderIcon(0, 0, icon, 16, 16);
-		
+		renderIcon(icon, type);
 		RenderUtils.postItemRender();
+	}
+	
+	private void renderIcon(IIcon icon, ItemRenderType type) {
+		if (type.equals(ItemRenderType.INVENTORY)) {
+			RenderItem.getInstance().renderIcon(0, 0, icon, 16, 16);
+		} else {
+			
+			RenderHelper.renderItemIn2D(icon);
+		}
+		
 	}
 }
