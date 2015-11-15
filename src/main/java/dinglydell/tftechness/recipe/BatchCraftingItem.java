@@ -25,7 +25,7 @@ public class BatchCraftingItem {
 	public boolean matches(ItemStack out, IRecipe recipe) {
 		boolean match = true;
 		if (output != null) {
-			match &= OreDict.oresMatch(out, output, false);
+			match &= OreDict.oresMatch(out, output);
 		}
 		
 		if (inputs != null && match) {

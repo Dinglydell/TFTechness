@@ -16,9 +16,11 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidContainerRegistry.FluidContainerData;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import org.apache.logging.log4j.LogManager;
 
@@ -28,8 +30,14 @@ import cofh.thermalexpansion.block.machine.BlockMachine;
 import cofh.thermalexpansion.block.tank.BlockTank;
 import cofh.thermalexpansion.item.TEItems;
 import cofh.thermalexpansion.plugins.nei.handlers.NEIRecipeWrapper;
+import cofh.thermalexpansion.util.crafting.FurnaceManager;
+import cofh.thermalexpansion.util.crafting.FurnaceManager.RecipeFurnace;
 import cofh.thermalexpansion.util.crafting.RecipeMachine;
+import cofh.thermalexpansion.util.crafting.SmelterManager;
+import cofh.thermalexpansion.util.crafting.SmelterManager.RecipeSmelter;
 import cofh.thermalexpansion.util.crafting.TECraftingHandler;
+import cofh.thermalexpansion.util.crafting.TransposerManager;
+import cofh.thermalfoundation.fluid.TFFluids;
 import cofh.thermalfoundation.item.TFItems;
 
 import com.bioxx.tfc.Core.Recipes;
@@ -50,6 +58,7 @@ import com.bioxx.tfc.api.Enums.EnumSize;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -80,6 +89,7 @@ import dinglydell.tftechness.render.item.RenderBucket;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
+import dinglydell.tftechness.util.OreDict;
 
 @Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion")
 public class TFTechness {
@@ -135,6 +145,14 @@ public class TFTechness {
 		
 	}
 	
+	@Mod.EventHandler
+	public void loadComplete(FMLLoadCompleteEvent event) {
+		// enderium & other pyrotheum recipes don't get registered until now
+		smelterRecipes();
+		// dust recipes aren't registered until now
+		furnaceRecipes();
+	}
+	
 	private void registerTileEntities() {
 		GameRegistry.registerTileEntity(TETFTMetalSheet.class, "TFTMetalSheet");
 		
@@ -168,7 +186,8 @@ public class TFTechness {
 				
 				GameRegistry.registerItem(bucket, "bucket" + StringHelper.titleCase(fluid.getName()));
 				
-				FluidContainerRegistry.registerFluidContainer(fcd.fluid, new ItemStack(bucket), bucket.getEmpty());
+				ItemStack bucketStack = new ItemStack(bucket);
+				FluidContainerRegistry.registerFluidContainer(fcd.fluid, bucketStack, bucket.getEmpty());
 				
 				MinecraftForgeClient.registerItemRenderer(bucket, bucketRenderer);
 			}
@@ -235,14 +254,104 @@ public class TFTechness {
 	private void addRecipes() {
 		for (Material m : materials) {
 			unshapedMetalRecipe(m);
-			nuggetIngotRecipe(m);
+			nuggetIngotBlockRecipe(m);
 		}
 		tankRecipes();
 		coilRecipes();
+		machineCraftingRecipes();
 		machineRecipes();
 	}
 	
 	private void machineRecipes() {
+		transposerRecipes();
+		
+		// smelterRecipes();
+	}
+	
+	private void furnaceRecipes() {
+		for (RecipeFurnace rf : FurnaceManager.getRecipeList()) {
+			for (Material m : materials) {
+				if (OreDict.oresMatch(rf.getOutput(), new ItemStack(m.ingot))) {
+					FurnaceManager.removeRecipe(rf.getOutput());
+					FurnaceManager.addRecipe(rf.getEnergy(), rf.getInput(), new ItemStack(m.ingot,
+							rf.getOutput().stackSize), false);
+				}
+			}
+		}
+	}
+	
+	private void smelterRecipes() {
+		// Replace recipes that result in a tf ingot with recipes that result in a tfc/tft ingot
+		for (RecipeSmelter rs : SmelterManager.getRecipeList()) {
+			for (Material m : materials) {
+				boolean match = OreDict.oresMatch(rs.getPrimaryOutput(), new ItemStack(m.ingot));
+				boolean match2 = OreDict.oresMatch(rs.getSecondaryOutput(), new ItemStack(m.ingot));
+				if (match || match2) {
+					SmelterManager.removeRecipe(rs.getPrimaryInput(), rs.getSecondaryInput());
+					ItemStack out;
+					if (match) {
+						out = new ItemStack(m.ingot, rs.getPrimaryOutput().stackSize);
+					} else {
+						out = rs.getPrimaryOutput();
+					}
+					ItemStack out2;
+					if (match2) {
+						out2 = new ItemStack(m.ingot, rs.getSecondaryOutput().stackSize);
+					} else {
+						out2 = rs.getSecondaryOutput();
+					}
+					
+					SmelterManager.addRecipe(rs.getEnergy(),
+							rs.getPrimaryInput(),
+							rs.getSecondaryInput(),
+							out,
+							out2,
+							rs.getSecondaryOutputChance());
+				}
+			}
+		}
+	}
+	
+	private void transposerRecipes() {
+		// Billon -> Signalum
+		// Ingot
+		TransposerManager.addFillRecipe(1600,
+				new ItemStack(TFTItems.ingots.get("Billon")),
+				new ItemStack(TFTItems.ingots.get("Signalum")),
+				new FluidStack(TFFluids.fluidRedstone, 1000),
+				false,
+				false);
+		// Double Ingot
+		TransposerManager.addFillRecipe(3200,
+				new ItemStack(TFTItems.ingots2x.get("Billon")),
+				new ItemStack(TFTItems.ingots2x.get("Signalum")),
+				new FluidStack(TFFluids.fluidRedstone, 2000),
+				false,
+				false);
+		// Sheet
+		TransposerManager.addFillRecipe(3200,
+				new ItemStack(TFTItems.sheets.get("Billon")),
+				new ItemStack(TFTItems.sheets.get("Signalum")),
+				new FluidStack(TFFluids.fluidRedstone, 2000),
+				false,
+				false);
+		// Double sheet
+		TransposerManager.addFillRecipe(6400,
+				new ItemStack(TFTItems.sheets2x.get("Billon")),
+				new ItemStack(TFTItems.sheets2x.get("Signalum")),
+				new FluidStack(TFFluids.fluidRedstone, 4000),
+				false,
+				false);
+		// Rod
+		TransposerManager.addFillRecipe(1600,
+				new ItemStack(TFTItems.rods.get("Billon")),
+				new ItemStack(TFTItems.rods.get("Signalum")),
+				new FluidStack(TFFluids.fluidRedstone, 1000),
+				false,
+				false);
+	}
+	
+	private void machineCraftingRecipes() {
 		ItemStack[] augs = new ItemStack[] {};
 		String machineFrame = "thermalexpansion:machineFrame";
 		if (MachineConfig.extruderEnabled) {
@@ -341,9 +450,12 @@ public class TFTechness {
 		}
 	}
 	
-	private void nuggetIngotRecipe(Material m) {
+	private void nuggetIngotBlockRecipe(Material m) {
 		GameRegistry.addRecipe(new ShapedOreRecipe(m.ingot, new Object[] {
 				"nnn", "nnn", "nnn", Character.valueOf('n'), "nugget" + m.oreName
+		}));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(m.ingot, 9), new Object[] {
+			"block" + m.oreName
 		}));
 	}
 	
@@ -495,7 +607,9 @@ public class TFTechness {
 			addHeat(manager, mat.sheet2x, mat.heatRaw, mat.unshaped, 4);
 		}
 		addHeat(manager, mat.rod, mat.heatRaw, mat.unshaped, 1);
-		addHeat(manager, mat.gear.getItem(), mat.heatRaw, mat.unshaped, 4);
+		if (mat.gear != null) {
+			addHeat(manager, mat.gear.getItem(), mat.heatRaw, mat.unshaped, 4);
+		}
 		
 	}
 	
@@ -558,9 +672,10 @@ public class TFTechness {
 	
 	private void removeNuggetIngotRecipes(RemoveBatch batch, Material m) {
 		if (m.nugget != null) {
-			batch.addCrafting(new ItemStack(m.ingot), new ItemStack[] {
-				m.nugget
-			});
+			// batch.addCrafting(new ItemStack(m.ingot), new ItemStack[] {
+			// m.nugget
+			// });
+			batch.addCrafting(new ItemStack(m.ingot));
 		}
 	}
 	
@@ -581,8 +696,11 @@ public class TFTechness {
 		heatMap.put("Mithril", new HeatRaw(0.9, 660));
 		heatMap.put("Electrum", new HeatRaw(0.181, 650));
 		heatMap.put("Enderium", new HeatRaw(0.5, 1700));
-		heatMap.put("Signalum", new HeatRaw(0.45, 1300));
+		heatMap.put("Signalum", new HeatRaw(0.45, 900));
 		heatMap.put("Lumium", new HeatRaw(0.35, 1200));
+		
+		// TFT
+		heatMap.put("Billon", new HeatRaw(0.35, 950));
 	}
 	
 	private TankMap[] getTanks() {
@@ -688,7 +806,10 @@ public class TFTechness {
 				}, TFItems.nuggetElectrum),
 				new Material("Enderium", TFItems.gearEnderium, 6, Alloy.EnumTier.TierV, TFItems.nuggetEnderium),
 				new Material("Signalum", TFItems.gearSignalum, 5, Alloy.EnumTier.TierIV, TFItems.nuggetSignalum),
-				new Material("Lumium", TFItems.gearLumium, 5, Alloy.EnumTier.TierIV, TFItems.nuggetLumium)
+				new Material("Lumium", TFItems.gearLumium, 5, Alloy.EnumTier.TierIV, TFItems.nuggetLumium),
+				new MaterialAlloy("Billon", null, 5, Alloy.EnumTier.TierIV, new AlloyIngred[] {
+						new AlloyIngred("Copper", 70.00f, 80.00f), new AlloyIngred("Silver", 20.00f, 30.00f)
+				}, null)
 		};
 	}
 }

@@ -5,8 +5,8 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class OreDict {
 	
-	public static boolean oresMatch(ItemStack itemA, ItemStack itemB, boolean strict) {
-		if (OreDictionary.itemMatches(itemA, itemB, strict)) {
+	public static boolean oresMatch(ItemStack itemA, ItemStack itemB) {
+		if (OreDictionary.itemMatches(itemA, itemB, true)) {
 			return true;
 		}
 		int[] idsA = OreDictionary.getOreIDs(itemA);

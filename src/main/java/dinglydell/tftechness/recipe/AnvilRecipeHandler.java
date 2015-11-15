@@ -57,7 +57,7 @@ public class AnvilRecipeHandler {
 				addDoubleSheetRecipe(manager, mat.sheet, mat.sheet2x, mat.tier);
 			}
 			addRodRecipe(manager, mat.rod, mat.ingot, mat.tier);
-			if (RecipeConfig.gearsEnabled) {
+			if (RecipeConfig.gearsEnabled && mat.gear != null) {
 				addGearRecipe(manager, mat.sheet2x, mat.gear, mat.tier);
 			}
 		}

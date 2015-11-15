@@ -36,7 +36,6 @@ public class ItemTFTSteelBucket extends ItemSteelBucket {
 	
 	public ItemTFTSteelBucket(Fluid f, ItemStack filledContainer, boolean upsideDown, boolean overflowing) {
 		this(f, filledContainer);
-		TFTechness.logger.info(f.getName() + ": " + upsideDown);
 		this.upsideDown = upsideDown;
 		this.overflowing = overflowing;
 	}
