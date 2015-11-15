@@ -4,12 +4,9 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 
-import cofh.core.render.IconRegistry;
 import cofh.core.render.RenderUtils;
 import cofh.lib.render.RenderHelper;
 import dinglydell.tftechness.item.ItemTFTSteelBucket;
@@ -34,17 +31,28 @@ public class RenderBucket implements IItemRenderer {
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 		RenderUtils.preItemRender();
 		if (type.equals(ItemRenderType.ENTITY)) {
-			GL11.glTranslatef(-0.5F, -0.3F, thickness / 2.0F);
+			GL11.glTranslatef(-0.5f, -0.3f, thickness / 2.0f);
 		}
+		ItemTFTSteelBucket b = (ItemTFTSteelBucket) item.getItem();
+		
 		IIcon icon = item.getIconIndex();
 		renderIcon(icon, type);
-		FluidStack f = FluidContainerRegistry.getFluidForFilledItem(item);
-		
-		if (f.getFluid().getTemperature() < ItemTFTSteelBucket.tempThreshold) {
-			icon = IconRegistry.getIcon(redSteelIcon);
-		} else {
-			icon = IconRegistry.getIcon(blueSteelIcon);
+		// FluidStack f = FluidContainerRegistry.getFluidForFilledItem(item);
+		if (b.isUpsideDown()) {
+			GL11.glRotatef(180, 0, 0, 1);
+			switch (type) {
+				case INVENTORY:
+					GL11.glTranslatef(-16f, -17f, 0);
+					break;
+				case ENTITY:
+					GL11.glTranslatef(0, 0, 0.001f);
+				default:
+					GL11.glTranslatef(-1f, -1f + (1 / 16), 0);
+					GL11.glScalef(1.02f, 1.02f, 1.02f);
+			}
+			
 		}
+		icon = b.getOverlayIcon();
 		renderIcon(icon, type);
 		RenderUtils.postItemRender();
 	}
@@ -53,7 +61,6 @@ public class RenderBucket implements IItemRenderer {
 		if (type.equals(ItemRenderType.INVENTORY)) {
 			RenderItem.getInstance().renderIcon(0, 0, icon, 16, 16);
 		} else {
-			
 			RenderHelper.renderItemIn2D(icon);
 		}
 		

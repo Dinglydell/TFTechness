@@ -22,6 +22,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import org.apache.logging.log4j.LogManager;
 
+import cofh.lib.util.helpers.StringHelper;
 import cofh.thermalexpansion.block.TEBlocks;
 import cofh.thermalexpansion.block.machine.BlockMachine;
 import cofh.thermalexpansion.block.tank.BlockTank;
@@ -58,6 +59,7 @@ import dinglydell.tftechness.block.ItemBlockTankFrame;
 import dinglydell.tftechness.block.TFTBlocks;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.block.machine.ItemBlockTFTMachine;
+import dinglydell.tftechness.config.BucketConfig;
 import dinglydell.tftechness.config.MachineConfig;
 import dinglydell.tftechness.config.RecipeConfig;
 import dinglydell.tftechness.item.ItemRod;
@@ -157,11 +159,14 @@ public class TFTechness {
 					&& !(fluid == FluidRegistry.WATER || fluid == FluidRegistry.LAVA || fluid == TFCFluids.LAVA
 							|| fluid == TFCFluids.FRESHWATER || fluid == TFCFluids.SALTWATER)) {
 				IIcon icon = fcd.filledContainer.getItem().getIconFromDamage(fcd.filledContainer.getItemDamage());
-				ItemTFTSteelBucket bucket = new ItemTFTSteelBucket(fluid, fcd.filledContainer);
+				ItemTFTSteelBucket bucket = new ItemTFTSteelBucket(fluid,
+						fcd.filledContainer,
+						BucketConfig.upsideDown.contains(fluid.getName()),
+						BucketConfig.overflowing.contains(fluid.getName()));
 				
-				TFTItems.buckets.put(fcd.fluid.getUnlocalizedName(), bucket);
+				TFTItems.buckets.put(fluid.getName(), bucket);
 				
-				GameRegistry.registerItem(bucket, "bucket." + fcd.fluid.getUnlocalizedName());
+				GameRegistry.registerItem(bucket, "bucket" + StringHelper.titleCase(fluid.getName()));
 				
 				FluidContainerRegistry.registerFluidContainer(fcd.fluid, new ItemStack(bucket), bucket.getEmpty());
 				
@@ -200,11 +205,12 @@ public class TFTechness {
 	
 	private void readConfig(FMLPreInitializationEvent event) {
 		logger.info("Loading config");
-		Configuration metalConfig = new Configuration(new File(event.getModConfigurationDirectory(),
-				"/TFTechness/Metals.cfg"), true);
+		
+		Configuration metalConfig = new Configuration(new File(event.getModConfigurationDirectory(), MODID
+				+ "/Metals.cfg"), true);
 		metalConfig.load();
 		
-		for (Map.Entry<String, HeatRaw> entry : heatMap.entrySet()) {
+		for (Map.Entry<String, HeatRaw> entry : TFTechness.heatMap.entrySet()) {
 			String key = entry.getKey();
 			
 			HeatRaw heat = entry.getValue();
@@ -215,30 +221,15 @@ public class TFTechness {
 		
 		metalConfig.save();
 		
-		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(),
-				"/TFTechness/General.cfg"), true);
+		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), MODID + "/General.cfg"),
+				true);
 		config.load();
-		config.addCustomCategoryComment("Recipes",
-				"true: TFTechness changes the recipe, false: TFTechness leave it alone.");
-		RecipeConfig.gearsEnabled = config.getBoolean("gears", "Recipes", true, "");
-		RecipeConfig.tanksEnabled = config.getBoolean("portableTanks", "Recipes", true, "");
-		RecipeConfig.coilsEnabled = config.getBoolean("redstoneCoils", "Recipes", true, "");
-		RecipeConfig.upgradeCrafting = config.getBoolean("upgradeCrafting",
-				"Recipes",
-				true,
-				"ThermalExpansion machine upgrades.");
+		RecipeConfig.loadConfig(config);
+		MachineConfig.loadConfig(config);
 		
-		config.addCustomCategoryComment("Machines",
-				"TFTechness changes some the way some ThermalExpansion machines work. (eg, makes the machine use TFC water instead of vanilla). Use this to disable the TFTechness versions and use ThermalExpansion.");
-		MachineConfig.extruderEnabled = config.getBoolean("extruder",
-				"Machines",
-				true,
-				"Accepts salt water, fresh water and TFC lava and produces salt when salt water is consumed.");
-		MachineConfig.accumulatorEnabled = config.getBoolean("accumulator",
-				"Machines",
-				true,
-				"Produces fresh or salt water instead of vanilla water. Cannot passively produce salt water.");
 		config.save();
+		
+		BucketConfig.loadConifg(event.getModConfigurationDirectory() + "/" + MODID);
 	}
 	
 	private void addRecipes() {

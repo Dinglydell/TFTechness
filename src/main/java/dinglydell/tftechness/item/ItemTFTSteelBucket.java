@@ -4,23 +4,22 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.Fluid;
-import cofh.core.render.IconRegistry;
 import cofh.lib.util.helpers.StringHelper;
 
 import com.bioxx.tfc.Items.Tools.ItemSteelBucket;
 import com.bioxx.tfc.api.TFCItems;
 
 import dinglydell.tftechness.TFTechness;
-import dinglydell.tftechness.render.item.RenderBucket;
 
 public class ItemTFTSteelBucket extends ItemSteelBucket {
 	/** The temperature at which the fluid is considered a "hot" fluid. */
 	public static final int tempThreshold = 1000;
 	
-	protected String fluidName;
+	protected Fluid fluid;
 	protected ItemStack ironBucket;
 	protected ItemStack empty;
 	protected boolean upsideDown;
+	protected boolean overflowing;
 	
 	public ItemTFTSteelBucket(Fluid f, ItemStack filledContainer) {
 		super(f.getBlock());
@@ -32,23 +31,35 @@ public class ItemTFTSteelBucket extends ItemSteelBucket {
 			setUnlocalizedName("blueSteelBucket.name");
 		}
 		ironBucket = filledContainer;
-		fluidName = f.getUnlocalizedName();
+		fluid = f;
 	}
 	
-	public ItemTFTSteelBucket(Fluid f, ItemStack filledContainer, boolean upsideDown) {
+	public ItemTFTSteelBucket(Fluid f, ItemStack filledContainer, boolean upsideDown, boolean overflowing) {
 		this(f, filledContainer);
+		TFTechness.logger.info(f.getName() + ": " + upsideDown);
 		this.upsideDown = upsideDown;
+		this.overflowing = overflowing;
 	}
 	
 	@Override
 	public void registerIcons(IIconRegister reg) {
-		IconRegistry.addIcon(RenderBucket.blueSteelIcon, TFTechness.MODID + ":blueSteelBucket", reg);
-		IconRegistry.addIcon(RenderBucket.redSteelIcon, TFTechness.MODID + ":redSteelBucket", reg);
+		if (overflowing) {
+			if (fluid.getTemperature() < tempThreshold) {
+				itemIcon = reg.registerIcon(TFTechness.MODID + ":redSteelBucketOverflowing");
+			} else {
+				itemIcon = reg.registerIcon(TFTechness.MODID + ":blueSteelBucketOverflowing");
+			}
+		} else if (fluid.getTemperature() < tempThreshold) {
+			itemIcon = reg.registerIcon(TFTechness.MODID + ":redSteelBucket");
+		} else {
+			itemIcon = reg.registerIcon(TFTechness.MODID + ":blueSteelBucket");
+		}
 	}
 	
 	@Override
 	public String getItemStackDisplayName(ItemStack it) {
-		return StringHelper.localize(getUnlocalizedName()) + " (" + StringHelper.localize(fluidName) + ")";
+		return StringHelper.localize(getUnlocalizedName()) + " (" + StringHelper.localize(fluid.getUnlocalizedName())
+				+ ")";
 		
 	}
 	
@@ -62,8 +73,12 @@ public class ItemTFTSteelBucket extends ItemSteelBucket {
 		return ironBucket.getIconIndex();
 	}
 	
+	public IIcon getOverlayIcon() {
+		return itemIcon;
+	}
+	
 	public String getFluidName() {
-		return fluidName;
+		return fluid.getUnlocalizedName();
 	}
 	
 	public ItemStack getEmpty() {

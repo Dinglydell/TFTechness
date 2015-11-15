@@ -28,3 +28,6 @@ Features so far:
 * portable tank frame surrounded with glass in the crafting table creates a portable tank
 * Portable tanks can be upgraded with an appropriate double sheet (or hardened glass block) crafted with previous tier tank
 * This works with welding frames & unfinished frames
+* Replaced the igneous extruder with a version that accepts fresh water/salt water and TFC lava
+* Replaced the aqueous accumulator with a version that can generate both fresh and salt water
+* Added steel buckets for every TF bucket fluid
