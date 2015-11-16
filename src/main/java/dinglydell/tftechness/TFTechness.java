@@ -1,13 +1,16 @@
 package dinglydell.tftechness;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,8 +33,6 @@ import cofh.thermalexpansion.block.machine.BlockMachine;
 import cofh.thermalexpansion.block.tank.BlockTank;
 import cofh.thermalexpansion.item.TEItems;
 import cofh.thermalexpansion.plugins.nei.handlers.NEIRecipeWrapper;
-import cofh.thermalexpansion.util.crafting.FurnaceManager;
-import cofh.thermalexpansion.util.crafting.FurnaceManager.RecipeFurnace;
 import cofh.thermalexpansion.util.crafting.RecipeMachine;
 import cofh.thermalexpansion.util.crafting.SmelterManager;
 import cofh.thermalexpansion.util.crafting.SmelterManager.RecipeSmelter;
@@ -82,6 +83,7 @@ import dinglydell.tftechness.metal.MaterialAlloy;
 import dinglydell.tftechness.metal.TFTMetals;
 import dinglydell.tftechness.metal.TankMap;
 import dinglydell.tftechness.recipe.AnvilRecipeHandler;
+import dinglydell.tftechness.recipe.FurnaceRecipe;
 import dinglydell.tftechness.recipe.RecipeShapelessUpgrade;
 import dinglydell.tftechness.recipe.RemoveBatch;
 import dinglydell.tftechness.recipe.TFTCraftingHandler;
@@ -140,7 +142,7 @@ public class TFTechness {
 			removeNuggetIngotRecipes(batch, m);
 		}
 		batch.Execute();
-		
+		replaceMachineRecipes();
 		addRecipes();
 		
 	}
@@ -148,9 +150,9 @@ public class TFTechness {
 	@Mod.EventHandler
 	public void loadComplete(FMLLoadCompleteEvent event) {
 		// enderium & other pyrotheum recipes don't get registered until now
-		smelterRecipes();
-		// dust recipes aren't registered until now
-		furnaceRecipes();
+		if (RecipeConfig.replaceMachine) {
+			replaceSmelterRecipes();
+		}
 	}
 	
 	private void registerTileEntities() {
@@ -251,6 +253,13 @@ public class TFTechness {
 		BucketConfig.loadConifg(event.getModConfigurationDirectory() + "/" + MODID);
 	}
 	
+	private void replaceMachineRecipes() {
+		if (RecipeConfig.replaceMachine) {
+			// (vanilla)
+			replaceFurnaceRecipes();
+		}
+	}
+	
 	private void addRecipes() {
 		for (Material m : materials) {
 			unshapedMetalRecipe(m);
@@ -268,21 +277,35 @@ public class TFTechness {
 		// smelterRecipes();
 	}
 	
-	private void furnaceRecipes() {
-		for (RecipeFurnace rf : FurnaceManager.getRecipeList()) {
+	private void replaceFurnaceRecipes() {
+		Map<ItemStack, ItemStack> smelt = (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
+		Iterator<Map.Entry<ItemStack, ItemStack>> iterator = smelt.entrySet().iterator();
+		ArrayList<FurnaceRecipe> pushRecipes = new ArrayList<FurnaceRecipe>();
+		while (iterator.hasNext()) {
+			Map.Entry<ItemStack, ItemStack> fr = iterator.next();
 			for (Material m : materials) {
-				if (OreDict.oresMatch(rf.getOutput(), new ItemStack(m.ingot))) {
-					FurnaceManager.removeRecipe(rf.getOutput());
-					FurnaceManager.addRecipe(rf.getEnergy(), rf.getInput(), new ItemStack(m.ingot,
-							rf.getOutput().stackSize), false);
+				if (OreDict.oresMatch(fr.getValue(), new ItemStack(m.ingot))) {
+					iterator.remove();
+					// avoids modifying the map during iteration
+					pushRecipes.add(new FurnaceRecipe(fr.getKey(),
+							new ItemStack(m.ingot),
+							FurnaceRecipes.smelting().func_151398_b(fr.getKey())));
+					
 				}
 			}
 		}
+		
+		for (FurnaceRecipe fr : pushRecipes) {
+			fr.register();
+		}
 	}
 	
-	private void smelterRecipes() {
+	private void replaceSmelterRecipes() {
 		// Replace recipes that result in a tf ingot with recipes that result in a tfc/tft ingot
 		for (RecipeSmelter rs : SmelterManager.getRecipeList()) {
+			if (rs.getPrimaryOutput().getItem() == TFCItems.steelIngot) {
+				SmelterManager.removeRecipe(rs.getPrimaryInput(), rs.getSecondaryInput());
+			}
 			for (Material m : materials) {
 				boolean match = OreDict.oresMatch(rs.getPrimaryOutput(), new ItemStack(m.ingot));
 				boolean match2 = OreDict.oresMatch(rs.getSecondaryOutput(), new ItemStack(m.ingot));

@@ -26,6 +26,8 @@ public class BatchCraftingItem {
 		boolean match = true;
 		if (output != null) {
 			match &= OreDict.oresMatch(out, output);
+		} else if (inputs == null) {
+			return false;
 		}
 		
 		if (inputs != null && match) {

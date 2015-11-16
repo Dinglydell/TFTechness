@@ -26,7 +26,8 @@ public class RemoveBatch {
 	}
 	
 	private void ExecuteCrafting() {
-		TFTechness.logger.info("Removing recipes");
+		TFTechness.logger.info("Removing crafting recipes");
+		
 		Iterator<IRecipe> iterator = CraftingManager.getInstance().getRecipeList().iterator();
 		while (iterator.hasNext()) {
 			IRecipe recipe = iterator.next();
@@ -43,6 +44,7 @@ public class RemoveBatch {
 				}
 				if (found) {
 					iterator.remove();
+					// TFTechness.logger.info("Removed: " + output.getDisplayName());
 				}
 			}
 		}
