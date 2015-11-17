@@ -8,8 +8,8 @@ public class TileTFTMachine {
 	
 	public static IIcon getTexture(TileMachineBase tile, int side, int render) {
 		
-		return tile.isActive ? IconRegistry.getIcon("TFTMachineActive", tile.getType())
-				: ((side != tile.getFacing()) ? IconRegistry.getIcon("TFTMachineSide")
+		return (side != tile.getFacing()) ? IconRegistry.getIcon("TFTMachineSide")
+				: (tile.isActive ? IconRegistry.getIcon("TFTMachineActive", tile.getType())
 						: IconRegistry.getIcon("TFTMachineFace", tile.getType()));
 	}
 	

@@ -820,15 +820,15 @@ public class TFTechness {
 						2,
 						Global.BRONZE,
 						TFItems.nuggetBronze),
-				new MaterialAlloy("Invar", TFItems.gearInvar, 4, Alloy.EnumTier.TierIII, new AlloyIngred[] {
+				new MaterialAlloy("Invar", TFItems.gearInvar, 5, Alloy.EnumTier.TierIII, new AlloyIngred[] {
 						new AlloyIngred("Wrought Iron", 61.00f, 67.00f), new AlloyIngred("Nickel", 33.00f, 39.00f)
 				}, TFItems.nuggetInvar),
-				new Material("Mithril", TFItems.gearMithril, 4, Alloy.EnumTier.TierIII, TFItems.nuggetMithril),
-				new MaterialAlloy("Electrum", TFItems.gearElectrum, 5, Alloy.EnumTier.TierIV, new AlloyIngred[] {
+				new Material("Mithril", TFItems.gearMithril, 5, Alloy.EnumTier.TierIII, TFItems.nuggetMithril),
+				new MaterialAlloy("Electrum", TFItems.gearElectrum, 2, Alloy.EnumTier.TierIII, new AlloyIngred[] {
 						new AlloyIngred("Gold", 50.00f, 60.00f), new AlloyIngred("Silver", 40.00f, 50.00f)
 				}, TFItems.nuggetElectrum),
-				new Material("Enderium", TFItems.gearEnderium, 6, Alloy.EnumTier.TierV, TFItems.nuggetEnderium),
-				new Material("Signalum", TFItems.gearSignalum, 5, Alloy.EnumTier.TierIV, TFItems.nuggetSignalum),
+				new Material("Enderium", TFItems.gearEnderium, 7, Alloy.EnumTier.TierV, TFItems.nuggetEnderium),
+				new Material("Signalum", TFItems.gearSignalum, 6, Alloy.EnumTier.TierIV, TFItems.nuggetSignalum),
 				new Material("Lumium", TFItems.gearLumium, 5, Alloy.EnumTier.TierIV, TFItems.nuggetLumium),
 				new MaterialAlloy("Billon", null, 5, Alloy.EnumTier.TierIV, new AlloyIngred[] {
 						new AlloyIngred("Copper", 70.00f, 80.00f), new AlloyIngred("Silver", 20.00f, 30.00f)
