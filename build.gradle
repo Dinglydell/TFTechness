@@ -36,7 +36,7 @@ dependencies {
     //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
     //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
 	compile files (
-		"lib/[1.7.10]TerraFirmaCraft-0.79.25.845.jar"
+		"lib/[1.7.10]TerraFirmaCraft-deobf-0.79.25.jar"
 	)
 	compile files (
 		"lib/CoFHCore-[1.7.10]3.0.3-303-dev.jar"

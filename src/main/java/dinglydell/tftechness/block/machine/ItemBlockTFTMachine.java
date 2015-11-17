@@ -33,8 +33,8 @@ public class ItemBlockTFTMachine extends ItemTerraBlock implements IEquipable {
 	
 	/** addItemInformation */
 	@Override
-	public void func_77624_a(ItemStack it, EntityPlayer player, List info, boolean flag) {
-		super.func_77624_a(it, player, info, flag);
+	public void addInformation(ItemStack it, EntityPlayer player, List info, boolean flag) {
+		super.addInformation(it, player, info, flag);
 		SecurityHelper.addOwnerInformation(it, info);
 		if ((StringHelper.displayShiftForDetail) && (!StringHelper.isShiftKeyDown())) {
 			info.add(StringHelper.shiftForDetails());
