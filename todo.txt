@@ -1,0 +1,2 @@
+-precipitator, dynamo still use vanilla water
+-recipe balancing - when should tech become available?

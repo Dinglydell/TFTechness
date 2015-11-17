@@ -91,6 +91,7 @@ import dinglydell.tftechness.render.item.RenderBucket;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
+import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
 import dinglydell.tftechness.util.OreDict;
 
 @Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion")
@@ -107,17 +108,12 @@ public class TFTechness {
 	public void preInit(FMLPreInitializationEvent event) {
 		initHeatMap();
 		readConfig(event);
-		getTFCMetaItems();
+		TFCMeta.preInit();
 		addMetals();
 		
 		addBlocks();
 		
 		registerRecipeTypes();
-		
-	}
-	
-	private void getTFCMetaItems() {
-		TFCMeta.salt = new ItemStack(TFCItems.powder, 1, 9);
 		
 	}
 	
@@ -161,6 +157,8 @@ public class TFTechness {
 		GameRegistry.registerTileEntity(TileTFTExtruder.class, "Extruder");
 		
 		GameRegistry.registerTileEntity(TileTFTAccumulator.class, "Accumulator");
+		
+		GameRegistry.registerTileEntity(TileTFTPrecipitator.class, "Precipitator");
 	}
 	
 	private void registerRecipeTypes() {

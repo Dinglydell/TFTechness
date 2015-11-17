@@ -29,6 +29,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
+import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
 
 public class BlockTFTMachine extends BlockTEBase {
 	
@@ -36,7 +37,7 @@ public class BlockTFTMachine extends BlockTEBase {
 	public static ItemStack accumulator;
 	
 	public enum Types {
-		EXTRUDER, ACCUMULATOR
+		EXTRUDER, ACCUMULATOR, PRECIPITATOR
 	}
 	
 	public BlockTFTMachine() {
@@ -62,7 +63,8 @@ public class BlockTFTMachine extends BlockTEBase {
 				return new TileTFTExtruder();
 			case ACCUMULATOR:
 				return new TileTFTAccumulator();
-				
+			case PRECIPITATOR:
+				return new TileTFTPrecipitator();
 		}
 		return null;
 		
