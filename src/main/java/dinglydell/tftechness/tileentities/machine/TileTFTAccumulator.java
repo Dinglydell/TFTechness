@@ -209,10 +209,13 @@ public class TileTFTAccumulator extends TileAccumulator {
 	@Override
 	protected void transferOutputFluid() {
 		
-		if (this.augmentAutoOutput && tank2.getFluidAmount() > 0) {
-			outputTrackerFluid = output(getTank(), outputTrackerFluid, 1, 3);
-			
-			outputTrackerFluid2 = output(tank2, outputTrackerFluid2, 2, 3);
+		if (this.augmentAutoOutput) {
+			if (getTank().getFluidAmount() > 0) {
+				outputTrackerFluid = output(getTank(), outputTrackerFluid, 1, 3);
+			}
+			if (tank2.getFluidAmount() > 0) {
+				outputTrackerFluid2 = output(tank2, outputTrackerFluid2, 2, 3);
+			}
 		}
 	}
 	
