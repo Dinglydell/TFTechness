@@ -5,6 +5,9 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+
 import cofh.api.tileentity.IRedstoneControl.ControlMode;
 import cofh.lib.util.helpers.EnergyHelper;
 import cofh.lib.util.helpers.ItemHelper;
@@ -86,7 +89,8 @@ public class ItemBlockTFTDynamo extends ItemTerraBlock implements IEquipable {
 	
 	@Override
 	public void onEquippedRender() {
-		
+		GL11.glRotatef(90F, 1F, 0F, 0F);
+		// GL11.glTranslatef(-0.5F, -0.5F, -0.3F);
 	}
 	
 }
