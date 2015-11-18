@@ -33,6 +33,7 @@ import cofh.thermalexpansion.block.machine.BlockMachine;
 import cofh.thermalexpansion.block.tank.BlockTank;
 import cofh.thermalexpansion.item.TEItems;
 import cofh.thermalexpansion.plugins.nei.handlers.NEIRecipeWrapper;
+import cofh.thermalexpansion.util.FuelHandler;
 import cofh.thermalexpansion.util.crafting.RecipeMachine;
 import cofh.thermalexpansion.util.crafting.SmelterManager;
 import cofh.thermalexpansion.util.crafting.SmelterManager.RecipeSmelter;
@@ -115,7 +116,7 @@ public class TFTechness {
 		addMetals();
 		
 		addBlocks();
-		
+		handleFules();
 		registerRecipeTypes();
 		
 	}
@@ -242,6 +243,12 @@ public class TFTechness {
 		TFTBlocks.metalSheet = new BlockTFTMetalSheet().setBlockName("MetalSheet").setHardness(80);
 		
 		GameRegistry.registerBlock(TFTBlocks.metalSheet, "MetalSheet");
+	}
+	
+	private void handleFules() {
+		FuelHandler.registerCoolant(TFCFluids.FRESHWATER.getName(),
+				FuelHandler.configFuels.get("Coolants", "water", 400000));
+		
 	}
 	
 	private void readConfig(FMLPreInitializationEvent event) {
