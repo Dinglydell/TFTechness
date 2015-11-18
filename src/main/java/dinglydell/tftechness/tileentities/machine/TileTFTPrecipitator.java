@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import cofh.lib.util.helpers.ItemHelper;
 import cofh.thermalexpansion.block.machine.TilePrecipitator;
@@ -53,7 +54,7 @@ public class TileTFTPrecipitator extends TilePrecipitator {
 		}
 		int result = getTank().fill(fs, b);
 		if (result > 0) {
-			lastFluid = getTankFluid().getFluid();
+			lastFluid = fs.getFluid();
 		}
 		return result;
 	}
@@ -105,7 +106,15 @@ public class TileTFTPrecipitator extends TilePrecipitator {
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
-		// lastFluid = nbt.get
+		lastFluid = FluidRegistry.getFluid(nbt.getInteger("LastFluid"));
+	}
+	
+	@Override
+	public void writeToNBT(NBTTagCompound nbt) {
+		super.writeToNBT(nbt);
+		if (lastFluid != null) {
+			nbt.setInteger("LastFluid", lastFluid.getID());
+		}
 	}
 	
 }
