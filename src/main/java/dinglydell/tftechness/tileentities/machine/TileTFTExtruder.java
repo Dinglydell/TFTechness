@@ -23,9 +23,10 @@ import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.gui.GuiTFTExtruder;
 import dinglydell.tftechness.gui.container.ContainerTFTExtruder;
 import dinglydell.tftechness.item.TFCMeta;
+import dinglydell.tftechness.tileentities.IAugmentNBT;
 import dinglydell.tftechness.tileentities.machine.TileTFTMachine.Colours;
 
-public class TileTFTExtruder extends TileExtruder {
+public class TileTFTExtruder extends TileExtruder implements IAugmentNBT {
 	
 	public static SideConfig defaultSideConfig;
 	public static int TYPE = BlockTFTMachine.Types.EXTRUDER.ordinal();

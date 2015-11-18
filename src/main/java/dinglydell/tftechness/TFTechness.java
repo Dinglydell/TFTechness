@@ -67,6 +67,8 @@ import dinglydell.tftechness.block.BlockTFTMetalSheet;
 import dinglydell.tftechness.block.BlockTankFrame;
 import dinglydell.tftechness.block.ItemBlockTankFrame;
 import dinglydell.tftechness.block.TFTBlocks;
+import dinglydell.tftechness.block.dynamo.BlockTFTDynamo;
+import dinglydell.tftechness.block.dynamo.ItemBlockTFTDynamo;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.block.machine.ItemBlockTFTMachine;
 import dinglydell.tftechness.config.BucketConfig;
@@ -89,6 +91,7 @@ import dinglydell.tftechness.recipe.RemoveBatch;
 import dinglydell.tftechness.recipe.TFTCraftingHandler;
 import dinglydell.tftechness.render.item.RenderBucket;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
+import dinglydell.tftechness.tileentities.dynamo.TileTFTDynamoSteam;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
@@ -159,6 +162,8 @@ public class TFTechness {
 		GameRegistry.registerTileEntity(TileTFTAccumulator.class, "Accumulator");
 		
 		GameRegistry.registerTileEntity(TileTFTPrecipitator.class, "Precipitator");
+		
+		GameRegistry.registerTileEntity(TileTFTDynamoSteam.class, "DynamoSteam");
 	}
 	
 	private void registerRecipeTypes() {
@@ -196,6 +201,7 @@ public class TFTechness {
 	
 	private void addBlocks() {
 		addMachines();
+		addDynamos();
 		addSheetBlocks();
 		
 	}
@@ -213,7 +219,23 @@ public class TFTechness {
 		BlockTFTMachine.accumulator = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
 				1,
 				BlockTFTMachine.Types.ACCUMULATOR.ordinal()));
+		GameRegistry.registerCustomItemStack("accumulator", BlockTFTMachine.accumulator);
 		
+		BlockTFTMachine.precipitator = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
+				1,
+				BlockTFTMachine.Types.PRECIPITATOR.ordinal()));
+		GameRegistry.registerCustomItemStack("precipitator", BlockTFTMachine.precipitator);
+		
+	}
+	
+	private void addDynamos() {
+		TFTBlocks.dynamo = new BlockTFTDynamo().setBlockName("Dynamo");
+		
+		GameRegistry.registerBlock(TFTBlocks.dynamo, ItemBlockTFTDynamo.class, "dynamo");
+		
+		BlockTFTDynamo.dynamoSteam = new ItemStack(TFTBlocks.dynamo, 1, BlockTFTDynamo.Types.STEAM.ordinal());
+		
+		GameRegistry.registerCustomItemStack("dynamoSteam", BlockTFTDynamo.dynamoSteam);
 	}
 	
 	private void addSheetBlocks() {

@@ -18,6 +18,7 @@ tile.TFTechness.machine.extruder.name=Igneous Extruder
 tile.TFTechness.machine.accumulator.name=Aqueous Accumulator
 tile.TFTechness.machine.precipitator.name=Glacial Precipitator
 
+tile.TFTechness.dynamo.steam.name=Steam Dynamo
 
 info.TFTechness.machine.extruder=Mixes salty or fresh water with lava - can also produce salt.
 info.TFTechness.machine.accumulator=Pulls fresh or salt water from surroundings.

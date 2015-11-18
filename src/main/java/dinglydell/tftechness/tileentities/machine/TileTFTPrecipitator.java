@@ -18,8 +18,9 @@ import cofh.thermalexpansion.block.machine.TilePrecipitator;
 import com.bioxx.tfc.api.TFCFluids;
 
 import dinglydell.tftechness.item.TFCMeta;
+import dinglydell.tftechness.tileentities.IAugmentNBT;
 
-public class TileTFTPrecipitator extends TilePrecipitator {
+public class TileTFTPrecipitator extends TilePrecipitator implements IAugmentNBT {
 	
 	protected Map<Fluid, ItemStack[]> processItems = new HashMap();
 	protected static int[] processEnergy = {

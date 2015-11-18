@@ -24,9 +24,10 @@ import com.bioxx.tfc.api.TFCFluids;
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.gui.GuiTFTAccumulator;
+import dinglydell.tftechness.tileentities.IAugmentNBT;
 import dinglydell.tftechness.tileentities.machine.TileTFTMachine.Colours;
 
-public class TileTFTAccumulator extends TileAccumulator {
+public class TileTFTAccumulator extends TileAccumulator implements IAugmentNBT {
 	
 	public static SideConfig defaultSideConfig;
 	public static int TYPE = BlockTFTMachine.Types.ACCUMULATOR.ordinal();

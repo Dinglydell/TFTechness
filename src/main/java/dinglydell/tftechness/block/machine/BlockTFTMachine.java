@@ -1,40 +1,33 @@
 package dinglydell.tftechness.block.machine;
 
-import java.util.List;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.IFluidHandler;
 import cofh.api.tileentity.ISidedTexture;
 import cofh.core.block.BlockCoFHBase;
 import cofh.core.render.IconRegistry;
 import cofh.lib.util.helpers.BlockHelper;
-import cofh.lib.util.helpers.FluidHelper;
 import cofh.lib.util.helpers.StringHelper;
-import cofh.thermalexpansion.block.BlockTEBase;
 import cofh.thermalexpansion.block.machine.TileMachineBase;
 import cofh.thermalexpansion.util.ReconfigurableHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dinglydell.tftechness.block.BlockTETFTBase;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
 
-public class BlockTFTMachine extends BlockTEBase {
+public class BlockTFTMachine extends BlockTETFTBase {
 	
 	public static ItemStack extruder;
 	public static ItemStack accumulator;
+	public static ItemStack precipitator;
 	
 	public enum Types {
 		EXTRUDER, ACCUMULATOR, PRECIPITATOR
@@ -44,13 +37,6 @@ public class BlockTFTMachine extends BlockTEBase {
 		super(Material.iron);
 		this.setHardness(15.0f);
 		this.setResistance(25.0f);
-	}
-	
-	@Override
-	public void getSubBlocks(Item it, CreativeTabs creat, List list) {
-		for (int i = 0; i < Types.values().length; i++) {
-			list.add(ItemBlockTFTMachine.setDefaultTag(new ItemStack(it, 1, i)));
-		}
 	}
 	
 	@Override
@@ -67,15 +53,6 @@ public class BlockTFTMachine extends BlockTEBase {
 				return new TileTFTPrecipitator();
 		}
 		return null;
-		
-	}
-	
-	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(int unknown, CreativeTabs tab, List subItems) {
-		int nBlocks = Types.values().length;
-		for (int i = 0; i < nBlocks; i++) {
-			subItems.add(new ItemStack(this, 1, i));
-		}
 		
 	}
 	
@@ -101,32 +78,6 @@ public class BlockTFTMachine extends BlockTEBase {
 		}
 		
 		super.onBlockPlacedBy(world, x, y, z, ent, it);
-	}
-	
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer p, int meta, float sideX,
-			float sideY, float sideZ) {
-		TileEntity te = world.getTileEntity(x, y, z);
-		if (te instanceof IFluidHandler && FluidHelper.fillHandlerWithContainer(world, (IFluidHandler) te, p)) {
-			return true;
-		}
-		return super.onBlockActivated(world, x, y, z, p, meta, sideX, sideY, sideZ);
-		
-	}
-	
-	@Override
-	public NBTTagCompound getItemStackTag(World world, int x, int y, int z) {
-		NBTTagCompound nbt = super.getItemStackTag(world, x, y, z);
-		TileMachineBase tile = (TileMachineBase) world.getTileEntity(x, y, z);
-		if (tile != null) {
-			if (nbt == null) {
-				nbt = new NBTTagCompound();
-			}
-			ReconfigurableHelper.setItemStackTagReconfig(nbt, tile);
-			nbt.setInteger("Energy", tile.getEnergyStored(ForgeDirection.UNKNOWN));
-			tile.writeAugmentsToNBT(nbt);
-		}
-		return nbt;
 	}
 	
 	@Override
@@ -179,16 +130,6 @@ public class BlockTFTMachine extends BlockTEBase {
 	}
 	
 	@Override
-	public boolean initialize() {
-		return false;
-	}
-	
-	@Override
-	public boolean postInit() {
-		return false;
-	}
-	
-	@Override
 	public boolean isNormalCube(IBlockAccess paramIBlockAccess, int paramInt1, int paramInt2, int paramInt3) {
 		return false;
 	}
@@ -207,6 +148,16 @@ public class BlockTFTMachine extends BlockTEBase {
 	
 	public boolean isOpaqueCube() {
 		return true;
+	}
+	
+	@Override
+	protected ItemStack setDefaultTag(ItemStack itemStack) {
+		return itemStack;
+	}
+	
+	@Override
+	protected int getNumBlocks() {
+		return Types.values().length;
 	}
 	
 }
