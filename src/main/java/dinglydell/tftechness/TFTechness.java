@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -87,7 +88,6 @@ import dinglydell.tftechness.item.TFTItems;
 import dinglydell.tftechness.metal.AlloyIngred;
 import dinglydell.tftechness.metal.Material;
 import dinglydell.tftechness.metal.MaterialAlloy;
-import dinglydell.tftechness.metal.MetalSnatcher;
 import dinglydell.tftechness.metal.MetalStat;
 import dinglydell.tftechness.metal.TFTMetals;
 import dinglydell.tftechness.metal.TankMap;
@@ -109,6 +109,7 @@ public class TFTechness {
 	public static final String MODID = "TFTechness";
 	public static final String VERSION = "0.1";
 	private static final int baseTemp = 22;
+	private static final float joulesToRF = 6.275f;
 	public static org.apache.logging.log4j.Logger logger = LogManager.getLogger("TFTechness");
 	public static Material[] materials;
 	public static Map<String, MetalStat> statMap = new HashMap();
@@ -375,20 +376,33 @@ public class TFTechness {
 	}
 	
 	private void magmaCrucibleRecipes() {
-		
-		Map<String, Metal> metals = MetalSnatcher.getMetals();
-		for (Entry<String, Fluid> mf : TFTFluids.metal.entrySet()) {
-			Metal m = metals.get(mf.getKey());
-			HeatIndex hi = MetalSnatcher.getHeatIndexFromMetal(m);
-			MetalStat stat = statMap.get(mf.getKey().replaceAll(" ", ""));
-			if (stat == null) {
-				TFTechness.logger.info(mf.getKey());
-			} else {
-				int rf = (int) ((hi.meltTemp - baseTemp) * stat.ingotMass * hi.specificHeat / 50);
-				ThermalExpansionHelper.addCrucibleRecipe(rf, new ItemStack(m.ingot), new FluidStack(mf.getValue(),
-						MetalConfig.ingotFluidmB));
+		for (HeatIndex hi : HeatRegistry.getInstance().getHeatList()) {
+			if (hi.getOutputItem() instanceof ItemMeltedMetal) {
+				Metal m = MetalRegistry.instance.getMetalFromItem(hi.getOutputItem());
+				if (m != null) {
+					MetalStat stat = statMap.get(m.name.replaceAll(" ", ""));
+					int rf = (int) ((hi.meltTemp - baseTemp) * stat.ingotMass * hi.specificHeat / joulesToRF);
+					ThermalExpansionHelper.addCrucibleRecipe(rf, hi.input, new FluidStack(TFTFluids.metal.get(m.name),
+							MetalConfig.ingotFluidmB * hi.getOutput(new Random()).stackSize));
+				}
 			}
 		}
+		
+		// Map<String, Metal> metals = MetalSnatcher.getMetals();
+		// for (Entry<String, Fluid> mf : TFTFluids.metal.entrySet()) {
+		// Metal m = metals.get(mf.getKey());
+		// HeatIndex hi = MetalSnatcher.getHeatIndexFromMetal(m);
+		// MetalStat stat = statMap.get(mf.getKey().replaceAll(" ", ""));
+		// if (stat == null) {
+		// TFTechness.logger.info(mf.getKey());
+		// } else {
+		// int rf = (int) ((hi.meltTemp - baseTemp) * stat.ingotMass * hi.specificHeat /
+		// joulesToRF);
+		// ThermalExpansionHelper.addCrucibleRecipe(rf, new ItemStack(m.ingot), new
+		// FluidStack(mf.getValue(),
+		// MetalConfig.ingotFluidmB));
+		// }
+		// }
 	}
 	
 	private void transposerRecipes() {
