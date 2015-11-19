@@ -12,9 +12,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.IFluidHandler;
-import cofh.api.energy.IEnergyProvider;
 import cofh.lib.util.helpers.FluidHelper;
 import cofh.thermalexpansion.block.BlockTEBase;
+import cofh.thermalexpansion.block.TilePowered;
 import cofh.thermalexpansion.block.TileReconfigurable;
 import cofh.thermalexpansion.util.ReconfigurableHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -77,7 +77,7 @@ public abstract class BlockTETFTBase extends BlockTEBase {
 				TileReconfigurable tileRec = (TileReconfigurable) tile;
 				ReconfigurableHelper.setItemStackTagReconfig(nbt, tileRec);
 			}
-			nbt.setInteger("Energy", ((IEnergyProvider) tile).getEnergyStored(ForgeDirection.UNKNOWN));
+			nbt.setInteger("Energy", ((TilePowered) tile).getEnergyStored(ForgeDirection.UNKNOWN));
 			((IAugmentNBT) tile).writeAugmentsToNBT(nbt);
 		}
 		return nbt;

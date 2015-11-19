@@ -1,2 +1,2 @@
--precipitator, dynamo still use vanilla water
+-molten metal
 -recipe balancing - when should tech become available?

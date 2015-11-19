@@ -14,11 +14,13 @@ import cofh.core.block.BlockCoFHBase;
 import cofh.core.render.IconRegistry;
 import cofh.lib.util.helpers.BlockHelper;
 import cofh.lib.util.helpers.StringHelper;
+import cofh.thermalexpansion.block.TileAugmentable;
 import cofh.thermalexpansion.block.machine.TileMachineBase;
 import cofh.thermalexpansion.util.ReconfigurableHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dinglydell.tftechness.block.BlockTETFTBase;
+import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
@@ -30,7 +32,7 @@ public class BlockTFTMachine extends BlockTETFTBase {
 	public static ItemStack precipitator;
 	
 	public enum Types {
-		EXTRUDER, ACCUMULATOR, PRECIPITATOR
+		EXTRUDER, ACCUMULATOR, PRECIPITATOR, CRYOCHAMBER
 	}
 	
 	public BlockTFTMachine() {
@@ -51,6 +53,8 @@ public class BlockTFTMachine extends BlockTETFTBase {
 				return new TileTFTAccumulator();
 			case PRECIPITATOR:
 				return new TileTFTPrecipitator();
+			case CRYOCHAMBER:
+				return new TileCryoChamber();
 		}
 		return null;
 		
@@ -59,7 +63,7 @@ public class BlockTFTMachine extends BlockTETFTBase {
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase ent, ItemStack it) {
 		if (it.stackTagCompound != null) {
-			TileMachineBase te = (TileMachineBase) world.getTileEntity(x, y, z);
+			TileAugmentable te = (TileAugmentable) world.getTileEntity(x, y, z);
 			
 			te.readAugmentsFromNBT(it.stackTagCompound);
 			te.installAugments();

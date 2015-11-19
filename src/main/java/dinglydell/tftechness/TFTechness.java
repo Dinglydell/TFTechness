@@ -99,6 +99,7 @@ import dinglydell.tftechness.recipe.TFTCraftingHandler;
 import dinglydell.tftechness.render.item.RenderBucket;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.dynamo.TileTFTDynamoSteam;
+import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
@@ -127,7 +128,7 @@ public class TFTechness {
 		handleFules();
 		registerRecipeTypes();
 		
-		TFTechness.logger.info("LAVA: " + FluidRegistry.LAVA.getTemperature());
+		// TFTechness.logger.info("LAVA: " + FluidRegistry.LAVA.getTemperature());
 	}
 	
 	@EventHandler
@@ -175,6 +176,8 @@ public class TFTechness {
 		GameRegistry.registerTileEntity(TileTFTPrecipitator.class, "Precipitator");
 		
 		GameRegistry.registerTileEntity(TileTFTDynamoSteam.class, "DynamoSteam");
+		
+		GameRegistry.registerTileEntity(TileCryoChamber.class, "CryoChamber");
 	}
 	
 	private void registerRecipeTypes() {
