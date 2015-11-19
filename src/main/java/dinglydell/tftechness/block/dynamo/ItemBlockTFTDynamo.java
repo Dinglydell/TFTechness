@@ -90,7 +90,6 @@ public class ItemBlockTFTDynamo extends ItemTerraBlock implements IEquipable {
 	@Override
 	public void onEquippedRender() {
 		GL11.glRotatef(90F, 1F, 0F, 0F);
-		// GL11.glTranslatef(-0.5F, -0.5F, -0.3F);
 	}
 	
 }

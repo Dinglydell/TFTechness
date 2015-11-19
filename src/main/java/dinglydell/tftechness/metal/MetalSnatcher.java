@@ -6,7 +6,11 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.item.ItemStack;
+
 import com.bioxx.tfc.Core.Metal.MetalRegistry;
+import com.bioxx.tfc.api.HeatIndex;
+import com.bioxx.tfc.api.HeatRegistry;
 import com.bioxx.tfc.api.Metal;
 
 /** Nasty stuff happens here */
@@ -21,6 +25,10 @@ public class MetalSnatcher {
 	public static int getIdFromMetal(Metal m) {
 		ArrayList<Metal> metals = new ArrayList<Metal>(Arrays.asList(getMetalsAsArray()));
 		return metals.indexOf(m);
+	}
+	
+	public static HeatIndex getHeatIndexFromMetal(Metal m) {
+		return HeatRegistry.getInstance().findMatchingIndex(new ItemStack(m.ingot));
 	}
 	
 	public static Map<String, Metal> getMetals() {

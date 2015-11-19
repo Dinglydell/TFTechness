@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -27,6 +28,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import org.apache.logging.log4j.LogManager;
 
+import cofh.api.modhelpers.ThermalExpansionHelper;
 import cofh.lib.util.helpers.StringHelper;
 import cofh.thermalexpansion.block.TEBlocks;
 import cofh.thermalexpansion.block.machine.BlockMachine;
@@ -74,7 +76,9 @@ import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.block.machine.ItemBlockTFTMachine;
 import dinglydell.tftechness.config.BucketConfig;
 import dinglydell.tftechness.config.MachineConfig;
+import dinglydell.tftechness.config.MetalConfig;
 import dinglydell.tftechness.config.RecipeConfig;
+import dinglydell.tftechness.fluid.TFTFluids;
 import dinglydell.tftechness.item.ItemRod;
 import dinglydell.tftechness.item.ItemTFTMetalSheet;
 import dinglydell.tftechness.item.ItemTFTSteelBucket;
@@ -83,6 +87,8 @@ import dinglydell.tftechness.item.TFTItems;
 import dinglydell.tftechness.metal.AlloyIngred;
 import dinglydell.tftechness.metal.Material;
 import dinglydell.tftechness.metal.MaterialAlloy;
+import dinglydell.tftechness.metal.MetalSnatcher;
+import dinglydell.tftechness.metal.MetalStat;
 import dinglydell.tftechness.metal.TFTMetals;
 import dinglydell.tftechness.metal.TankMap;
 import dinglydell.tftechness.recipe.AnvilRecipeHandler;
@@ -102,15 +108,16 @@ import dinglydell.tftechness.util.OreDict;
 public class TFTechness {
 	public static final String MODID = "TFTechness";
 	public static final String VERSION = "0.1";
+	private static final int baseTemp = 22;
 	public static org.apache.logging.log4j.Logger logger = LogManager.getLogger("TFTechness");
 	public static Material[] materials;
-	public static Map<String, HeatRaw> heatMap = new HashMap();
+	public static Map<String, MetalStat> statMap = new HashMap();
 	public static Map<String, Material> materialMap;
 	public static TankMap[] tankMap;
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		initHeatMap();
+		initMaps();
 		readConfig(event);
 		TFCMeta.preInit();
 		addMetals();
@@ -119,12 +126,14 @@ public class TFTechness {
 		handleFules();
 		registerRecipeTypes();
 		
+		TFTechness.logger.info("LAVA: " + FluidRegistry.LAVA.getTemperature());
 	}
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		// Requires some TE init
 		addTanks();
+		TFTFluids.createFluids();
 		addBuckets();
 		registerTileEntities();
 	}
@@ -258,13 +267,15 @@ public class TFTechness {
 				+ "/Metals.cfg"), true);
 		metalConfig.load();
 		
-		for (Map.Entry<String, HeatRaw> entry : TFTechness.heatMap.entrySet()) {
+		for (Entry<String, MetalStat> entry : TFTechness.statMap.entrySet()) {
 			String key = entry.getKey();
 			
-			HeatRaw heat = entry.getValue();
+			HeatRaw heat = entry.getValue().heat;
 			double melt = metalConfig.get(key, "MeltingPoint", heat.meltTemp).getDouble();
 			double sh = metalConfig.get(key, "SpecificHeat", heat.specificHeat).getDouble();
+			int ingotMass = metalConfig.get(key, "IngotMass", entry.getValue().ingotMass).getInt();
 			heat = new HeatRaw(sh, melt);
+			
 		}
 		
 		metalConfig.save();
@@ -272,6 +283,7 @@ public class TFTechness {
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), MODID + "/General.cfg"),
 				true);
 		config.load();
+		MetalConfig.loadConfig(config);
 		RecipeConfig.loadConfig(config);
 		MachineConfig.loadConfig(config);
 		
@@ -300,7 +312,7 @@ public class TFTechness {
 	
 	private void machineRecipes() {
 		transposerRecipes();
-		
+		magmaCrucibleRecipes();
 		// smelterRecipes();
 	}
 	
@@ -358,6 +370,23 @@ public class TFTechness {
 							out2,
 							rs.getSecondaryOutputChance());
 				}
+			}
+		}
+	}
+	
+	private void magmaCrucibleRecipes() {
+		
+		Map<String, Metal> metals = MetalSnatcher.getMetals();
+		for (Entry<String, Fluid> mf : TFTFluids.metal.entrySet()) {
+			Metal m = metals.get(mf.getKey());
+			HeatIndex hi = MetalSnatcher.getHeatIndexFromMetal(m);
+			MetalStat stat = statMap.get(mf.getKey().replaceAll(" ", ""));
+			if (stat == null) {
+				TFTechness.logger.info(mf.getKey());
+			} else {
+				int rf = (int) ((hi.meltTemp - baseTemp) * stat.ingotMass * hi.specificHeat / 50);
+				ThermalExpansionHelper.addCrucibleRecipe(rf, new ItemStack(m.ingot), new FluidStack(mf.getValue(),
+						MetalConfig.ingotFluidmB));
 			}
 		}
 	}
@@ -729,28 +758,55 @@ public class TFTechness {
 		}
 	}
 	
-	private void initHeatMap() {
+	private void initMaps() {
 		// Stock TFC
-		heatMap.put("Gold", new HeatRaw(0.6, 1060));
-		heatMap.put("WroughtIron", new HeatRaw(0.35, 1535));
-		heatMap.put("Copper", new HeatRaw(0.35, 1080));
-		heatMap.put("Tin", new HeatRaw(0.14, 230));
-		heatMap.put("Silver", new HeatRaw(0.48, 961));
-		heatMap.put("Lead", new HeatRaw(0.22, 328));
-		heatMap.put("Nickel", new HeatRaw(0.48, 1453));
-		heatMap.put("Platinum", new HeatRaw(0.35, 1730));
-		heatMap.put("Bronze", new HeatRaw(0.35, 950));
+		// For multiple metals with the same stat entry
+		MetalStat blackSteel = new MetalStat(0.35, 1485, 998);
+		MetalStat blueSteel = new MetalStat(0.35, 1540, 975);
+		MetalStat copper = new MetalStat(0.35, 1080, 996);
+		MetalStat redSteel = new MetalStat(0.35, 1540, 1093);
+		MetalStat steel = new MetalStat(0.35, 1540, 844);
+		
+		statMap.put("Bismuth", new MetalStat(0.14, 270, 1087));
+		statMap.put("BismuthBronze", new MetalStat(0.35, 985, 963));
+		statMap.put("BlackBronze", new MetalStat(0.35, 1070, 1313));
+		statMap.put("BlackSteel", blackSteel);
+		statMap.put("BlueSteel", blueSteel);
+		statMap.put("Brass", new MetalStat(0.35, 930, 976));
+		statMap.put("Bronze", new MetalStat(0.35, 950, 947));
+		statMap.put("Copper", copper);
+		statMap.put("Gold", new MetalStat(0.6, 1060, 2147));
+		statMap.put("HCBlackSteel", blackSteel);
+		statMap.put("HCBlueSteel", blueSteel);
+		statMap.put("HCRedSteel", redSteel);
+		statMap.put("Lead", new MetalStat(0.22, 328, 1260));
+		statMap.put("Nickel", new MetalStat(0.48, 1453, 989));
+		statMap.put("PigIron", new MetalStat(0.35, 1500, 900));
+		statMap.put("Platinum", new MetalStat(0.35, 1730, 2383));
+		statMap.put("RedSteel", redSteel);
+		statMap.put("RoseGold", new MetalStat(0.35, 960, 1859));
+		statMap.put("Silver", new MetalStat(0.48, 961, 1111));
+		statMap.put("Steel", steel);
+		statMap.put("SterlingSilver", new MetalStat(0.35, 900, 1082));
+		statMap.put("Tin", new MetalStat(0.14, 230, 811));
+		// TFC uses copper heat properties for all unknown ingots
+		statMap.put("Unknown", copper);
+		statMap.put("WeakRedSteel", redSteel);
+		statMap.put("WeakBlueSteel", blueSteel);
+		statMap.put("WeakSteel", steel);
+		statMap.put("WroughtIron", new MetalStat(0.35, 1535, 889));
+		statMap.put("Zinc", new MetalStat(0.21, 420, 792));
 		
 		// TF
-		heatMap.put("Invar", new HeatRaw(0.52, 1700));
-		heatMap.put("Mithril", new HeatRaw(0.9, 660));
-		heatMap.put("Electrum", new HeatRaw(0.181, 650));
-		heatMap.put("Enderium", new HeatRaw(0.5, 1700));
-		heatMap.put("Signalum", new HeatRaw(0.45, 900));
-		heatMap.put("Lumium", new HeatRaw(0.35, 1200));
+		statMap.put("Invar", new MetalStat(0.52, 1700, 894));
+		statMap.put("Mithril", new MetalStat(0.9, 660, 500));
+		statMap.put("Electrum", new MetalStat(0.181, 650, 1629));
+		statMap.put("Enderium", new MetalStat(0.5, 1700, 1279));
+		statMap.put("Signalum", new MetalStat(0.45, 900, 1024));
+		statMap.put("Lumium", new MetalStat(0.35, 1200, 2544));
 		
 		// TFT
-		heatMap.put("Billon", new HeatRaw(0.35, 950));
+		statMap.put("Billon", new MetalStat(0.35, 950, 1024));
 	}
 	
 	private TankMap[] getTanks() {
@@ -760,7 +816,7 @@ public class TFTechness {
 				new TankMap(new ItemStack(TEBlocks.blockGlass, 1),
 						5,
 						BlockTank.Types.REINFORCED,
-						TFTechness.heatMap.get("Invar")), new TankMap("Enderium", BlockTank.Types.RESONANT)
+						TFTechness.statMap.get("Invar").heat), new TankMap("Enderium", BlockTank.Types.RESONANT)
 		};
 	}
 	

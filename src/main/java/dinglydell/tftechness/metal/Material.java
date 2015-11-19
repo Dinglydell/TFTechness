@@ -30,7 +30,7 @@ public class Material {
 	
 	private Material(String name, ItemStack gear, int tier, ItemStack nugget, boolean gearOnly) {
 		this.gearOnly = gearOnly;
-		this.heatRaw = TFTechness.heatMap.get(name);
+		this.heatRaw = TFTechness.statMap.get(name).heat;
 		this.gear = gear;
 		this.name = name;
 		this.oreName = name;
