@@ -109,8 +109,9 @@ import dinglydell.tftechness.util.OreDict;
 public class TFTechness {
 	public static final String MODID = "TFTechness";
 	public static final String VERSION = "0.1";
-	private static final int baseTemp = 22;
-	private static final float joulesToRF = 6.275f;
+	/** Base temperature of objects (22°C) */
+	public static final int baseTemp = 22;
+	public static final float rfToJoules = 6.275f;
 	public static org.apache.logging.log4j.Logger logger = LogManager.getLogger("TFTechness");
 	public static Material[] materials;
 	public static Map<String, MetalStat> statMap = new HashMap();
@@ -384,7 +385,7 @@ public class TFTechness {
 				Metal m = MetalRegistry.instance.getMetalFromItem(hi.getOutputItem());
 				if (m != null) {
 					MetalStat stat = statMap.get(m.name.replaceAll(" ", ""));
-					int rf = (int) ((hi.meltTemp - baseTemp) * stat.ingotMass * hi.specificHeat / joulesToRF);
+					int rf = (int) ((hi.meltTemp - baseTemp) * stat.ingotMass * hi.specificHeat / rfToJoules);
 					ThermalExpansionHelper.addCrucibleRecipe(rf, hi.input, new FluidStack(TFTFluids.metal.get(m.name),
 							MetalConfig.ingotFluidmB * hi.getOutput(new Random()).stackSize));
 				}

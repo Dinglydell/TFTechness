@@ -1,11 +1,13 @@
 package dinglydell.tftechness.tileentities.machine;
 
 import net.minecraft.util.IIcon;
+import cofh.api.energy.EnergyStorage;
+import cofh.core.network.PacketCoFHBase;
 import cofh.core.render.IconRegistry;
 import cofh.lib.util.helpers.ServerHelper;
 import cofh.thermalexpansion.block.TileAugmentable;
-import cofh.thermalexpansion.block.machine.BlockMachine;
 import dinglydell.tftechness.TFTechness;
+import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.tileentities.IAugmentNBT;
 
 public abstract class TileTFTMachine extends TileAugmentable implements IAugmentNBT {
@@ -27,19 +29,25 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 	}
 	
 	protected int energyConsumption;
+	protected int lastEnergyConsumption;
+	protected EnergyConfig energyConfig;
 	
 	public TileTFTMachine() {
 		sideConfig = getSideConfig();
+		energyConfig = getEnergyConfig();
+		energyStorage = new EnergyStorage(energyConfig.maxEnergy, energyConfig.maxPower);
 	}
 	
 	@Override
 	public void updateEntity() {
 		if (!ServerHelper.isClientWorld(this.worldObj)) {
+			chargeEnergy();
 			if (isActive) {
 				if (energyStorage.getEnergyStored() - energyConsumption > 0) {
-					energyStorage.modifyEnergyStored(-spendEnergy(energyConsumption));
-					energyStorage.modifyEnergyStored(-energyConsumption);
+					lastEnergyConsumption = spendEnergy(energyConsumption);
+					energyStorage.modifyEnergyStored(-lastEnergyConsumption);
 				} else {
+					lastEnergyConsumption = 0;
 					energyStorage.modifyEnergyStored(-spendEnergy(energyStorage.getEnergyStored()));
 				}
 				
@@ -48,6 +56,7 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 					onDeactivate();
 				}
 			} else {
+				lastEnergyConsumption = 0;
 				if (redstoneControlOrDisable() || shouldActivate()) {
 					isActive = true;
 					onActivate();
@@ -57,8 +66,32 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 	}
 	
 	@Override
+	public PacketCoFHBase getGuiPacket() {
+		PacketCoFHBase packet = super.getGuiPacket();
+		packet.addInt(lastEnergyConsumption);
+		return packet;
+	}
+	
+	@Override
+	protected void handleGuiPacket(PacketCoFHBase packet) {
+		super.handleGuiPacket(packet);
+		lastEnergyConsumption = packet.getInt();
+	}
+	
+	@Override
+	public int getInfoEnergyPerTick() {
+		return lastEnergyConsumption;
+	}
+	
+	@Override
+	public int getInfoMaxEnergyPerTick() {
+		return energyConsumption;
+	}
+	
+	@Override
 	public String getName() {
-		return "tile." + TFTechness.MODID + ".machine." + BlockMachine.Types.values()[getType()].name().toLowerCase();
+		return "tile." + TFTechness.MODID + ".machine."
+				+ BlockTFTMachine.Types.values()[getType()].name().toLowerCase() + ".name";
 	}
 	
 	@Override
@@ -77,4 +110,6 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 	protected abstract int spendEnergy(int rf);
 	
 	protected abstract SideConfig getSideConfig();
+	
+	protected abstract EnergyConfig getEnergyConfig();
 }
