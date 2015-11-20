@@ -1,5 +1,6 @@
 package dinglydell.tftechness.tileentities.machine;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import cofh.api.energy.EnergyStorage;
 import cofh.core.network.PacketCoFHBase;
@@ -13,7 +14,9 @@ import dinglydell.tftechness.tileentities.IAugmentNBT;
 public abstract class TileTFTMachine extends TileAugmentable implements IAugmentNBT {
 	
 	public static IIcon getTexture(TileAugmentable tile, int side, int render) {
-		
+		if (side < 2) {
+			return (side == 0 ? IconRegistry.getIcon("TFTMachineTop") : IconRegistry.getIcon("TFTMachineBottom"));
+		}
 		return (side != tile.getFacing()) ? IconRegistry.getIcon("TFTMachineSide")
 				: (tile.isActive ? IconRegistry.getIcon("TFTMachineActive", tile.getType())
 						: IconRegistry.getIcon("TFTMachineFace", tile.getType()));
@@ -31,6 +34,7 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 	protected int energyConsumption;
 	protected int lastEnergyConsumption;
 	protected EnergyConfig energyConfig;
+	protected byte level;
 	
 	public TileTFTMachine() {
 		sideConfig = getSideConfig();
@@ -97,6 +101,21 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 	@Override
 	public IIcon getTexture(int side, int render) {
 		return getTexture(this, side, render);
+	}
+	
+	@Override
+	public void readAugmentsFromNBT(NBTTagCompound nbt) {
+		super.readAugmentsFromNBT(nbt);
+		level = nbt.getByte("Level");
+	}
+	
+	public void writeAugmentsToNBT(NBTTagCompound nbt) {
+		super.writeAugmentsToNBT(nbt);
+		nbt.setByte("Level", level);
+	}
+	
+	public int getLevel() {
+		return level;
 	}
 	
 	protected abstract boolean shouldActivate();
