@@ -580,7 +580,7 @@ public class TFTechness {
 	private void dynamoCraftingRecipes() {
 		ItemStack[] augs = new ItemStack[] {};
 		if (MachineConfig.dynamoSteamEnabled) {
-			NEIRecipeWrapper.addMachineRecipe(new RecipeAugmentable(BlockDynamo.dynamoSteam, augs, new Object[] {
+			NEIRecipeWrapper.addMachineRecipe(new RecipeAugmentable(BlockTFTDynamo.dynamoSteam, augs, new Object[] {
 					" t ",
 					"CcC",
 					"crc",
