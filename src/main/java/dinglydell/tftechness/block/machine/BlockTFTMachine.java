@@ -15,7 +15,6 @@ import cofh.core.render.IconRegistry;
 import cofh.lib.util.helpers.BlockHelper;
 import cofh.lib.util.helpers.StringHelper;
 import cofh.thermalexpansion.block.TileAugmentable;
-import cofh.thermalexpansion.block.machine.TileMachineBase;
 import cofh.thermalexpansion.util.ReconfigurableHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -30,6 +29,7 @@ public class BlockTFTMachine extends BlockTETFTBase {
 	public static ItemStack extruder;
 	public static ItemStack accumulator;
 	public static ItemStack precipitator;
+	public static ItemStack cryoChamber;
 	
 	public enum Types {
 		EXTRUDER, ACCUMULATOR, PRECIPITATOR, CRYOCHAMBER

@@ -84,6 +84,7 @@ import dinglydell.tftechness.item.ItemRod;
 import dinglydell.tftechness.item.ItemTFTMetalSheet;
 import dinglydell.tftechness.item.ItemTFTSteelBucket;
 import dinglydell.tftechness.item.TFCMeta;
+import dinglydell.tftechness.item.TFTAugments;
 import dinglydell.tftechness.item.TFTItems;
 import dinglydell.tftechness.metal.AlloyIngred;
 import dinglydell.tftechness.metal.Material;
@@ -138,6 +139,7 @@ public class TFTechness {
 		addTanks();
 		TFTFluids.createFluids();
 		addBuckets();
+		TFTAugments.init();
 		registerTileEntities();
 	}
 	
@@ -240,6 +242,10 @@ public class TFTechness {
 				1,
 				BlockTFTMachine.Types.PRECIPITATOR.ordinal()));
 		GameRegistry.registerCustomItemStack("precipitator", BlockTFTMachine.precipitator);
+		
+		BlockTFTMachine.cryoChamber = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
+				1,
+				BlockTFTMachine.Types.CRYOCHAMBER.ordinal()));
 		
 	}
 	
@@ -507,6 +513,30 @@ public class TFTechness {
 			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockMachine.accumulator, augs, accumulator));
 			if (RecipeConfig.upgradeCrafting) {
 				TFTCraftingHandler.addMachineUpgradeRecipes(BlockMachine.accumulator);
+			}
+		}
+		
+		if (MachineConfig.cryoChamberEnabled) {
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.cryoChamber, augs, new Object[] {
+					" C ",
+					"iFi",
+					"cSc",
+					Character.valueOf('C'),
+					TFItems.dustCryotheum,
+					Character.valueOf('i'),
+					TFCMeta.freshIce,
+					Character.valueOf('F'),
+					machineFrame,
+					Character.valueOf('c'),
+					"gearCopper",
+					Character.valueOf('S'),
+					TEItems.pneumaticServo
+			}));
+			
+			if (RecipeConfig.upgradeCrafting) {
+				TFTCraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.cryoChamber);
+			} else {
+				TECraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.cryoChamber);
 			}
 		}
 		

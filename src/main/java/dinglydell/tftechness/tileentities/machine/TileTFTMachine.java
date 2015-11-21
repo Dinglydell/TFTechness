@@ -1,5 +1,9 @@
 package dinglydell.tftechness.tileentities.machine;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import cofh.api.energy.EnergyStorage;
@@ -31,7 +35,14 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 		}
 	}
 	
+	public static final int[] capacityMultiplier = {
+			2, 3, 4, 5
+	};
+	public static final int[] numAugments = {
+			3, 4, 5, 6
+	};
 	protected int energyConsumption;
+	protected Map<String, Double> consuptionModifiers = new HashMap<String, Double>();
 	protected int lastEnergyConsumption;
 	protected EnergyConfig energyConfig;
 	protected byte level;
@@ -40,6 +51,7 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 		sideConfig = getSideConfig();
 		energyConfig = getEnergyConfig();
 		energyStorage = new EnergyStorage(energyConfig.maxEnergy, energyConfig.maxPower);
+		
 	}
 	
 	@Override
@@ -47,13 +59,9 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 		if (!ServerHelper.isClientWorld(this.worldObj)) {
 			chargeEnergy();
 			if (isActive) {
-				if (energyStorage.getEnergyStored() - energyConsumption > 0) {
-					lastEnergyConsumption = spendEnergy(energyConsumption);
-					energyStorage.modifyEnergyStored(-lastEnergyConsumption);
-				} else {
-					lastEnergyConsumption = 0;
-					energyStorage.modifyEnergyStored(-spendEnergy(energyStorage.getEnergyStored()));
-				}
+				int energy = getEnergyConsumption();
+				lastEnergyConsumption = spendEnergy(energy);
+				energyStorage.modifyEnergyStored(-lastEnergyConsumption);
 				
 				if (!redstoneControlOrDisable() || shouldDeactivate()) {
 					isActive = false;
@@ -66,6 +74,55 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 					onActivate();
 				}
 			}
+		}
+	}
+	
+	private int getEnergyConsumption() {
+		int rf = getMaxEnergyConsumption();
+		if (energyStorage.getEnergyStored() - rf < 0) {
+			rf = energyStorage.getEnergyStored();
+		}
+		return rf;
+	}
+	
+	private int getMaxEnergyConsumption() {
+		double energy = energyConsumption;
+		for (Double d : consuptionModifiers.values()) {
+			energy *= d;
+		}
+		return (int) Math.ceil(energy);
+	}
+	
+	protected void onLevelChange() {
+		augments = new ItemStack[numAugments[level]];
+		augmentStatus = new boolean[this.augments.length];
+		energyConfig.setParams(this.energyConfig.minPower, this.energyConfig.maxPower, this.energyConfig.maxEnergy
+				* capacityMultiplier[level]);
+	}
+	
+	protected void resetAugments() {
+		super.resetAugments();
+		consuptionModifiers = new HashMap();
+	}
+	
+	@Override
+	public PacketCoFHBase getPacket() {
+		PacketCoFHBase packet = super.getPacket();
+		packet.addByte(level);
+		return packet;
+	}
+	
+	@Override
+	public void handleTilePacket(PacketCoFHBase packet, boolean b) {
+		super.handleTilePacket(packet, b);
+		if (!b) {
+			int l = level;
+			level = packet.getByte();
+			if (l != level) {
+				onLevelChange();
+			}
+		} else {
+			packet.getByte();
 		}
 	}
 	
@@ -89,7 +146,7 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 	
 	@Override
 	public int getInfoMaxEnergyPerTick() {
-		return energyConsumption;
+		return getMaxEnergyConsumption();
 	}
 	
 	@Override
@@ -105,13 +162,38 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 	
 	@Override
 	public void readAugmentsFromNBT(NBTTagCompound nbt) {
-		super.readAugmentsFromNBT(nbt);
 		level = nbt.getByte("Level");
+		onLevelChange();
+		super.readAugmentsFromNBT(nbt);
+		
 	}
 	
+	@Override
 	public void writeAugmentsToNBT(NBTTagCompound nbt) {
-		super.writeAugmentsToNBT(nbt);
 		nbt.setByte("Level", level);
+		super.writeAugmentsToNBT(nbt);
+	}
+	
+	@Override
+	public boolean installAugment(int i) {
+		if (super.installAugment(i)) {
+			return true;
+		}
+		//
+		// IAugmentItem augment = (IAugmentItem) augments[i].getItem();
+		// int augLvl = augment.getAugmentLevel(augments[i], TEAugments.MACHINE_SPEED);
+		// if (augLvl > 0) {
+		// if (i > level || hasDuplicateAugment(TEAugments.MACHINE_SPEED, augLvl, i)) {
+		// return false;
+		// }
+		// if (hasAugmentChain(TEAugments.MACHINE_SPEED, augLvl)) {
+		// consuptionModifier = Math.max(consuptionModifier,
+		// TEAugments.MACHINE_SPEED_ENERGY_MOD[augLvl]);
+		// return true;
+		// }
+		//
+		// }
+		return false;
 	}
 	
 	public int getLevel() {

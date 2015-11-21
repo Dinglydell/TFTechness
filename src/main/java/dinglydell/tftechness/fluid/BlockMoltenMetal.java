@@ -9,6 +9,6 @@ public class BlockMoltenMetal extends BlockFluidClassic {
 	public BlockMoltenMetal(Fluid fluid) {
 		super(fluid, Material.lava);
 		setBlockName(fluid.getName());
+		
 	}
-	
 }

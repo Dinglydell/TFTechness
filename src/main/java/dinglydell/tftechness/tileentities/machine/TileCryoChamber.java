@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import cofh.api.item.IAugmentItem;
 import cofh.core.network.PacketCoFHBase;
 import cofh.lib.util.helpers.ServerHelper;
 
@@ -15,6 +16,7 @@ import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.gui.GuiCryoChamber;
 import dinglydell.tftechness.gui.container.ContainerCryoChamber;
+import dinglydell.tftechness.item.TFTAugments;
 import dinglydell.tftechness.tileentities.ISlideable;
 
 public class TileCryoChamber extends TileTFTMachine implements ISlideable {
@@ -40,7 +42,11 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 	
 	protected static final int sliderMarkerIntervals = 10;
 	
-	protected static final float inefficiency = 5;
+	protected static final float[] levelInefficiency = {
+			5, 4.7f, 4.4f, 4
+	};
+	
+	protected float inefficiency;
 	
 	protected float lastChange;
 	
@@ -92,6 +98,33 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 		
 	}
 	
+	@Override
+	public boolean installAugment(int i) {
+		if (super.installAugment(i)) {
+			return true;
+		}
+		IAugmentItem augment = (IAugmentItem) augments[i].getItem();
+		int augLvl = augment.getAugmentLevel(augments[i], TFTAugments.CRYO_UPGRADE);
+		if (augLvl > 0) {
+			if (i > level || hasDuplicateAugment(TFTAugments.CRYO_UPGRADE, augLvl, i)) {
+				return false;
+			}
+			if (hasAugmentChain(TFTAugments.CRYO_UPGRADE, augLvl)) {
+				consuptionModifiers.put(TFTAugments.CRYO_UPGRADE, TFTAugments.CRYO_UPGRADE_ENERGY_MOD[augLvl]);
+				inefficiency = levelInefficiency[level] * TFTAugments.CRYO_UPGRADE_INEFFICIENCY_MOD[augLvl];
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	@Override
+	protected void resetAugments() {
+		super.resetAugments();
+		inefficiency = levelInefficiency[level];
+	}
+	
 	public void updateEntity() {
 		if (!ServerHelper.isClientWorld(this.worldObj)) {
 			float temp = TFC_Climate.getHeightAdjustedTemp(worldObj, xCoord, yCoord, zCoord);
@@ -135,27 +168,47 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 	}
 	
 	@Override
+	protected void onLevelChange() {
+		super.onLevelChange();
+		inefficiency = levelInefficiency[level];
+	}
+	
+	@Override
 	protected SideConfig getSideConfig() {
 		SideConfig cfg = new SideConfig();
-		cfg.numConfig = 0;
-		cfg.slotGroups = new int[0][0];
-		cfg.allowInsertionSide = new boolean[0];
-		cfg.allowExtractionSide = new boolean[0];
-		cfg.allowInsertionSlot = new boolean[0];
-		cfg.allowExtractionSlot = new boolean[0];
-		cfg.sideTex = new int[0];
+		cfg.numConfig = 1;
+		cfg.slotGroups = new int[][] {
+			new int[0]
+		};
+		cfg.allowInsertionSide = new boolean[] {
+			false
+		};
+		cfg.allowExtractionSide = new boolean[] {
+			false
+		};
+		cfg.allowInsertionSlot = new boolean[] {
+			false
+		};
+		cfg.allowExtractionSlot = new boolean[] {
+			false
+		};
+		cfg.sideTex = new int[] {
+			0
+		};
 		cfg.defaultSides = new byte[] {
 				0, 0, 0, 0, 0, 0
 		};
 		return cfg;
 	}
 	
+	@Override
 	public PacketCoFHBase getGuiPacket() {
 		PacketCoFHBase packet = super.getGuiPacket();
 		packet.addFloat(internalTemperature);
 		return packet;
 	}
 	
+	@Override
 	protected void handleGuiPacket(PacketCoFHBase packet) {
 		super.handleGuiPacket(packet);
 		internalTemperature = packet.getFloat();
@@ -167,13 +220,14 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 		
 	}
 	
+	@Override
 	public Object getGuiServer(InventoryPlayer inv) {
 		return new ContainerCryoChamber(inv, this);
 	}
 	
 	@Override
 	protected EnergyConfig getEnergyConfig() {
-		energyConsumption = 80;
+		energyConsumption = 40;
 		EnergyConfig cfg = new EnergyConfig();
 		cfg.maxEnergy = 96000;
 		cfg.maxPower = 160;
