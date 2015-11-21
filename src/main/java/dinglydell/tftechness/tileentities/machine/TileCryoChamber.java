@@ -80,12 +80,12 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 	
 	@Override
 	protected boolean shouldActivate() {
-		return true;
+		return internalTemperature >= targetTemperatureMin;
 	}
 	
 	@Override
 	protected boolean shouldDeactivate() {
-		return false;
+		return internalTemperature < targetTemperatureMin;
 	}
 	
 	@Override
