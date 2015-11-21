@@ -69,7 +69,7 @@ public abstract class TileTFTMachine extends TileAugmentable implements IAugment
 				}
 			} else {
 				lastEnergyConsumption = 0;
-				if (redstoneControlOrDisable() || shouldActivate()) {
+				if (redstoneControlOrDisable() && shouldActivate()) {
 					isActive = true;
 					onActivate();
 				}
