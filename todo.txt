@@ -1,2 +1,4 @@
+-rf blast furnace/blomery(?)
+-rf forge/crucible
 -molten metal
--recipe balancing - when should tech become available?
+-proper recipe balancing - when should tech become available?
