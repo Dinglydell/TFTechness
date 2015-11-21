@@ -18,6 +18,7 @@ import cofh.thermalexpansion.block.TileAugmentable;
 import cofh.thermalexpansion.util.ReconfigurableHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.BlockTETFTBase;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
@@ -32,7 +33,22 @@ public class BlockTFTMachine extends BlockTETFTBase {
 	public static ItemStack cryoChamber;
 	
 	public enum Types {
-		EXTRUDER, ACCUMULATOR, PRECIPITATOR, CRYOCHAMBER
+		EXTRUDER, ACCUMULATOR, PRECIPITATOR, CRYOCHAMBER(true);
+		private boolean tftechness = false;
+		
+		private Types() {
+			
+		}
+		
+		private Types(boolean tft) {
+			tftechness = tft;
+		}
+		
+		/** Determines whether the machine is from TFTechness, or if it's just a modified version of
+		 * a TE machine */
+		public boolean isTFTechness() {
+			return tftechness;
+		}
 	}
 	
 	public BlockTFTMachine() {
@@ -91,8 +107,12 @@ public class BlockTFTMachine extends BlockTETFTBase {
 		IconRegistry.addIcon("TFTMachineSide", "thermalexpansion:machine/Machine_Side", reg);
 		for (int i = 0; i < Types.values().length; i++) {
 			String titleName = StringHelper.titleCase(Types.values()[i].name().toLowerCase());
-			IconRegistry.addIcon("TFTMachineFace" + i, "thermalexpansion:machine/Machine_Face_" + titleName, reg);
-			IconRegistry.addIcon("TFTMachineActive" + i, "thermalexpansion:machine/Machine_Active_" + titleName, reg);
+			String modid = "thermalexpansion";
+			if (Types.values()[i].isTFTechness()) {
+				modid = TFTechness.MODID;
+			}
+			IconRegistry.addIcon("TFTMachineFace" + i, modid + ":machine/Machine_Face_" + titleName, reg);
+			IconRegistry.addIcon("TFTMachineActive" + i, modid + ":machine/Machine_Active_" + titleName, reg);
 		}
 		IconRegistry.addIcon("Config_0", "thermalexpansion:config/Config_None", reg);
 		IconRegistry.addIcon("Config_1", "thermalexpansion:config/Config_Blue", reg);
