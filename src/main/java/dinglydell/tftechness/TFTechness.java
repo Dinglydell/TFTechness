@@ -30,8 +30,10 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import org.apache.logging.log4j.LogManager;
 
 import cofh.api.modhelpers.ThermalExpansionHelper;
+import cofh.core.util.crafting.RecipeAugmentable;
 import cofh.lib.util.helpers.StringHelper;
 import cofh.thermalexpansion.block.TEBlocks;
+import cofh.thermalexpansion.block.dynamo.BlockDynamo;
 import cofh.thermalexpansion.block.machine.BlockMachine;
 import cofh.thermalexpansion.block.tank.BlockTank;
 import cofh.thermalexpansion.item.TEItems;
@@ -266,8 +268,10 @@ public class TFTechness {
 	}
 	
 	private void handleFules() {
-		FuelHandler.registerCoolant(TFCFluids.FRESHWATER.getName(),
-				FuelHandler.configFuels.get("Coolants", "water", 400000));
+		if (MachineConfig.dynamoCompressionEnabled) {
+			FuelHandler.registerCoolant(TFCFluids.FRESHWATER.getName(),
+					FuelHandler.configFuels.get("Coolants", "water", 400000));
+		}
 		
 	}
 	
@@ -318,6 +322,7 @@ public class TFTechness {
 		tankRecipes();
 		coilRecipes();
 		machineCraftingRecipes();
+		dynamoCraftingRecipes();
 		machineRecipes();
 	}
 	
@@ -457,6 +462,7 @@ public class TFTechness {
 	private void machineCraftingRecipes() {
 		ItemStack[] augs = new ItemStack[] {};
 		String machineFrame = "thermalexpansion:machineFrame";
+		// Igneous Extruder
 		if (MachineConfig.extruderEnabled) {
 			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.extruder, augs, new Object[] {
 					" p ",
@@ -499,7 +505,7 @@ public class TFTechness {
 				Character.valueOf('S'),
 				TEItems.pneumaticServo
 		};
-		
+		// Aqueous Accumulator
 		if (MachineConfig.accumulatorEnabled) {
 			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.accumulator, augs, accumulator));
 			if (RecipeConfig.upgradeCrafting) {
@@ -515,7 +521,36 @@ public class TFTechness {
 				TFTCraftingHandler.addMachineUpgradeRecipes(BlockMachine.accumulator);
 			}
 		}
+		// Glacial Precipitator
+		if (MachineConfig.precipitatorEnabled) {
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.precipitator, augs, new Object[] {
+					" p ",
+					"iFi",
+					"cSc",
+					Character.valueOf('p'),
+					Blocks.piston,
+					Character.valueOf('i'),
+					"ingotInvar",
+					Character.valueOf('F'),
+					machineFrame,
+					Character.valueOf('c'),
+					"gearCopper",
+					Character.valueOf('S'),
+					TEItems.pneumaticServo
+			}));
+			
+			if (RecipeConfig.upgradeCrafting) {
+				TFTCraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.precipitator);
+			} else {
+				TECraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.precipitator);
+			}
+			
+			TECraftingHandler.addSecureRecipe(BlockTFTMachine.precipitator);
+		} else if (RecipeConfig.upgradeCrafting) {
+			TFTCraftingHandler.addMachineUpgradeRecipes(BlockMachine.precipitator);
+		}
 		
+		// Cryogenic Chamber
 		if (MachineConfig.cryoChamberEnabled) {
 			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.cryoChamber, augs, new Object[] {
 					" C ",
@@ -538,6 +573,27 @@ public class TFTechness {
 			} else {
 				TECraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.cryoChamber);
 			}
+		}
+		
+	}
+	
+	private void dynamoCraftingRecipes() {
+		ItemStack[] augs = new ItemStack[] {};
+		if (MachineConfig.dynamoSteamEnabled) {
+			NEIRecipeWrapper.addMachineRecipe(new RecipeAugmentable(BlockDynamo.dynamoSteam, augs, new Object[] {
+					" t ",
+					"CcC",
+					"crc",
+					Character.valueOf('t'),
+					TEItems.powerCoilSilver,
+					Character.valueOf('C'),
+					"gearCopper",
+					Character.valueOf('r'),
+					"dustRedstone",
+					Character.valueOf('c'),
+					"ingotCopper"
+			}));
+			
 		}
 		
 	}
@@ -795,6 +851,14 @@ public class TFTechness {
 		}
 		
 		batch.addCrafting(BlockMachine.accumulator);
+		
+		if (MachineConfig.precipitatorEnabled) {
+			batch.addCrafting(BlockMachine.precipitator);
+		}
+		
+		if (MachineConfig.dynamoSteamEnabled) {
+			batch.addCrafting(BlockDynamo.dynamoSteam);
+		}
 	}
 	
 	private void removeNuggetIngotRecipes(RemoveBatch batch, Material m) {
