@@ -65,6 +65,7 @@ import com.bioxx.tfc.api.Enums.EnumSize;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -103,6 +104,7 @@ import dinglydell.tftechness.render.item.RenderBucket;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.dynamo.TileTFTDynamoSteam;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
+import dinglydell.tftechness.tileentities.machine.TileRFForge;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
@@ -115,6 +117,8 @@ public class TFTechness {
 	/** Base temperature of objects (22°C) */
 	public static final int baseTemp = 22;
 	public static final float rfToJoules = 6.275f;
+	/** The degree symbol */
+	public static final String degrees = "\u00b0";
 	public static org.apache.logging.log4j.Logger logger = LogManager.getLogger("TFTechness");
 	public static Material[] materials;
 	public static Map<String, MetalStat> statMap = new HashMap();
@@ -143,6 +147,9 @@ public class TFTechness {
 		addBuckets();
 		TFTAugments.init();
 		registerTileEntities();
+		
+		// Waila
+		FMLInterModComms.sendMessage("Waila", "register", "dinglydell.tftechness.waila.TFTWaila.callbackRegister");
 	}
 	
 	@EventHandler
@@ -183,6 +190,8 @@ public class TFTechness {
 		GameRegistry.registerTileEntity(TileTFTDynamoSteam.class, "DynamoSteam");
 		
 		GameRegistry.registerTileEntity(TileCryoChamber.class, "CryoChamber");
+		
+		GameRegistry.registerTileEntity(TileRFForge.class, "RFForge");
 	}
 	
 	private void registerRecipeTypes() {
@@ -248,6 +257,10 @@ public class TFTechness {
 		BlockTFTMachine.cryoChamber = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
 				1,
 				BlockTFTMachine.Types.CRYOCHAMBER.ordinal()));
+		
+		BlockTFTMachine.rfForge = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
+				1,
+				BlockTFTMachine.Types.RFFORGE.ordinal()));
 		
 	}
 	

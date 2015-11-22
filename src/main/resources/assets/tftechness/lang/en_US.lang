@@ -19,13 +19,16 @@ tile.TFTechness.machine.accumulator.name=Aqueous Accumulator
 tile.TFTechness.machine.precipitator.name=Glacial Precipitator
 
 tile.TFTechness.machine.cryochamber.name=Cryogenic Chamber
+tile.TFTechness.machine.rfforge.name=Energized Forge
 
 tile.TFTechness.dynamo.steam.name=Steam Dynamo
 
 info.TFTechness.machine.extruder=Mixes salty or fresh water with lava - can also produce salt.
 info.TFTechness.machine.accumulator=Pulls fresh or salt water from surroundings.
 info.TFTechness.machine.precipitator=Freezes fluids into solids.
+
 info.TFTechness.machine.cryochamber=Cools food to reduce decay.
+info.TFTechness.machine.rfforge=Heats, melts & mixes metals using the mighty power of RF.
 
 item.thermalexpansion.augment.tftCryoEfficiency0.name=Coolant Chamber
 item.thermalexpansion.augment.tftCryoEfficiency1.name=Cryogenic Induction Coil

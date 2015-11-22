@@ -1,12 +1,8 @@
 package dinglydell.tftechness.tileentities.machine;
 
-import java.util.List;
-
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import cofh.api.item.IAugmentItem;
-import cofh.core.network.PacketCoFHBase;
 import cofh.lib.util.helpers.ServerHelper;
 
 import com.bioxx.tfc.Core.TFC_Climate;
@@ -17,9 +13,8 @@ import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.gui.GuiCryoChamber;
 import dinglydell.tftechness.gui.container.ContainerCryoChamber;
 import dinglydell.tftechness.item.TFTAugments;
-import dinglydell.tftechness.tileentities.ISlideable;
 
-public class TileCryoChamber extends TileTFTMachine implements ISlideable {
+public class TileCryoChamber extends TileTemperature {
 	/** Heat transfer coefficient of air */
 	protected static final float heatTransferCoefficient = 10.45f;
 	/** Surface area of the cube: 6m^2 */
@@ -29,16 +24,10 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 	/** This rounds up the constant values to save the calculation from needing to happen every
 	 * single tick */
 	protected static final float heatMultiplier = heatTransferCoefficient * surfaceArea / (20 * mass * specificHeat);
-	/** The temperature at which the device stops trying so hard to cooldown */
-	private static final float slowDownTemperature = 0;
 	/** The hightest temperature the device desires to be */
 	protected static final float targetTemperatureMax = -5;
 	/** The lowest temperature the device desires to be */
 	protected static final float targetTemperatureMin = -6;
-	/** The lowest temperature the slider should display */
-	protected static final float sliderLowest = -10;
-	/** The highest temperature the slider should display */
-	protected static final float sliderHighest = 40;
 	
 	protected static final int sliderMarkerIntervals = 10;
 	
@@ -47,10 +36,6 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 	};
 	
 	protected float inefficiency;
-	
-	protected float lastChange;
-	
-	protected float internalTemperature = 22;
 	
 	public TileCryoChamber() {
 		super();
@@ -63,19 +48,6 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 	@Override
 	public int getType() {
 		return TYPE;
-	}
-	
-	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
-		nbt.setFloat("Temperature", internalTemperature);
-	}
-	
-	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
-		if (nbt.hasKey("Temperature")) {
-			internalTemperature = nbt.getFloat("Temperature");
-		}
 	}
 	
 	@Override
@@ -128,10 +100,10 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 	public void updateEntity() {
 		if (!ServerHelper.isClientWorld(this.worldObj)) {
 			float temp = TFC_Climate.getHeightAdjustedTemp(worldObj, xCoord, yCoord, zCoord);
-			float dT = temp - internalTemperature;
-			float change = heatMultiplier * dT;
-			internalTemperature += change;
-			lastChange = change;
+			// float dT = temp - internalTemperature;
+			// float change = heatMultiplier * dT;
+			// internalTemperature += change;
+			// lastChange = change;
 			float enviroDecay = 0;
 			// If ambient temperature is below 0, not much can be done as TFC is hardcoded to have
 			// no decay.
@@ -202,19 +174,6 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 	}
 	
 	@Override
-	public PacketCoFHBase getGuiPacket() {
-		PacketCoFHBase packet = super.getGuiPacket();
-		packet.addFloat(internalTemperature);
-		return packet;
-	}
-	
-	@Override
-	protected void handleGuiPacket(PacketCoFHBase packet) {
-		super.handleGuiPacket(packet);
-		internalTemperature = packet.getFloat();
-	}
-	
-	@Override
 	public Object getGuiClient(InventoryPlayer inv) {
 		return new GuiCryoChamber(inv, this);
 		
@@ -235,14 +194,18 @@ public class TileCryoChamber extends TileTFTMachine implements ISlideable {
 	}
 	
 	@Override
-	public double getSliderScaledPosition() {
-		return 1 - ((internalTemperature - sliderLowest) / (sliderHighest - sliderLowest));
+	protected float getSurfaceArea() {
+		return surfaceArea;
 	}
 	
 	@Override
-	public void addSliderTooltip(List<String> list) {
-		list.add((Math.round(internalTemperature * 100) / 100.0) + "\u00b0C");
-		
+	protected float getSpecificHeat() {
+		return specificHeat;
+	}
+	
+	@Override
+	protected int getMass() {
+		return mass;
 	}
 	
 }

@@ -1,4 +1,4 @@
-package dinglydell.tftechness.tileentities;
+package dinglydell.tftechness.gui;
 
 import java.util.List;
 

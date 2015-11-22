@@ -21,6 +21,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.BlockTETFTBase;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
+import dinglydell.tftechness.tileentities.machine.TileRFForge;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
@@ -31,9 +32,10 @@ public class BlockTFTMachine extends BlockTETFTBase {
 	public static ItemStack accumulator;
 	public static ItemStack precipitator;
 	public static ItemStack cryoChamber;
+	public static ItemStack rfForge;
 	
 	public enum Types {
-		EXTRUDER, ACCUMULATOR, PRECIPITATOR, CRYOCHAMBER(true);
+		EXTRUDER, ACCUMULATOR, PRECIPITATOR, CRYOCHAMBER(true), RFFORGE(true);
 		private boolean tftechness = false;
 		
 		private Types() {
@@ -71,6 +73,8 @@ public class BlockTFTMachine extends BlockTETFTBase {
 				return new TileTFTPrecipitator();
 			case CRYOCHAMBER:
 				return new TileCryoChamber();
+			case RFFORGE:
+				return new TileRFForge();
 		}
 		return null;
 		

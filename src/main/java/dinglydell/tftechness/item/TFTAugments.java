@@ -40,7 +40,7 @@ public class TFTAugments {
 				Character.valueOf('G'),
 				"plateGold"
 		}));
-		GameRegistry.addRecipe(new ShapedOreRecipe(cryoUpgrades[3], new Object[] {
+		GameRegistry.addRecipe(new ShapedOreRecipe(cryoUpgrades[2], new Object[] {
 				"   ",
 				" R ",
 				"dEd",
