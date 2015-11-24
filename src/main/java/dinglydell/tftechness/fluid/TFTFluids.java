@@ -25,7 +25,7 @@ public class TFTFluids {
 				float kelvin = hi.meltTemp + 273.15f;
 				int lum = Math.max(0, (int) (15 * (hi.meltTemp - 22) / FluidRegistry.LAVA.getTemperature()));
 				lum = Math.min(15, lum);
-				f = new Fluid(m.getKey().toLowerCase()).setLuminosity(lum).setTemperature((int) kelvin);
+				f = new FluidMoltenMetal(m.getKey().toLowerCase(), m.getValue()).setLuminosity(lum).setTemperature((int) kelvin);
 				FluidRegistry.registerFluid(f);
 			} else {
 				f = FluidRegistry.getFluid(m.getKey().toLowerCase());

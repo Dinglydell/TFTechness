@@ -30,6 +30,8 @@ info.TFTechness.machine.precipitator=Freezes fluids into solids.
 info.TFTechness.machine.cryochamber=Cools food to reduce decay.
 info.TFTechness.machine.rfforge=Heats, melts & mixes metals using the mighty power of RF.
 
+info.TFTechness.tank.mixed.name=Mixed Fluid Tank
+
 item.thermalexpansion.augment.tftCryoEfficiency0.name=Coolant Chamber
 item.thermalexpansion.augment.tftCryoEfficiency1.name=Cryogenic Induction Coil
 item.thermalexpansion.augment.tftCryoEfficiency2.name=Cryothermic Infuser
@@ -45,21 +47,29 @@ tab.TFTechness.machine.cryochamber.2=Well you've come to the right place! Place 
 tab.TFTechness.machine.cryochamber.3=Certified and guarenteed by Mr A. Suspiciousfool as 100% safe!
 tab.TFTechness.machine.cryochamber.4=*guarenteed not to not spontaneously combust 
 
-item.SilverRod.name=Silver Rod
-item.GoldRod.name=Gold Rod
-item.InvarRod.name=Invar Rod
-item.TinRod.name=Tin Rod
-item.PlatinumRod.name=Platinum Rod
-item.WroughtIronRod.name=Wrought Iron Rod
-item.LeadRod.name=Lead Rod
-item.EnderiumRod.name=Enderium Rod
-item.NickelRod.name=Nickel Rod
-item.LumiumRod.name=Lumium Rod
-item.CopperRod.name=Copper Rod
-item.MithrilRod.name=Mana Infused Rod
-item.ElectrumRod.name=Electrum Rod
-item.SignalumRod.name=Signalum Rod
-item.BronzeRod.name=Bronze Rod
+item.metalRod=Rod
 
 item.blueSteelBucket.name=Blue Steel Bucket
 item.redSteelBucket.name=Red Steel Bucket
+
+fluid.moltenMetal=Molten
+
+metal.bismuth=Bismuth
+metal.bismuth bronze=Bismuth Bronze
+metal.bronze=Bronze
+metal.copper=Copper
+metal.electrum=Electrum
+metal.enderium=Enderium
+metal.gold=Gold
+metal.invar=Invar
+metal.lead=Lead
+metal.lumium=Lumium
+metal.mithril=Mana
+metal.nickel=Nickel
+metal.platinum=Platinum
+metal.signalum=Signalum
+metal.silver=Silver
+metal.tin=Tin
+metal.unknown=Unknown
+metal.wrought iron=Wrought Iron
+metal.zinc=Zinc

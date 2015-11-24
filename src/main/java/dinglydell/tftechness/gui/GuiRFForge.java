@@ -5,13 +5,13 @@ import java.util.List;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import cofh.lib.gui.element.ElementEnergyStored;
-import cofh.lib.gui.element.ElementFluidTank;
 import cofh.thermalexpansion.gui.client.GuiAugmentableBase;
 
 import com.bioxx.tfc.api.TFC_ItemHeat;
 
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.gui.container.ContainerRFForge;
+import dinglydell.tftechness.gui.element.ElementFluidTankAlloy;
 import dinglydell.tftechness.gui.element.ElementVerticalSlider;
 import dinglydell.tftechness.tileentities.machine.TileRFForge;
 
@@ -38,8 +38,8 @@ public class GuiRFForge extends GuiAugmentableBase implements ISlideable {
 		addElement(new ElementEnergyStored(this, 8, 8, myTile.getEnergyStorage()));
 		// TODO: things here
 		addElement(new ElementVerticalSlider(this, 28, 8, 7, 49, this));
-		addElement(new ElementFluidTank(this, 131, 9, myTile.getTankA()).setAlwaysShow(true));
-		addElement(new ElementFluidTank(this, 154, 9, myTile.getTankB()).setAlwaysShow(true));
+		addElement(new ElementFluidTankAlloy(this, 131, 9, myTile.getTankA()));
+		addElement(new ElementFluidTankAlloy(this, 154, 9, myTile.getTankB()));
 	}
 	
 	@Override

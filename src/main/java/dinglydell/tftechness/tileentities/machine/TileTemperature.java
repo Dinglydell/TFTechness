@@ -36,11 +36,21 @@ public abstract class TileTemperature extends TileTFTMachine {
 		if (!ServerHelper.isClientWorld(this.worldObj)) {
 			float temp = TFC_Climate.getHeightAdjustedTemp(worldObj, xCoord, yCoord, zCoord);
 			float dT = temp - internalTemperature;
-			float change = heatTransferCoefficient * getSurfaceArea() / (getSpecificHeat() * getMass()) * dT;
+			float change = getTemperatureChange(internalTemperature,
+					temp,
+					getSurfaceArea(),
+					getSpecificHeat(),
+					getMass());
 			internalTemperature += change;
 			lastChange = change;
 		}
 		super.updateEntity();
+	}
+	
+	protected float getTemperatureChange(float temperature, float ambientTemperature, float surfaceArea,
+			float specificHeat, float mass) {
+		float dT = ambientTemperature - temperature;
+		return heatTransferCoefficient * surfaceArea / (specificHeat * mass) * dT;
 	}
 	
 	@Override

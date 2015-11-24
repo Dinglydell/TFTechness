@@ -4,10 +4,10 @@ import java.util.Random;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import cofh.core.network.PacketCoFHBase;
-import cofh.core.util.fluid.FluidTankAdv;
 import cofh.lib.util.helpers.ServerHelper;
 
 import com.bioxx.tfc.Core.Metal.MetalRegistry;
@@ -20,6 +20,8 @@ import com.bioxx.tfc.api.Enums.EnumFuelMaterial;
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.config.MetalConfig;
+import dinglydell.tftechness.fluid.FluidTankAlloy;
+import dinglydell.tftechness.fluid.FluidTankMixed;
 import dinglydell.tftechness.fluid.TFTFluids;
 import dinglydell.tftechness.gui.GuiRFForge;
 import dinglydell.tftechness.gui.container.ContainerRFForge;
@@ -33,12 +35,18 @@ public class TileRFForge extends TileTemperature {
 	protected static final int mass = 1200;
 	protected static final float exposedSurfaceArea = 0.01f;
 	protected static final float coolingExposedSurfaceArea = 1;
+	// Currently all items have the same properties
+	protected static final float itemSurfaceArea = 0.074f;
+	protected static final float itemMass = 10;
 	
 	// protected float internalTemperature = TFTechness.baseTemp;
 	protected float targetTemperature = EnumFuelMaterial.COAL.burnTempMax;
-	protected FluidTankAdv tankA = new FluidTankAdv(tankCapacity[0]);
-	protected FluidTankAdv tankB = new FluidTankAdv(tankCapacity[0]);
+	protected FluidTankAlloy tankA = new FluidTankAlloy(tankCapacity[0]);
+	protected FluidTankAlloy tankB = new FluidTankAlloy(tankCapacity[0]);
 	private boolean isCooling;
+	
+	// private FluidTankAdv guiTankA = new FluidTankAdv(tankCapacity[0]);
+	// private FluidTankAdv guiTankB = new FluidTankAdv(tankCapacity[0]);
 	
 	public TileRFForge() {
 		inventory = new ItemStack[6];
@@ -57,20 +65,23 @@ public class TileRFForge extends TileTemperature {
 	
 	@Override
 	protected void onActivate() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override
 	protected void onDeactivate() {
-		// TODO Auto-generated method stub
 	}
 	
 	@Override
 	public PacketCoFHBase getGuiPacket() {
 		PacketCoFHBase packet = super.getGuiPacket();
-		packet.addFluidStack(tankA.getFluid());
-		packet.addFluidStack(tankB.getFluid());
+		packet.addInt(tankA.getNumFluids());
+		for (FluidStack fs : tankA.getFluids()) {
+			packet.addFluidStack(fs);
+		}
+		packet.addInt(tankB.getNumFluids());
+		for (FluidStack fs : tankB.getFluids()) {
+			packet.addFluidStack(fs);
+		}
 		return packet;
 		
 	}
@@ -78,9 +89,31 @@ public class TileRFForge extends TileTemperature {
 	@Override
 	public void handleGuiPacket(PacketCoFHBase packet) {
 		super.handleGuiPacket(packet);
-		tankA.setFluid(packet.getFluidStack());
-		tankB.setFluid(packet.getFluidStack());
+		int tankNum = packet.getInt();
+		tankA.empty();
+		for (int i = 0; i < tankNum; i++) {
+			tankA.setFluid(packet.getFluidStack());
+		}
+		tankNum = packet.getInt();
+		tankB.empty();
+		for (int i = 0; i < tankNum; i++) {
+			tankB.setFluid(packet.getFluidStack());
+		}
 		
+	}
+	
+	@Override
+	public void readFromNBT(NBTTagCompound nbt) {
+		super.readFromNBT(nbt);
+		tankA.readFromNBT(nbt.getCompoundTag("TankA"));
+		tankB.readFromNBT(nbt.getCompoundTag("TankB"));
+	}
+	
+	@Override
+	public void writeToNBT(NBTTagCompound nbt) {
+		super.writeToNBT(nbt);
+		nbt.setTag("TankA", tankA.writeToNBT(new NBTTagCompound()));
+		nbt.setTag("TankB", tankB.writeToNBT(new NBTTagCompound()));
 	}
 	
 	@Override
@@ -93,10 +126,17 @@ public class TileRFForge extends TileTemperature {
 					HeatIndex index = HeatRegistry.getInstance().findMatchingIndex(is);
 					if (index != null && index.hasOutput()) {
 						float temp = TFC_ItemHeat.getTemp(is);
-						if (internalTemperature > temp) {
-							temp += TFC_ItemHeat.getTempIncrease(is);
-						} else
-							temp -= TFC_ItemHeat.getTempDecrease(is);
+						float change = getTemperatureChange(temp,
+								internalTemperature,
+								itemSurfaceArea,
+								index.specificHeat,
+								itemMass);
+						temp += change;
+						// if (internalTemperature > temp) {
+						// temp += TFC_ItemHeat.getTempIncrease(is);
+						// } else {
+						// temp -= TFC_ItemHeat.getTempDecrease(is);
+						// }
 						TFC_ItemHeat.setTemp(is, temp);
 						
 						if (temp > index.meltTemp) {
@@ -104,16 +144,16 @@ public class TileRFForge extends TileTemperature {
 							if (m != null) {
 								Fluid f = TFTFluids.metal.get(m.name);
 								int amt = index.getOutput(new Random()).stackSize * MetalConfig.ingotFluidmB;
-								FluidTankAdv tank;
+								FluidTankMixed tank;
 								if (i < 3) {
 									tank = tankA;
 								} else {
 									tank = tankB;
 								}
 								FluidStack fs = new FluidStack(f, amt);
-								if (tank.fill(fs, false) == amt) {
-									tank.fill(fs, true);
-								}
+								// if (tank.fill(fs, false) == amt) {
+								tank.fill(fs, true);
+								// }
 								inventory[i] = null;
 							}
 						}
@@ -230,11 +270,11 @@ public class TileRFForge extends TileTemperature {
 		return mass;
 	}
 	
-	public FluidTankAdv getTankA() {
+	public FluidTankAlloy getTankA() {
 		return tankA;
 	}
 	
-	public FluidTankAdv getTankB() {
+	public FluidTankAlloy getTankB() {
 		return tankB;
 	}
 }

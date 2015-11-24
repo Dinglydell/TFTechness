@@ -782,7 +782,7 @@ public class TFTechness {
 	}
 	
 	private void addRod(Material mat) {
-		mat.rod = new ItemRod(mat.metal.name).setUnlocalizedName(mat.name + "Rod");
+		mat.rod = new ItemRod(mat.metal.name);
 		
 		TFTItems.rods.put(mat.name, mat.rod);
 		GameRegistry.registerItem(mat.rod, mat.name + "Rod");
