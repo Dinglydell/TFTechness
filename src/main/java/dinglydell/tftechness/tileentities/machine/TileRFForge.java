@@ -219,45 +219,16 @@ public class TileRFForge extends TileTemperature {
 	protected SideConfig getSideConfig() {
 
 		SideConfig cfg = new SideConfig();
-		cfg.numConfig = 8;
-		cfg.slotGroups = new int[][] { new int[0],
-				{ 0, 1 },
-				{ 2, 3 },
-				{ 4 },
-				{ 2, 3, 4 },
-				{ 0 },
-				{ 1 },
-				{ 0, 1, 2, 3, 4 } };
-		cfg.allowInsertionSide = new boolean[] { false,
-				true,
-				false,
-				false,
-				false,
-				true,
-				true,
-				true };
-		cfg.allowExtractionSide = new boolean[] { false,
-				true,
-				true,
-				true,
-				true,
-				false,
-				false,
-				true };
-		cfg.allowInsertionSlot = new boolean[] { true,
-				true,
-				false,
-				false,
-				false,
-				false };
-		cfg.allowExtractionSlot = new boolean[] { true,
-				true,
-				true,
-				true,
-				true,
-				false };
-		cfg.sideTex = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
-		cfg.defaultSides = new byte[] { 3, 1, 2, 2, 2, 2 };
+		cfg.numConfig = 3;
+		cfg.slotGroups = new int[][] { new int[0], new int[0], new int[0] };
+		cfg.allowInsertionSide = new boolean[] { false, true, false };
+		cfg.allowExtractionSide = new boolean[] { false, true, true };
+		cfg.allowInsertionSlot = new boolean[] { true, true, true };
+		cfg.allowExtractionSlot = new boolean[] { true, true, true, };
+		cfg.sideTex = new int[] { Colours.none.ordinal(),
+				Colours.blue.ordinal(),
+				Colours.orange.ordinal(), };
+		cfg.defaultSides = new byte[] { 3, 1, 2 };
 		return cfg;
 	}
 

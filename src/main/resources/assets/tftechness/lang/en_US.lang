@@ -30,7 +30,7 @@ info.TFTechness.machine.accumulator=Pulls fresh or salt water from surroundings.
 info.TFTechness.machine.precipitator=Freezes fluids into solids.
 
 info.TFTechness.machine.cryochamber=Cools food to reduce decay.
-info.TFTechness.machine.rfforge=Heats, melts & mixes metals using the mighty power of RF.
+info.TFTechness.machine.rfforge=Heats & melts metals using the mighty power of RF.
 
 info.TFTechness.tank.mixed.name=Mixed Fluid Tank
 
@@ -49,8 +49,8 @@ tab.TFTechness.machine.cryochamber.2=Well you've come to the right place! Place 
 tab.TFTechness.machine.cryochamber.3=Certified and guarenteed by Mr A. Suspiciousfool as 100% safe!
 tab.TFTechness.machine.cryochamber.4=*guarenteed not to not spontaneously combust 
 
-tab.TFTechness.machine.rfforge.0=Heats up and melts metals & mixes alloys.
-tab.TFTechness.machine.rfforge.1=Any fluids extracted from the tanks will extract the alloy fluid.
+tab.TFTechness.machine.rfforge.0=Heats up and melts metals.
+tab.TFTechness.machine.rfforge.1=Not guaranteed to be explosion free
 
 item.metalRod=Rod
 

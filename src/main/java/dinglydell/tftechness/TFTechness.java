@@ -119,26 +119,28 @@ public class TFTechness {
 	public static final float rfToJoules = 6.275f;
 	/** The degree symbol */
 	public static final String degrees = "\u00b0";
-	public static org.apache.logging.log4j.Logger logger = LogManager.getLogger("TFTechness");
+	public static org.apache.logging.log4j.Logger logger = LogManager
+			.getLogger("TFTechness");
 	public static Material[] materials;
 	public static Map<String, MetalStat> statMap = new HashMap();
 	public static Map<String, Material> materialMap;
 	public static TankMap[] tankMap;
-	
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		initMaps();
 		readConfig(event);
 		TFCMeta.preInit();
 		addMetals();
-		
+
 		addBlocks();
 		handleFules();
 		registerRecipeTypes();
-		
-		// TFTechness.logger.info("LAVA: " + FluidRegistry.LAVA.getTemperature());
+
+		// TFTechness.logger.info("LAVA: " +
+		// FluidRegistry.LAVA.getTemperature());
 	}
-	
+
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		// Requires some TE init
@@ -147,16 +149,18 @@ public class TFTechness {
 		addBuckets();
 		TFTAugments.init();
 		registerTileEntities();
-		
+
 		// Waila
-		FMLInterModComms.sendMessage("Waila", "register", "dinglydell.tftechness.waila.TFTWaila.callbackRegister");
+		FMLInterModComms.sendMessage("Waila",
+				"register",
+				"dinglydell.tftechness.waila.TFTWaila.callbackRegister");
 	}
-	
+
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(new AnvilRecipeHandler());
 		RemoveBatch batch = new RemoveBatch();
-		
+
 		removeTankRecipes(batch);
 		removeCoilRecipes(batch);
 		removeMachineRecipes(batch);
@@ -167,9 +171,9 @@ public class TFTechness {
 		batch.Execute();
 		replaceMachineRecipes();
 		addRecipes();
-		
+
 	}
-	
+
 	@Mod.EventHandler
 	public void loadComplete(FMLLoadCompleteEvent event) {
 		// enderium & other pyrotheum recipes don't get registered until now
@@ -177,156 +181,184 @@ public class TFTechness {
 			replaceSmelterRecipes();
 		}
 	}
-	
+
 	private void registerTileEntities() {
 		GameRegistry.registerTileEntity(TETFTMetalSheet.class, "TFTMetalSheet");
-		
+
 		GameRegistry.registerTileEntity(TileTFTExtruder.class, "Extruder");
-		
-		GameRegistry.registerTileEntity(TileTFTAccumulator.class, "Accumulator");
-		
-		GameRegistry.registerTileEntity(TileTFTPrecipitator.class, "Precipitator");
-		
-		GameRegistry.registerTileEntity(TileTFTDynamoSteam.class, "DynamoSteam");
-		
+
+		GameRegistry
+				.registerTileEntity(TileTFTAccumulator.class, "Accumulator");
+
+		GameRegistry.registerTileEntity(TileTFTPrecipitator.class,
+				"Precipitator");
+
+		GameRegistry
+				.registerTileEntity(TileTFTDynamoSteam.class, "DynamoSteam");
+
 		GameRegistry.registerTileEntity(TileCryoChamber.class, "CryoChamber");
-		
+
 		GameRegistry.registerTileEntity(TileRFForge.class, "RFForge");
 	}
-	
+
 	private void registerRecipeTypes() {
 		RecipeSorter.register(MODID + ":upgradeshapeless",
 				RecipeShapelessUpgrade.class,
 				RecipeSorter.Category.SHAPELESS,
 				"before:forge:shapelessore");
-		
+
 	}
-	
+
 	private void addBuckets() {
 		RenderBucket bucketRenderer = new RenderBucket();
-		for (FluidContainerData fcd : FluidContainerRegistry.getRegisteredFluidContainerData()) {
+		for (FluidContainerData fcd : FluidContainerRegistry
+				.getRegisteredFluidContainerData()) {
 			Fluid fluid = fcd.fluid.getFluid();
 			if (fcd.emptyContainer.getItem() == Items.bucket
-					&& !(fluid == FluidRegistry.WATER || fluid == FluidRegistry.LAVA || fluid == TFCFluids.LAVA
+					&& !(fluid == FluidRegistry.WATER
+							|| fluid == FluidRegistry.LAVA
+							|| fluid == TFCFluids.LAVA
 							|| fluid == TFCFluids.FRESHWATER || fluid == TFCFluids.SALTWATER)) {
-				IIcon icon = fcd.filledContainer.getItem().getIconFromDamage(fcd.filledContainer.getItemDamage());
+				IIcon icon = fcd.filledContainer.getItem()
+						.getIconFromDamage(fcd.filledContainer.getItemDamage());
 				ItemTFTSteelBucket bucket = new ItemTFTSteelBucket(fluid,
 						fcd.filledContainer,
 						BucketConfig.upsideDown.contains(fluid.getName()),
 						BucketConfig.overflowing.contains(fluid.getName()));
-				
+
 				TFTItems.buckets.put(fluid.getName(), bucket);
-				
-				GameRegistry.registerItem(bucket, "bucket" + StringHelper.titleCase(fluid.getName()));
-				
+
+				GameRegistry.registerItem(bucket,
+						"bucket" + StringHelper.titleCase(fluid.getName()));
+
 				ItemStack bucketStack = new ItemStack(bucket);
-				FluidContainerRegistry.registerFluidContainer(fcd.fluid, bucketStack, bucket.getEmpty());
-				
-				MinecraftForgeClient.registerItemRenderer(bucket, bucketRenderer);
+				FluidContainerRegistry.registerFluidContainer(fcd.fluid,
+						bucketStack,
+						bucket.getEmpty());
+
+				MinecraftForgeClient.registerItemRenderer(bucket,
+						bucketRenderer);
 			}
 		}
 	}
-	
+
 	private void addBlocks() {
 		addMachines();
 		addDynamos();
 		addSheetBlocks();
-		
+
 	}
-	
+
 	private void addMachines() {
 		TFTBlocks.machine = new BlockTFTMachine().setBlockName("Machine");
-		
-		GameRegistry.registerBlock(TFTBlocks.machine, ItemBlockTFTMachine.class, "machine");
-		
-		BlockTFTMachine.extruder = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
-				1,
-				BlockTFTMachine.Types.EXTRUDER.ordinal()));
-		GameRegistry.registerCustomItemStack("extruder", BlockTFTMachine.extruder);
-		
-		BlockTFTMachine.accumulator = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
-				1,
-				BlockTFTMachine.Types.ACCUMULATOR.ordinal()));
-		GameRegistry.registerCustomItemStack("accumulator", BlockTFTMachine.accumulator);
-		
-		BlockTFTMachine.precipitator = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
-				1,
-				BlockTFTMachine.Types.PRECIPITATOR.ordinal()));
-		GameRegistry.registerCustomItemStack("precipitator", BlockTFTMachine.precipitator);
-		
-		BlockTFTMachine.cryoChamber = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
-				1,
-				BlockTFTMachine.Types.CRYOCHAMBER.ordinal()));
-		
-		BlockTFTMachine.rfForge = ItemBlockTFTMachine.setDefaultTag(new ItemStack(TFTBlocks.machine,
-				1,
-				BlockTFTMachine.Types.RFFORGE.ordinal()));
-		
+
+		GameRegistry.registerBlock(TFTBlocks.machine,
+				ItemBlockTFTMachine.class,
+				"machine");
+
+		BlockTFTMachine.extruder = ItemBlockTFTMachine
+				.setDefaultTag(new ItemStack(TFTBlocks.machine, 1,
+						BlockTFTMachine.Types.EXTRUDER.ordinal()));
+		GameRegistry.registerCustomItemStack("extruder",
+				BlockTFTMachine.extruder);
+
+		BlockTFTMachine.accumulator = ItemBlockTFTMachine
+				.setDefaultTag(new ItemStack(TFTBlocks.machine, 1,
+						BlockTFTMachine.Types.ACCUMULATOR.ordinal()));
+		GameRegistry.registerCustomItemStack("accumulator",
+				BlockTFTMachine.accumulator);
+
+		BlockTFTMachine.precipitator = ItemBlockTFTMachine
+				.setDefaultTag(new ItemStack(TFTBlocks.machine, 1,
+						BlockTFTMachine.Types.PRECIPITATOR.ordinal()));
+		GameRegistry.registerCustomItemStack("precipitator",
+				BlockTFTMachine.precipitator);
+
+		BlockTFTMachine.cryoChamber = ItemBlockTFTMachine
+				.setDefaultTag(new ItemStack(TFTBlocks.machine, 1,
+						BlockTFTMachine.Types.CRYOCHAMBER.ordinal()));
+
+		BlockTFTMachine.rfForge = ItemBlockTFTMachine
+				.setDefaultTag(new ItemStack(TFTBlocks.machine, 1,
+						BlockTFTMachine.Types.RFFORGE.ordinal()));
+
 	}
-	
+
 	private void addDynamos() {
 		TFTBlocks.dynamo = new BlockTFTDynamo().setBlockName("Dynamo");
-		
-		GameRegistry.registerBlock(TFTBlocks.dynamo, ItemBlockTFTDynamo.class, "dynamo");
-		
-		BlockTFTDynamo.dynamoSteam = new ItemStack(TFTBlocks.dynamo, 1, BlockTFTDynamo.Types.STEAM.ordinal());
-		
-		GameRegistry.registerCustomItemStack("dynamoSteam", BlockTFTDynamo.dynamoSteam);
+
+		GameRegistry.registerBlock(TFTBlocks.dynamo,
+				ItemBlockTFTDynamo.class,
+				"dynamo");
+
+		BlockTFTDynamo.dynamoSteam = new ItemStack(TFTBlocks.dynamo, 1,
+				BlockTFTDynamo.Types.STEAM.ordinal());
+
+		GameRegistry.registerCustomItemStack("dynamoSteam",
+				BlockTFTDynamo.dynamoSteam);
 	}
-	
+
 	private void addSheetBlocks() {
-		TFTBlocks.metalSheet = new BlockTFTMetalSheet().setBlockName("MetalSheet").setHardness(80);
-		
+		TFTBlocks.metalSheet = new BlockTFTMetalSheet()
+				.setBlockName("MetalSheet").setHardness(80);
+
 		GameRegistry.registerBlock(TFTBlocks.metalSheet, "MetalSheet");
 	}
-	
+
 	private void handleFules() {
 		if (MachineConfig.dynamoCompressionEnabled) {
 			FuelHandler.registerCoolant(TFCFluids.FRESHWATER.getName(),
 					FuelHandler.configFuels.get("Coolants", "water", 400000));
 		}
-		
+
 	}
-	
+
 	private void readConfig(FMLPreInitializationEvent event) {
 		logger.info("Loading config");
-		
-		Configuration metalConfig = new Configuration(new File(event.getModConfigurationDirectory(), MODID
-				+ "/Metals.cfg"), true);
+
+		Configuration metalConfig = new Configuration(new File(
+				event.getModConfigurationDirectory(), MODID + "/Metals.cfg"),
+				true);
 		metalConfig.load();
-		
+
 		for (Entry<String, MetalStat> entry : TFTechness.statMap.entrySet()) {
 			String key = entry.getKey();
-			
+
 			HeatRaw heat = entry.getValue().heat;
-			double melt = metalConfig.get(key, "MeltingPoint", heat.meltTemp).getDouble();
-			double sh = metalConfig.get(key, "SpecificHeat", heat.specificHeat).getDouble();
-			int ingotMass = metalConfig.get(key, "IngotMass", entry.getValue().ingotMass).getInt();
+			double melt = metalConfig.get(key, "MeltingPoint", heat.meltTemp)
+					.getDouble();
+			double sh = metalConfig.get(key, "SpecificHeat", heat.specificHeat)
+					.getDouble();
+			int ingotMass = metalConfig.get(key,
+					"IngotMass",
+					entry.getValue().ingotMass).getInt();
 			heat = new HeatRaw(sh, melt);
-			
+
 		}
-		
+
 		metalConfig.save();
-		
-		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), MODID + "/General.cfg"),
+
+		Configuration config = new Configuration(new File(
+				event.getModConfigurationDirectory(), MODID + "/General.cfg"),
 				true);
 		config.load();
 		MetalConfig.loadConfig(config);
 		RecipeConfig.loadConfig(config);
 		MachineConfig.loadConfig(config);
-		
+
 		config.save();
-		
-		BucketConfig.loadConifg(event.getModConfigurationDirectory() + "/" + MODID);
+
+		BucketConfig.loadConifg(event.getModConfigurationDirectory() + "/"
+				+ MODID);
 	}
-	
+
 	private void replaceMachineRecipes() {
 		if (RecipeConfig.replaceMachine) {
 			// (vanilla)
 			replaceFurnaceRecipes();
 		}
 	}
-	
+
 	private void addRecipes() {
 		for (Material m : materials) {
 			unshapedMetalRecipe(m);
@@ -339,16 +371,18 @@ public class TFTechness {
 		machineRecipes();
 		TFTAugments.addRecipes();
 	}
-	
+
 	private void machineRecipes() {
 		transposerRecipes();
 		magmaCrucibleRecipes();
 		// smelterRecipes();
 	}
-	
+
 	private void replaceFurnaceRecipes() {
-		Map<ItemStack, ItemStack> smelt = (Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList();
-		Iterator<Map.Entry<ItemStack, ItemStack>> iterator = smelt.entrySet().iterator();
+		Map<ItemStack, ItemStack> smelt = (Map<ItemStack, ItemStack>) FurnaceRecipes
+				.smelting().getSmeltingList();
+		Iterator<Map.Entry<ItemStack, ItemStack>> iterator = smelt.entrySet()
+				.iterator();
 		ArrayList<FurnaceRecipe> pushRecipes = new ArrayList<FurnaceRecipe>();
 		while (iterator.hasNext()) {
 			Map.Entry<ItemStack, ItemStack> fr = iterator.next();
@@ -357,42 +391,49 @@ public class TFTechness {
 					iterator.remove();
 					// avoids modifying the map during iteration
 					pushRecipes.add(new FurnaceRecipe(fr.getKey(),
-							new ItemStack(m.ingot),
-							FurnaceRecipes.smelting().func_151398_b(fr.getKey())));
-					
+							new ItemStack(m.ingot), FurnaceRecipes.smelting()
+									.func_151398_b(fr.getKey())));
+
 				}
 			}
 		}
-		
+
 		for (FurnaceRecipe fr : pushRecipes) {
 			fr.register();
 		}
 	}
-	
+
 	private void replaceSmelterRecipes() {
-		// Replace recipes that result in a tf ingot with recipes that result in a tfc/tft ingot
+		// Replace recipes that result in a tf ingot with recipes that result in
+		// a tfc/tft ingot
 		for (RecipeSmelter rs : SmelterManager.getRecipeList()) {
 			if (rs.getPrimaryOutput().getItem() == TFCItems.steelIngot) {
-				SmelterManager.removeRecipe(rs.getPrimaryInput(), rs.getSecondaryInput());
+				SmelterManager.removeRecipe(rs.getPrimaryInput(),
+						rs.getSecondaryInput());
 			}
 			for (Material m : materials) {
-				boolean match = OreDict.oresMatch(rs.getPrimaryOutput(), new ItemStack(m.ingot));
-				boolean match2 = OreDict.oresMatch(rs.getSecondaryOutput(), new ItemStack(m.ingot));
+				boolean match = OreDict.oresMatch(rs.getPrimaryOutput(),
+						new ItemStack(m.ingot));
+				boolean match2 = OreDict.oresMatch(rs.getSecondaryOutput(),
+						new ItemStack(m.ingot));
 				if (match || match2) {
-					SmelterManager.removeRecipe(rs.getPrimaryInput(), rs.getSecondaryInput());
+					SmelterManager.removeRecipe(rs.getPrimaryInput(),
+							rs.getSecondaryInput());
 					ItemStack out;
 					if (match) {
-						out = new ItemStack(m.ingot, rs.getPrimaryOutput().stackSize);
+						out = new ItemStack(m.ingot,
+								rs.getPrimaryOutput().stackSize);
 					} else {
 						out = rs.getPrimaryOutput();
 					}
 					ItemStack out2;
 					if (match2) {
-						out2 = new ItemStack(m.ingot, rs.getSecondaryOutput().stackSize);
+						out2 = new ItemStack(m.ingot,
+								rs.getSecondaryOutput().stackSize);
 					} else {
 						out2 = rs.getSecondaryOutput();
 					}
-					
+
 					SmelterManager.addRecipe(rs.getEnergy(),
 							rs.getPrimaryInput(),
 							rs.getSecondaryInput(),
@@ -403,20 +444,27 @@ public class TFTechness {
 			}
 		}
 	}
-	
+
 	private void magmaCrucibleRecipes() {
 		for (HeatIndex hi : HeatRegistry.getInstance().getHeatList()) {
 			if (hi.getOutputItem() instanceof ItemMeltedMetal) {
-				Metal m = MetalRegistry.instance.getMetalFromItem(hi.getOutputItem());
+				Metal m = MetalRegistry.instance.getMetalFromItem(hi
+						.getOutputItem());
 				if (m != null) {
 					MetalStat stat = statMap.get(m.name.replaceAll(" ", ""));
-					int rf = (int) ((hi.meltTemp - baseTemp) * stat.ingotMass * hi.specificHeat / rfToJoules);
-					ThermalExpansionHelper.addCrucibleRecipe(rf, hi.input, new FluidStack(TFTFluids.metal.get(m.name),
-							MetalConfig.ingotFluidmB * hi.getOutput(new Random()).stackSize));
+					int rf = (int) ((hi.meltTemp - baseTemp) * stat.ingotMass
+							* hi.specificHeat / rfToJoules);
+					ThermalExpansionHelper
+							.addCrucibleRecipe(rf,
+									hi.input,
+									new FluidStack(
+											TFTFluids.metal.get(m.name),
+											MetalConfig.ingotFluidmB
+													* hi.getOutput(new Random()).stackSize));
 				}
 			}
 		}
-		
+
 		// Map<String, Metal> metals = MetalSnatcher.getMetals();
 		// for (Entry<String, Fluid> mf : TFTFluids.metal.entrySet()) {
 		// Metal m = metals.get(mf.getKey());
@@ -425,15 +473,17 @@ public class TFTechness {
 		// if (stat == null) {
 		// TFTechness.logger.info(mf.getKey());
 		// } else {
-		// int rf = (int) ((hi.meltTemp - baseTemp) * stat.ingotMass * hi.specificHeat /
+		// int rf = (int) ((hi.meltTemp - baseTemp) * stat.ingotMass *
+		// hi.specificHeat /
 		// joulesToRF);
-		// ThermalExpansionHelper.addCrucibleRecipe(rf, new ItemStack(m.ingot), new
+		// ThermalExpansionHelper.addCrucibleRecipe(rf, new ItemStack(m.ingot),
+		// new
 		// FluidStack(mf.getValue(),
 		// MetalConfig.ingotFluidmB));
 		// }
 		// }
 	}
-	
+
 	private void transposerRecipes() {
 		// Billon -> Signalum
 		// Ingot
@@ -472,40 +522,40 @@ public class TFTechness {
 				false,
 				false);
 	}
-	
+
 	private void machineCraftingRecipes() {
 		ItemStack[] augs = new ItemStack[] {};
 		String machineFrame = "thermalexpansion:machineFrame";
 		// Igneous Extruder
 		if (MachineConfig.extruderEnabled) {
-			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.extruder, augs, new Object[] {
-					" p ",
-					"gFg",
-					"cSc",
-					Character.valueOf('p'),
-					Blocks.piston,
-					Character.valueOf('g'),
-					"blockGlass",
-					Character.valueOf('F'),
-					machineFrame,
-					Character.valueOf('c'),
-					"gearCopper",
-					Character.valueOf('S'),
-					TEItems.pneumaticServo
-			}));
-			
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(
+					BlockTFTMachine.extruder, augs, new Object[] { " p ",
+							"gFg",
+							"cSc",
+							Character.valueOf('p'),
+							Blocks.piston,
+							Character.valueOf('g'),
+							"blockGlass",
+							Character.valueOf('F'),
+							machineFrame,
+							Character.valueOf('c'),
+							"gearCopper",
+							Character.valueOf('S'),
+							TEItems.pneumaticServo }));
+
 			if (RecipeConfig.upgradeCrafting) {
-				TFTCraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.extruder);
+				TFTCraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.extruder);
 			} else {
-				TECraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.extruder);
+				TECraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.extruder);
 			}
-			
+
 			TECraftingHandler.addSecureRecipe(BlockTFTMachine.extruder);
 		} else if (RecipeConfig.upgradeCrafting) {
 			TFTCraftingHandler.addMachineUpgradeRecipes(BlockMachine.extruder);
 		}
-		Object[] accumulator = new Object[] {
-				" b ",
+		Object[] accumulator = new Object[] { " b ",
 				"gFg",
 				"cSc",
 				Character.valueOf('b'),
@@ -517,147 +567,194 @@ public class TFTechness {
 				Character.valueOf('c'),
 				"gearCopper",
 				Character.valueOf('S'),
-				TEItems.pneumaticServo
-		};
+				TEItems.pneumaticServo };
 		// Aqueous Accumulator
 		if (MachineConfig.accumulatorEnabled) {
-			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.accumulator, augs, accumulator));
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(
+					BlockTFTMachine.accumulator, augs, accumulator));
 			if (RecipeConfig.upgradeCrafting) {
-				TFTCraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.accumulator);
+				TFTCraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.accumulator);
 			} else {
-				TECraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.accumulator);
+				TECraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.accumulator);
 			}
-			
+
 			TECraftingHandler.addSecureRecipe(BlockTFTMachine.extruder);
 		} else {
-			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockMachine.accumulator, augs, accumulator));
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(
+					BlockMachine.accumulator, augs, accumulator));
 			if (RecipeConfig.upgradeCrafting) {
-				TFTCraftingHandler.addMachineUpgradeRecipes(BlockMachine.accumulator);
+				TFTCraftingHandler
+						.addMachineUpgradeRecipes(BlockMachine.accumulator);
 			}
 		}
 		// Glacial Precipitator
 		if (MachineConfig.precipitatorEnabled) {
-			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.precipitator, augs, new Object[] {
-					" p ",
-					"iFi",
-					"cSc",
-					Character.valueOf('p'),
-					Blocks.piston,
-					Character.valueOf('i'),
-					"ingotInvar",
-					Character.valueOf('F'),
-					machineFrame,
-					Character.valueOf('c'),
-					"gearCopper",
-					Character.valueOf('S'),
-					TEItems.pneumaticServo
-			}));
-			
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(
+					BlockTFTMachine.precipitator, augs, new Object[] { " p ",
+							"iFi",
+							"cSc",
+							Character.valueOf('p'),
+							Blocks.piston,
+							Character.valueOf('i'),
+							"ingotInvar",
+							Character.valueOf('F'),
+							machineFrame,
+							Character.valueOf('c'),
+							"gearCopper",
+							Character.valueOf('S'),
+							TEItems.pneumaticServo }));
+
 			if (RecipeConfig.upgradeCrafting) {
-				TFTCraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.precipitator);
+				TFTCraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.precipitator);
 			} else {
-				TECraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.precipitator);
+				TECraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.precipitator);
 			}
-			
+
 			TECraftingHandler.addSecureRecipe(BlockTFTMachine.precipitator);
 		} else if (RecipeConfig.upgradeCrafting) {
-			TFTCraftingHandler.addMachineUpgradeRecipes(BlockMachine.precipitator);
+			TFTCraftingHandler
+					.addMachineUpgradeRecipes(BlockMachine.precipitator);
 		}
-		
+
 		// Cryogenic Chamber
 		if (MachineConfig.cryoChamberEnabled) {
-			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(BlockTFTMachine.cryoChamber, augs, new Object[] {
-					" C ",
-					"iFi",
-					"cSc",
-					Character.valueOf('C'),
-					TFItems.dustCryotheum,
-					Character.valueOf('i'),
-					TFCMeta.freshIce,
-					Character.valueOf('F'),
-					machineFrame,
-					Character.valueOf('c'),
-					"gearCopper",
-					Character.valueOf('S'),
-					TEItems.pneumaticServo
-			}));
-			
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(
+					BlockTFTMachine.cryoChamber, augs, new Object[] { " C ",
+							"iFi",
+							"cSc",
+							Character.valueOf('C'),
+							TFItems.dustCryotheum,
+							Character.valueOf('i'),
+							TFCMeta.freshIce,
+							Character.valueOf('F'),
+							machineFrame,
+							Character.valueOf('c'),
+							"gearCopper",
+							Character.valueOf('S'),
+							TEItems.pneumaticServo }));
+
 			if (RecipeConfig.upgradeCrafting) {
-				TFTCraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.cryoChamber);
+				TFTCraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.cryoChamber);
 			} else {
-				TECraftingHandler.addMachineUpgradeRecipes(BlockTFTMachine.cryoChamber);
+				TECraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.cryoChamber);
 			}
 		}
-		
+		if (MachineConfig.rfForgeEnabled) {
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(
+					BlockTFTMachine.rfForge, augs, new Object[] { " P ",
+							"bFb",
+							"gRg",
+							Character.valueOf('P'),
+							TFItems.dustPyrotheum,
+							Character.valueOf('b'),
+							"stoneBricks",
+							Character.valueOf('F'),
+							machineFrame,
+							Character.valueOf('g'),
+							"gearInvar",
+							Character.valueOf('R'),
+							TEItems.powerCoilGold }));
+		}
 	}
-	
+
 	private void dynamoCraftingRecipes() {
 		ItemStack[] augs = new ItemStack[] {};
 		if (MachineConfig.dynamoSteamEnabled) {
-			GameRegistry.addRecipe(new RecipeAugmentable(BlockTFTDynamo.dynamoSteam, augs, new Object[] {
-					" t ",
-					"CcC",
-					"crc",
-					Character.valueOf('t'),
-					TEItems.powerCoilSilver,
-					Character.valueOf('C'),
-					"gearCopper",
-					Character.valueOf('r'),
-					"dustRedstone",
-					Character.valueOf('c'),
-					"ingotCopper"
-			}));
-			
+			GameRegistry.addRecipe(new RecipeAugmentable(
+					BlockTFTDynamo.dynamoSteam, augs, new Object[] { " t ",
+							"CcC",
+							"crc",
+							Character.valueOf('t'),
+							TEItems.powerCoilSilver,
+							Character.valueOf('C'),
+							"gearCopper",
+							Character.valueOf('r'),
+							"dustRedstone",
+							Character.valueOf('c'),
+							"ingotCopper" }));
+
 		}
-		
+
 	}
-	
+
 	private void coilRecipes() {
 		if (RecipeConfig.coilsEnabled) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(TEItems.powerCoilElectrum, new Object[] {
-					"r  ", " E ", "  r", Character.valueOf('E'), "rodElectrum", Character.valueOf('r'), "dustRedstone"
-			}));
-			GameRegistry.addRecipe(new ShapedOreRecipe(TEItems.powerCoilSilver, new Object[] {
-					"  r", " S ", "r  ", Character.valueOf('S'), "rodSilver", Character.valueOf('r'), "dustRedstone"
-			}));
-			GameRegistry.addRecipe(new ShapedOreRecipe(TEItems.powerCoilGold, new Object[] {
-					"  r", " G ", "r  ", Character.valueOf('G'), "rodGold", Character.valueOf('r'), "dustRedstone"
-			}));
+			GameRegistry.addRecipe(new ShapedOreRecipe(
+					TEItems.powerCoilElectrum, new Object[] { "r  ",
+							" E ",
+							"  r",
+							Character.valueOf('E'),
+							"rodElectrum",
+							Character.valueOf('r'),
+							"dustRedstone" }));
+			GameRegistry.addRecipe(new ShapedOreRecipe(TEItems.powerCoilSilver,
+					new Object[] { "  r",
+							" S ",
+							"r  ",
+							Character.valueOf('S'),
+							"rodSilver",
+							Character.valueOf('r'),
+							"dustRedstone" }));
+			GameRegistry.addRecipe(new ShapedOreRecipe(TEItems.powerCoilGold,
+					new Object[] { "  r",
+							" G ",
+							"r  ",
+							Character.valueOf('G'),
+							"rodGold",
+							Character.valueOf('r'),
+							"dustRedstone" }));
 		}
-		
+
 	}
-	
+
 	private void tankRecipes() {
 		if (RecipeConfig.tanksEnabled) {
 			for (int i = 0; i < tankMap.length; i++) {
 				TankMap t = tankMap[i];
-				ItemStack frame = BlockTankFrame.getItemStack(t.type, BlockTankFrame.Stages.frame);
-				// Finished tanks are made by surrounding a tank frame with 4 glass blocks
-				GameRegistry.addRecipe(new ShapedOreRecipe(t.finished, new Object[] {
-						" G ", "GFG", " G ", Character.valueOf('G'), "blockGlass", Character.valueOf('F'), frame
-				}));
+				ItemStack frame = BlockTankFrame.getItemStack(t.type,
+						BlockTankFrame.Stages.frame);
+				// Finished tanks are made by surrounding a tank frame with 4
+				// glass blocks
+				GameRegistry.addRecipe(new ShapedOreRecipe(t.finished,
+						new Object[] { " G ",
+								"GFG",
+								" G ",
+								Character.valueOf('G'),
+								"blockGlass",
+								Character.valueOf('F'),
+								frame }));
 				if (i > 0) {
 					TankMap prev = tankMap[i - 1];
-					// Finished tanks can be made with previous tier finished + sheet
-					GameRegistry.addRecipe(new RecipeShapelessUpgrade(t.finished, prev.finished, new Object[] {
-							prev.finished, t.sheet2x
-					}));
+					// Finished tanks can be made with previous tier finished +
+					// sheet
+					GameRegistry.addRecipe(new RecipeShapelessUpgrade(
+							t.finished, prev.finished,
+							new Object[] { prev.finished, t.sheet2x }));
 				}
 			}
 		}
 	}
-	
+
 	private void nuggetIngotBlockRecipe(Material m) {
-		GameRegistry.addRecipe(new ShapedOreRecipe(m.ingot, new Object[] {
-				"nnn", "nnn", "nnn", Character.valueOf('n'), "nugget" + m.oreName
-		}));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(m.ingot, 9), new Object[] {
-			"block" + m.oreName
-		}));
+		GameRegistry.addRecipe(new ShapedOreRecipe(m.ingot,
+				new Object[] { "nnn",
+						"nnn",
+						"nnn",
+						Character.valueOf('n'),
+						"nugget" + m.oreName }));
+		GameRegistry
+				.addRecipe(new ShapelessOreRecipe(new ItemStack(m.ingot, 9),
+						new Object[] { "block" + m.oreName }));
 	}
-	
+
 	private void unshapedMetalRecipe(Material m) {
-		
+
 		if (!m.gearOnly) {
 			// Ingot => Unshaped
 			GameRegistry.addShapelessRecipe(new ItemStack(m.unshaped, 1, 0),
@@ -667,57 +764,61 @@ public class TFTechness {
 			GameRegistry.addShapelessRecipe(new ItemStack(m.ingot, 1, 0),
 					Recipes.getStackNoTemp(new ItemStack(m.unshaped, 1)));
 		}
-		
+
 	}
-	
+
 	private void addTanks() {
 		tankMap = getTanks();
-		
+
 		registerTanks();
 		registerTankHeat();
-		
+
 	}
-	
+
 	private void registerTanks() {
 		TFTBlocks.tankFrame = new BlockTankFrame();
-		
-		GameRegistry.registerBlock(TFTBlocks.tankFrame, ItemBlockTankFrame.class, "TankFrame");
-		
-		// Goes through all the tank types & stages and creates an itemstack for each one
+
+		GameRegistry.registerBlock(TFTBlocks.tankFrame,
+				ItemBlockTankFrame.class,
+				"TankFrame");
+
+		// Goes through all the tank types & stages and creates an itemstack for
+		// each one
 		BlockTank.Types[] types = BlockTank.Types.values();
 		BlockTankFrame.Stages[] stages = BlockTankFrame.Stages.values();
 		int tankMapIndex = 0;
 		for (int i = 0; i < types.length; i++) {
 			BlockTank.Types t = types[i];
-			
+
 			for (int j = 0; j < stages.length; j++) {
 				BlockTankFrame.Stages s = stages[j];
-				
+
 				String name = t.name() + s.name();
-				ItemStack frame = new ItemStack(TFTBlocks.tankFrame, 1, BlockTankFrame.getMeta(t, s));
-				
+				ItemStack frame = new ItemStack(TFTBlocks.tankFrame, 1,
+						BlockTankFrame.getMeta(t, s));
+
 				BlockTankFrame.itemStacks.put(name, frame);
-				
+
 				GameRegistry.registerCustomItemStack("tank" + name, frame);
-				
+
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	private void registerTankHeat() {
 		HeatRegistry manager = HeatRegistry.getInstance();
-		
+
 		for (TankMap t : tankMap) {
 			for (BlockTankFrame.Stages s : BlockTankFrame.Stages.values()) {
 				ItemStack frame = BlockTankFrame.getItemStack(t.type, s);
 				manager.addIndex(new HeatIndex(frame, t.heatRaw, frame));
 			}
-			
+
 		}
 	}
-	
+
 	private void addMetals() {
 		materials = getMaterials();
 		materialMap = getMatMap();
@@ -734,67 +835,70 @@ public class TFTechness {
 			registerHeat(mat);
 			registerAlloy(mat);
 		}
-		
+
 	}
-	
+
 	private void addUnshaped(Material mat) {
-		mat.unshaped = new ItemMeltedMetal().setUnlocalizedName(mat.name + "Unshaped");
-		
+		mat.unshaped = new ItemMeltedMetal().setUnlocalizedName(mat.name
+				+ "Unshaped");
+
 		TFTItems.unshaped.put(mat.name, mat.unshaped);
 		GameRegistry.registerItem(mat.unshaped, "Unshaped" + mat.name);
 	}
-	
+
 	private void addIngots(Material mat) {
 		mat.ingot = new ItemIngot().setUnlocalizedName(mat.name + "Ingot");
-		
+
 		TFTItems.ingots.put(mat.name, mat.ingot);
 		GameRegistry.registerItem(mat.ingot, mat.name + "Ingot");
 		OreDictionary.registerOre("ingot" + mat.name, mat.ingot);
-		
+
 	}
-	
+
 	private void addDoubleIngots(Material mat) {
-		mat.ingot2x = ((ItemIngot) new ItemIngot().setUnlocalizedName(mat.name + "Ingot2x")).setSize(EnumSize.LARGE).setMetal(mat.name,
-				200);
-		
+		mat.ingot2x = ((ItemIngot) new ItemIngot().setUnlocalizedName(mat.name
+				+ "Ingot2x")).setSize(EnumSize.LARGE).setMetal(mat.name, 200);
+
 		TFTItems.ingots2x.put(mat.name, mat.ingot2x);
 		GameRegistry.registerItem(mat.ingot2x, mat.name + "Ingot2x");
 		OreDictionary.registerOre("ingotDouble" + mat.name, mat.ingot2x);
 	}
-	
+
 	private void addSheets(Material mat) {
-		mat.sheet = ((ItemTFTMetalSheet) new ItemTFTMetalSheet(mat.name).setUnlocalizedName(mat.name + "Sheet")).setMetal(mat.name,
-				200);
-		
+		mat.sheet = ((ItemTFTMetalSheet) new ItemTFTMetalSheet(mat.name)
+				.setUnlocalizedName(mat.name + "Sheet"))
+				.setMetal(mat.name, 200);
+
 		TFTItems.sheets.put(mat.name, mat.sheet);
 		GameRegistry.registerItem(mat.sheet, mat.name + "Sheet");
 		OreDictionary.registerOre("plate" + mat.name, mat.sheet);
-		
+
 	}
-	
+
 	private void addDoubleSheets(Material mat) {
-		mat.sheet2x = ((ItemTFTMetalSheet) new ItemTFTMetalSheet(mat.name).setUnlocalizedName(mat.name + "Sheet2x")).setMetal(mat.name,
+		mat.sheet2x = ((ItemTFTMetalSheet) new ItemTFTMetalSheet(mat.name)
+				.setUnlocalizedName(mat.name + "Sheet2x")).setMetal(mat.name,
 				400);
-		
+
 		TFTItems.sheets2x.put(mat.name, mat.sheet2x);
 		GameRegistry.registerItem(mat.sheet2x, mat.name + "Sheet2x");
 		OreDictionary.registerOre("plateDouble" + mat.name, mat.sheet2x);
 	}
-	
+
 	private void addRod(Material mat) {
 		mat.rod = new ItemRod(mat.metal.name);
-		
+
 		TFTItems.rods.put(mat.name, mat.rod);
 		GameRegistry.registerItem(mat.rod, mat.name + "Rod");
 		OreDictionary.registerOre("rod" + mat.name, mat.rod);
 	}
-	
+
 	private void registerHeat(Material mat) {
 		HeatRegistry manager = HeatRegistry.getInstance();
 		registerMetalHeat(manager, mat);
-		
+
 	}
-	
+
 	private void registerMetalHeat(HeatRegistry manager, Material mat) {
 		if (!mat.gearOnly) {
 			addHeat(manager, mat.unshaped, mat.heatRaw, mat.unshaped, 1);
@@ -807,50 +911,57 @@ public class TFTechness {
 		if (mat.gear != null) {
 			addHeat(manager, mat.gear.getItem(), mat.heatRaw, mat.unshaped, 4);
 		}
-		
+
 	}
-	
-	private void addHeat(HeatRegistry manager, Item metal, HeatRaw raw, Item unshaped, int quantity) {
-		manager.addIndex(new HeatIndex(new ItemStack(metal, 1), raw, new ItemStack(unshaped, quantity)));
-		
+
+	private void addHeat(HeatRegistry manager, Item metal, HeatRaw raw,
+			Item unshaped, int quantity) {
+		manager.addIndex(new HeatIndex(new ItemStack(metal, 1), raw,
+				new ItemStack(unshaped, quantity)));
+
 	}
-	
+
 	private void registerAlloy(Material material) {
-		
+
 		if (material instanceof MaterialAlloy) {
 			MaterialAlloy mat = (MaterialAlloy) material;
 			Alloy alloy = new Alloy(mat.metal, mat.alloyTier);
 			for (AlloyIngred ing : mat.alloy) {
-				alloy.addIngred(MetalRegistry.instance.getMetalFromString(ing.name), ing.min, ing.max);
+				alloy.addIngred(MetalRegistry.instance
+						.getMetalFromString(ing.name), ing.min, ing.max);
 			}
 			AlloyManager.INSTANCE.addAlloy(alloy);
 		}
 	}
-	
+
 	private void registerMetal(Material mat) {
 		mat.metal = new Metal(mat.name, mat.unshaped, mat.ingot);
 		TFTMetals.metals.put(mat.name, mat.metal);
 		MetalRegistry.instance.addMetal(mat.metal, mat.alloyTier);
-		
+
 	}
-	
+
 	private void removeGearRecipes(RemoveBatch batch, Material m) {
 		if (RecipeConfig.gearsEnabled) {
 			batch.addCrafting(m.gear);
 		}
-		
+
 	}
-	
+
 	private void removeTankRecipes(RemoveBatch batch) {
 		if (RecipeConfig.tanksEnabled) {
-			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1, BlockTank.Types.BASIC.ordinal()));
-			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1, BlockTank.Types.HARDENED.ordinal()));
-			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1, BlockTank.Types.REINFORCED.ordinal()));
-			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1, BlockTank.Types.RESONANT.ordinal()));
+			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1,
+					BlockTank.Types.BASIC.ordinal()));
+			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1,
+					BlockTank.Types.HARDENED.ordinal()));
+			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1,
+					BlockTank.Types.REINFORCED.ordinal()));
+			batch.addCrafting(new ItemStack(TEBlocks.blockTank, 1,
+					BlockTank.Types.RESONANT.ordinal()));
 		}
-		
+
 	}
-	
+
 	private void removeCoilRecipes(RemoveBatch batch) {
 		if (RecipeConfig.coilsEnabled) {
 			batch.addCrafting(TEItems.powerCoilElectrum);
@@ -858,23 +969,23 @@ public class TFTechness {
 			batch.addCrafting(TEItems.powerCoilGold);
 		}
 	}
-	
+
 	private void removeMachineRecipes(RemoveBatch batch) {
 		if (MachineConfig.extruderEnabled) {
 			batch.addCrafting(BlockMachine.extruder);
 		}
-		
+
 		batch.addCrafting(BlockMachine.accumulator);
-		
+
 		if (MachineConfig.precipitatorEnabled) {
 			batch.addCrafting(BlockMachine.precipitator);
 		}
-		
+
 		if (MachineConfig.dynamoSteamEnabled) {
 			batch.addCrafting(BlockDynamo.dynamoSteam);
 		}
 	}
-	
+
 	private void removeNuggetIngotRecipes(RemoveBatch batch, Material m) {
 		if (m.nugget != null) {
 			// batch.addCrafting(new ItemStack(m.ingot), new ItemStack[] {
@@ -883,7 +994,7 @@ public class TFTechness {
 			batch.addCrafting(new ItemStack(m.ingot));
 		}
 	}
-	
+
 	private void initMaps() {
 		// Stock TFC
 		// For multiple metals with the same stat entry
@@ -892,7 +1003,7 @@ public class TFTechness {
 		MetalStat copper = new MetalStat(0.35, 1080, 996);
 		MetalStat redSteel = new MetalStat(0.35, 1540, 1093);
 		MetalStat steel = new MetalStat(0.35, 1540, 844);
-		
+
 		statMap.put("Bismuth", new MetalStat(0.14, 270, 1087));
 		statMap.put("BismuthBronze", new MetalStat(0.35, 985, 963));
 		statMap.put("BlackBronze", new MetalStat(0.35, 1070, 1313));
@@ -922,7 +1033,7 @@ public class TFTechness {
 		statMap.put("WeakSteel", steel);
 		statMap.put("WroughtIron", new MetalStat(0.35, 1535, 889));
 		statMap.put("Zinc", new MetalStat(0.21, 420, 792));
-		
+
 		// TF
 		statMap.put("Invar", new MetalStat(0.52, 1700, 894));
 		statMap.put("Mithril", new MetalStat(0.9, 660, 500));
@@ -930,22 +1041,20 @@ public class TFTechness {
 		statMap.put("Enderium", new MetalStat(0.5, 1700, 1279));
 		statMap.put("Signalum", new MetalStat(0.45, 900, 1024));
 		statMap.put("Lumium", new MetalStat(0.35, 1200, 2544));
-		
+
 		// TFT
 		statMap.put("Billon", new MetalStat(0.35, 950, 1024));
 	}
-	
+
 	private TankMap[] getTanks() {
-		return new TankMap[] {
-				new TankMap("Copper", BlockTank.Types.BASIC),
+		return new TankMap[] { new TankMap("Copper", BlockTank.Types.BASIC),
 				new TankMap("Invar", BlockTank.Types.HARDENED),
-				new TankMap(new ItemStack(TEBlocks.blockGlass, 1),
-						5,
+				new TankMap(new ItemStack(TEBlocks.blockGlass, 1), 5,
 						BlockTank.Types.REINFORCED,
-						TFTechness.statMap.get("Invar").heat), new TankMap("Enderium", BlockTank.Types.RESONANT)
-		};
+						TFTechness.statMap.get("Invar").heat),
+				new TankMap("Enderium", BlockTank.Types.RESONANT) };
 	}
-	
+
 	private Map<String, Material> getMatMap() {
 		Map<String, Material> m = new HashMap();
 		for (Material mat : materials) {
@@ -953,95 +1062,66 @@ public class TFTechness {
 		}
 		return m;
 	}
-	
+
 	private Material[] getMaterials() {
-		return new Material[] {
-		new Material("Gold",
-				TFCItems.goldUnshaped,
-				TFCItems.goldIngot,
-				TFCItems.goldSheet2x,
-				TFItems.gearGold,
-				2,
-				Global.GOLD,
-				new ItemStack(Items.gold_nugget)),
-				new Material("WroughtIron",
-						"Iron",
+		return new Material[] { new Material("Gold", TFCItems.goldUnshaped,
+				TFCItems.goldIngot, TFCItems.goldSheet2x, TFItems.gearGold, 2,
+				Global.GOLD, new ItemStack(Items.gold_nugget)),
+				new Material("WroughtIron", "Iron",
 						TFCItems.wroughtIronUnshaped,
-						TFCItems.wroughtIronIngot,
-						TFCItems.wroughtIronSheet2x,
-						TFItems.gearIron,
-						3,
-						Global.WROUGHTIRON,
+						TFCItems.wroughtIronIngot, TFCItems.wroughtIronSheet2x,
+						TFItems.gearIron, 3, Global.WROUGHTIRON,
 						TFItems.nuggetIron),
-				new Material("Copper",
-						TFCItems.copperUnshaped,
-						TFCItems.copperIngot,
-						TFCItems.copperSheet2x,
-						TFItems.gearCopper,
-						1,
-						Global.COPPER,
+				new Material("Copper", TFCItems.copperUnshaped,
+						TFCItems.copperIngot, TFCItems.copperSheet2x,
+						TFItems.gearCopper, 1, Global.COPPER,
 						TFItems.nuggetCopper),
-				new Material("Tin",
-						TFCItems.tinUnshaped,
-						TFCItems.tinIngot,
-						TFCItems.tinSheet2x,
-						TFItems.gearTin,
-						0,
-						Global.TIN,
+				new Material("Tin", TFCItems.tinUnshaped, TFCItems.tinIngot,
+						TFCItems.tinSheet2x, TFItems.gearTin, 0, Global.TIN,
 						TFItems.nuggetTin),
-				new Material("Silver",
-						TFCItems.silverUnshaped,
-						TFCItems.silverIngot,
-						TFCItems.silverSheet2x,
-						TFItems.gearSilver,
-						2,
-						Global.SILVER,
+				new Material("Silver", TFCItems.silverUnshaped,
+						TFCItems.silverIngot, TFCItems.silverSheet2x,
+						TFItems.gearSilver, 2, Global.SILVER,
 						TFItems.nuggetSilver),
-				new Material("Lead",
-						TFCItems.leadUnshaped,
-						TFCItems.leadIngot,
-						TFCItems.leadSheet2x,
-						TFItems.gearLead,
-						2,
-						Global.LEAD,
+				new Material("Lead", TFCItems.leadUnshaped, TFCItems.leadIngot,
+						TFCItems.leadSheet2x, TFItems.gearLead, 2, Global.LEAD,
 						TFItems.nuggetLead),
-				new Material("Nickel",
-						TFCItems.nickelUnshaped,
-						TFCItems.nickelIngot,
-						TFCItems.nickelSheet2x,
-						TFItems.gearNickel,
-						4,
-						Global.NICKEL,
+				new Material("Nickel", TFCItems.nickelUnshaped,
+						TFCItems.nickelIngot, TFCItems.nickelSheet2x,
+						TFItems.gearNickel, 4, Global.NICKEL,
 						TFItems.nuggetNickel),
-				new Material("Platinum",
-						TFCItems.platinumUnshaped,
-						TFCItems.platinumIngot,
-						TFCItems.platinumSheet2x,
-						TFItems.gearPlatinum,
-						3,
-						Global.PLATINUM,
+				new Material("Platinum", TFCItems.platinumUnshaped,
+						TFCItems.platinumIngot, TFCItems.platinumSheet2x,
+						TFItems.gearPlatinum, 3, Global.PLATINUM,
 						TFItems.nuggetPlatinum),
-				new Material("Bronze",
-						TFCItems.bronzeUnshaped,
-						TFCItems.bronzeIngot,
-						TFCItems.bronzeSheet2x,
-						TFItems.gearBronze,
-						2,
-						Global.BRONZE,
+				new Material("Bronze", TFCItems.bronzeUnshaped,
+						TFCItems.bronzeIngot, TFCItems.bronzeSheet2x,
+						TFItems.gearBronze, 2, Global.BRONZE,
 						TFItems.nuggetBronze),
-				new MaterialAlloy("Invar", TFItems.gearInvar, 5, Alloy.EnumTier.TierIII, new AlloyIngred[] {
-						new AlloyIngred("Wrought Iron", 61.00f, 67.00f), new AlloyIngred("Nickel", 33.00f, 39.00f)
-				}, TFItems.nuggetInvar),
-				new Material("Mithril", TFItems.gearMithril, 5, Alloy.EnumTier.TierIII, TFItems.nuggetMithril),
-				new MaterialAlloy("Electrum", TFItems.gearElectrum, 2, Alloy.EnumTier.TierIII, new AlloyIngred[] {
-						new AlloyIngred("Gold", 50.00f, 60.00f), new AlloyIngred("Silver", 40.00f, 50.00f)
-				}, TFItems.nuggetElectrum),
-				new Material("Enderium", TFItems.gearEnderium, 7, Alloy.EnumTier.TierV, TFItems.nuggetEnderium),
-				new Material("Signalum", TFItems.gearSignalum, 6, Alloy.EnumTier.TierIV, TFItems.nuggetSignalum),
-				new Material("Lumium", TFItems.gearLumium, 5, Alloy.EnumTier.TierIV, TFItems.nuggetLumium),
-				new MaterialAlloy("Billon", null, 5, Alloy.EnumTier.TierIV, new AlloyIngred[] {
-						new AlloyIngred("Copper", 70.00f, 80.00f), new AlloyIngred("Silver", 20.00f, 30.00f)
-				}, null)
-		};
+				new MaterialAlloy("Invar", TFItems.gearInvar, 5,
+						Alloy.EnumTier.TierIII,
+						new AlloyIngred[] { new AlloyIngred("Wrought Iron",
+								61.00f, 67.00f),
+								new AlloyIngred("Nickel", 33.00f, 39.00f) },
+						TFItems.nuggetInvar),
+				new Material("Mithril", TFItems.gearMithril, 5,
+						Alloy.EnumTier.TierIII, TFItems.nuggetMithril),
+				new MaterialAlloy("Electrum", TFItems.gearElectrum, 2,
+						Alloy.EnumTier.TierIII,
+						new AlloyIngred[] { new AlloyIngred("Gold", 50.00f,
+								60.00f),
+								new AlloyIngred("Silver", 40.00f, 50.00f) },
+						TFItems.nuggetElectrum),
+				new Material("Enderium", TFItems.gearEnderium, 7,
+						Alloy.EnumTier.TierV, TFItems.nuggetEnderium),
+				new Material("Signalum", TFItems.gearSignalum, 6,
+						Alloy.EnumTier.TierIV, TFItems.nuggetSignalum),
+				new Material("Lumium", TFItems.gearLumium, 5,
+						Alloy.EnumTier.TierIV, TFItems.nuggetLumium),
+				new MaterialAlloy("Billon", null, 5, Alloy.EnumTier.TierIV,
+						new AlloyIngred[] { new AlloyIngred("Copper", 70.00f,
+								80.00f),
+								new AlloyIngred("Silver", 20.00f, 30.00f) },
+						null) };
 	}
 }
