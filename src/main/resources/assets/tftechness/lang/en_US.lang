@@ -18,7 +18,7 @@ tile.TFTechness.machine.extruder.name=Igneous Extruder
 tile.TFTechness.machine.accumulator.name=Aqueous Accumulator
 tile.TFTechness.machine.precipitator.name=Glacial Precipitator
 
-tile.TFTechness.machine.cryochamber.name=Cryogenic Chamber
+tile.TFTechness.machine.cryochamber.name=Cryothermic Chamber
 tile.TFTechness.machine.rfforge.name=Energized Forge
 
 tile.TFTechness.dynamo.steam.name=Steam Dynamo
@@ -33,10 +33,10 @@ info.TFTechness.machine.rfforge=Heats, melts & mixes metals using the mighty pow
 info.TFTechness.tank.mixed.name=Mixed Fluid Tank
 
 item.thermalexpansion.augment.tftCryoEfficiency0.name=Coolant Chamber
-item.thermalexpansion.augment.tftCryoEfficiency1.name=Cryogenic Induction Coil
+item.thermalexpansion.augment.tftCryoEfficiency1.name=Cryothermic Induction Coil
 item.thermalexpansion.augment.tftCryoEfficiency2.name=Cryothermic Infuser
 
-info.thermalexpansion.augment.tftCryoEfficiency=Cryogenic Chamber: Cooling
+info.thermalexpansion.augment.tftCryoEfficiency=Cryothermic Chamber: Cooling
 info.thermalexpansion.augment.tftCryoEfficiency.0=Increases max power consumption
 info.thermalexpansion.augment.tftCryoEfficiency.1=Increases max energy spend on cooling
 info.thermalexpansion.augment.tftCryoEfficiency.2=Reduces efficiency
@@ -46,6 +46,9 @@ tab.TFTechness.machine.cryochamber.1=Want to slow down decay to a near stop?
 tab.TFTechness.machine.cryochamber.2=Well you've come to the right place! Place your food in here and never have to worry about food decay again!
 tab.TFTechness.machine.cryochamber.3=Certified and guarenteed by Mr A. Suspiciousfool as 100% safe!
 tab.TFTechness.machine.cryochamber.4=*guarenteed not to not spontaneously combust 
+
+tab.TFTechness.machine.rfforge.0=Heats up and melts metals & mixes alloys.
+tab.TFTechness.machine.rfforge.1=Any fluids extracted from the tanks will extract the alloy fluid.
 
 item.metalRod=Rod
 
