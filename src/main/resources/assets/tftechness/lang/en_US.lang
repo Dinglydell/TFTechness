@@ -1,3 +1,5 @@
+gui.TFTechness.target=Target
+
 tile.TFTechness.tank.basic.unfinished.name=Unfinished Portable Tank Frame
 tile.TFTechness.tank.basic.frame.name=Portable Tank Frame
 
