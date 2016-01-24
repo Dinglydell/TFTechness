@@ -30,7 +30,7 @@ public class GuiRFForge extends GuiAugmentableBase implements ISliderHandler {
 
 		myTile = te;
 
-		generateInfo("tab." + TFTechness.MODID + ".machine.rfforge", 5);
+		generateInfo("tab." + TFTechness.MODID + ".machine.rfforge", 2);
 	}
 
 	@Override

@@ -21,57 +21,84 @@ import dinglydell.tftechness.tileentities.machine.TileTemperature;
 import dinglydell.tftechness.util.MathUtils;
 
 public class TFTWaila implements IWailaDataProvider {
-	public static final String baseTempString = TFC_ItemHeat.getHeatColor(0, Integer.MAX_VALUE);
-	
+	public static final String baseTempString = TFC_ItemHeat.getHeatColor(0,
+			Integer.MAX_VALUE);
+
 	@Override
-	public ItemStack getWailaStack(IWailaDataAccessor accessor, IWailaConfigHandler config) {
+	public ItemStack getWailaStack(IWailaDataAccessor accessor,
+			IWailaConfigHandler config) {
 		return null;
 	}
-	
+
 	@Override
-	public List<String> getWailaHead(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
+	public List<String> getWailaHead(ItemStack itemStack,
+			List<String> currenttip, IWailaDataAccessor accessor,
 			IWailaConfigHandler config) {
 		// TODO Auto-generated method stub
 		return currenttip;
 	}
-	
+
 	@Override
-	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
+	public List<String> getWailaBody(ItemStack itemStack,
+			List<String> currenttip, IWailaDataAccessor accessor,
 			IWailaConfigHandler config) {
 		TileEntity te = accessor.getTileEntity();
 		if (te instanceof TileTemperature) {
 			float temp = accessor.getNBTData().getFloat("Temperature");
-			String tmpString = TFC_ItemHeat.getHeatColor(temp, Integer.MAX_VALUE);
-			if (tmpString.equals(baseTempString)) {
-				currenttip.add(MathUtils.roundTo(temp, 2) + TFTechness.degrees + "C");
-			} else {
-				currenttip.add(tmpString + " (" + (int) MathUtils.roundTo(temp, 0) + TFTechness.degrees + "C)");
-			}
+			addTemperature(currenttip, temp);
+		}
+		if (te instanceof TileRFForge) {
+			float target = accessor.getNBTData().getFloat("TargetTemperature");
+			addTemperature(currenttip, target, "Target: ");
 		}
 		return currenttip;
 	}
-	
+
+	private void addTemperature(List<String> currenttip, float temp,
+			String prefix) {
+		String tmpString = TFC_ItemHeat.getHeatColor(temp, Integer.MAX_VALUE);
+		if (tmpString.equals(baseTempString)) {
+			currenttip.add(prefix + MathUtils.roundTo(temp, 2)
+					+ TFTechness.degrees + "C");
+		} else {
+			currenttip.add(prefix + tmpString + " ("
+					+ (int) MathUtils.roundTo(temp, 0) + TFTechness.degrees
+					+ "C)");
+		}
+
+	}
+
+	private void addTemperature(List<String> currenttip, float temp) {
+		addTemperature(currenttip, temp, "");
+
+	}
+
 	@Override
-	public List<String> getWailaTail(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
+	public List<String> getWailaTail(ItemStack itemStack,
+			List<String> currenttip, IWailaDataAccessor accessor,
 			IWailaConfigHandler config) {
 		// TODO Auto-generated method stub
 		return currenttip;
 	}
-	
+
 	@Override
-	public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x,
-			int y, int z) {
+	public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te,
+			NBTTagCompound tag, World world, int x, int y, int z) {
 		if (te instanceof TileTemperature) {
 			tag.setFloat("Temperature", ((TileTemperature) te).getTemperature());
 		}
+		if (te instanceof TileRFForge) {
+			tag.setFloat("TargetTemperature",
+					((TileRFForge) te).targetTemperature);
+		}
 		return tag;
 	}
-	
+
 	public static void callbackRegister(IWailaRegistrar reg) {
 		reg.registerBodyProvider(new TFTWaila(), TileRFForge.class);
 		reg.registerNBTProvider(new TFTWaila(), TileRFForge.class);
 		reg.registerBodyProvider(new TFTWaila(), TileCryoChamber.class);
 		reg.registerNBTProvider(new TFTWaila(), TileCryoChamber.class);
 	}
-	
+
 }

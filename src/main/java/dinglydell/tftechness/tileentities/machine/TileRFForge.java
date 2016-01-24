@@ -76,6 +76,7 @@ public class TileRFForge extends TileTemperature {
 	public PacketCoFHBase getGuiPacket() {
 		PacketCoFHBase packet = super.getGuiPacket();
 		packet.addFluidStack(tank.getFluid());
+		packet.addFloat(targetTemperature);
 		return packet;
 
 	}
@@ -84,19 +85,21 @@ public class TileRFForge extends TileTemperature {
 	public void handleGuiPacket(PacketCoFHBase packet) {
 		super.handleGuiPacket(packet);
 		tank.setFluid(packet.getFluidStack());
-
+		targetTemperature = packet.getFloat();
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		tank.readFromNBT(nbt.getCompoundTag("Tank"));
+		targetTemperature = nbt.getFloat("TargetTemperature");
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		nbt.setTag("Tank", tank.writeToNBT(new NBTTagCompound()));
+		nbt.setFloat("TargetTemperature", targetTemperature);
 	}
 
 	@Override
@@ -160,6 +163,7 @@ public class TileRFForge extends TileTemperature {
 							index.specificHeat,
 							itemMass);
 					temp += change;
+					internalTemperature -= change * 0.001;
 					// if (internalTemperature > temp) {
 					// temp += TFC_ItemHeat.getTempIncrease(is);
 					// } else {
@@ -219,16 +223,38 @@ public class TileRFForge extends TileTemperature {
 	protected SideConfig getSideConfig() {
 
 		SideConfig cfg = new SideConfig();
-		cfg.numConfig = 3;
-		cfg.slotGroups = new int[][] { new int[0], new int[0], new int[0] };
-		cfg.allowInsertionSide = new boolean[] { false, true, false };
-		cfg.allowExtractionSide = new boolean[] { false, true, true };
-		cfg.allowInsertionSlot = new boolean[] { true, true, true };
-		cfg.allowExtractionSlot = new boolean[] { true, true, true, };
+		cfg.numConfig = 6;
+		cfg.slotGroups = new int[][] { new int[0],
+				new int[0],
+				{ 0 },
+				{ 1 },
+				{ 0, 1 },
+				{ 0, 1 } };
+		cfg.allowInsertionSide = new boolean[] { false,
+				true,
+				false,
+				false,
+				false,
+				true };
+		cfg.allowExtractionSide = new boolean[] { false,
+				true,
+				true,
+				true,
+				true,
+				true };
+		cfg.allowInsertionSlot = new boolean[] { true,
+				false,
+				false,
+				false,
+				false };
+		cfg.allowExtractionSlot = new boolean[] { true, true, true, true, false };
 		cfg.sideTex = new int[] { Colours.none.ordinal(),
 				Colours.blue.ordinal(),
-				Colours.orange.ordinal(), };
-		cfg.defaultSides = new byte[] { 3, 1, 2 };
+				Colours.red.ordinal(),
+				Colours.yellow.ordinal(),
+				Colours.orange.ordinal(),
+				Colours.grey.ordinal() };
+		cfg.defaultSides = new byte[] { 3, 1, 2, 2, 2, 2 };
 		return cfg;
 	}
 
