@@ -17,7 +17,7 @@ import cofh.thermalexpansion.block.machine.TilePrecipitator;
 
 import com.bioxx.tfc.api.TFCFluids;
 
-import dinglydell.tftechness.item.TFCMeta;
+import dinglydell.tftechness.item.TFTMeta;
 import dinglydell.tftechness.tileentities.IAugmentNBT;
 
 public class TileTFTPrecipitator extends TilePrecipitator implements IAugmentNBT {
@@ -37,13 +37,13 @@ public class TileTFTPrecipitator extends TilePrecipitator implements IAugmentNBT
 		ItemStack[] fresh = new ItemStack[3];
 		fresh[0] = new ItemStack(Items.snowball, 4);
 		fresh[1] = new ItemStack(Blocks.snow);
-		fresh[2] = ItemHelper.cloneStack(TFCMeta.freshIce, 1);
+		fresh[2] = ItemHelper.cloneStack(TFTMeta.freshIce, 1);
 		processItems.put(TFCFluids.FRESHWATER, fresh);
 		
 		ItemStack[] salt = new ItemStack[3];
 		salt[0] = new ItemStack(Items.snowball, 4);
 		salt[1] = new ItemStack(Blocks.snow);
-		salt[2] = ItemHelper.cloneStack(TFCMeta.saltIce, 1);
+		salt[2] = ItemHelper.cloneStack(TFTMeta.saltIce, 1);
 		processItems.put(TFCFluids.SALTWATER, salt);
 	}
 	

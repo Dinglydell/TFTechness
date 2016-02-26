@@ -11,10 +11,16 @@ public class MachineConfig {
 	public static boolean dynamoSteamEnabled;
 	public static boolean dynamoCompressionEnabled;
 	public static boolean rfForgeEnabled;
+	public static boolean bigReactorsOnly;
 
 	public static void loadConfig(Configuration config) {
 		config.addCustomCategoryComment("Machines",
 				"TFTechness changes some the way some ThermalExpansion machines work. (eg, makes the machine use TFC water instead of vanilla). Use this to disable the TFTechness versions and use ThermalExpansion. Includes dynamos.");
+		bigReactorsOnly = config
+				.getBoolean("bigReactorsOnly",
+						"Machines",
+						true,
+						"When enabled, dynamos do not work and instead big reactor turbines must be used as your first power source");
 		extruderEnabled = config
 				.getBoolean("extruder",
 						"Machines",

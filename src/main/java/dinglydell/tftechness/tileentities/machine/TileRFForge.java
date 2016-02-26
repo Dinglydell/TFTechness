@@ -14,7 +14,6 @@ import com.bioxx.tfc.api.HeatRegistry;
 import com.bioxx.tfc.api.Metal;
 import com.bioxx.tfc.api.TFCItems;
 import com.bioxx.tfc.api.TFC_ItemHeat;
-import com.bioxx.tfc.api.Enums.EnumFuelMaterial;
 import com.bioxx.tfc.api.Interfaces.ISmeltable;
 
 import dinglydell.tftechness.TFTechness;
@@ -30,14 +29,17 @@ public class TileRFForge extends TileTemperature {
 	protected static final int[] tankCapacity = { 4000, 8000, 16000, 32000 };
 	protected static final float specificHeat = 1.5f;
 	protected static final int mass = 1200;
-	protected static final float exposedSurfaceArea = 0.01f;
+	protected static final float[] levelExposedSurfaceArea = { 0.03f,
+			0.02f,
+			0.01f,
+			0.0075f };
 	protected static final float coolingExposedSurfaceArea = 1;
 	// Currently all items have the same properties
 	protected static final float itemSurfaceArea = 0.074f;
 	protected static final float itemMass = 10;
 
 	// protected float internalTemperature = TFTechness.baseTemp;
-	public float targetTemperature = EnumFuelMaterial.COAL.burnTempMax;
+	public float targetTemperature = 0;
 	protected FluidTankAdv tank = new FluidTankAdv(tankCapacity[0]);
 	/**
 	 * All input slots will have an index >= tankASlotEnd and < this value
@@ -223,11 +225,13 @@ public class TileRFForge extends TileTemperature {
 	protected SideConfig getSideConfig() {
 
 		SideConfig cfg = new SideConfig();
-		cfg.numConfig = 6;
+		cfg.numConfig = 8;
 		cfg.slotGroups = new int[][] { new int[0],
 				new int[0],
 				{ 0 },
 				{ 1 },
+				{ 0, 1 },
+				{ 0, 1 },
 				{ 0, 1 },
 				{ 0, 1 } };
 		cfg.allowInsertionSide = new boolean[] { false,
@@ -235,14 +239,20 @@ public class TileRFForge extends TileTemperature {
 				false,
 				false,
 				false,
-				true };
+				true,
+				true,
+				false };
 		cfg.allowExtractionSide = new boolean[] { false,
 				true,
 				true,
 				true,
 				true,
-				true };
+				true,
+				true,
+				false };
 		cfg.allowInsertionSlot = new boolean[] { true,
+				false,
+				false,
 				false,
 				false,
 				false,
@@ -253,6 +263,8 @@ public class TileRFForge extends TileTemperature {
 				Colours.red.ordinal(),
 				Colours.yellow.ordinal(),
 				Colours.orange.ordinal(),
+				Colours.green.ordinal(),
+				Colours.purple.ordinal(),
 				Colours.grey.ordinal() };
 		cfg.defaultSides = new byte[] { 3, 1, 2, 2, 2, 2 };
 		return cfg;
@@ -280,7 +292,8 @@ public class TileRFForge extends TileTemperature {
 
 	@Override
 	protected float getSurfaceArea() {
-		return isCooling ? coolingExposedSurfaceArea : exposedSurfaceArea;
+		return isCooling ? coolingExposedSurfaceArea
+				: levelExposedSurfaceArea[level];
 	}
 
 	@Override

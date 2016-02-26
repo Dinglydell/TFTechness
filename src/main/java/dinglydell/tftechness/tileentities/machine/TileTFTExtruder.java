@@ -22,7 +22,7 @@ import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.gui.GuiTFTExtruder;
 import dinglydell.tftechness.gui.container.ContainerTFTExtruder;
-import dinglydell.tftechness.item.TFCMeta;
+import dinglydell.tftechness.item.TFTMeta;
 import dinglydell.tftechness.tileentities.IAugmentNBT;
 import dinglydell.tftechness.tileentities.machine.TileTFTMachine.Colours;
 
@@ -85,7 +85,7 @@ public class TileTFTExtruder extends TileExtruder implements IAugmentNBT {
 		outputItems[0] = new ItemStack(TFCBlocks.stoneIgExCobble);
 		outputItems[1] = new ItemStack(TFCBlocks.stoneIgEx);
 		// outputItems[2] = new ItemStack(Blocks.obsidian);
-		secondaryOutput = ItemHelper.cloneStack(TFCMeta.salt, 1);
+		secondaryOutput = ItemHelper.cloneStack(TFTMeta.salt, 1);
 		energyConfig = defaultEnergyConfig[BlockMachine.Types.EXTRUDER.ordinal()].copy();
 		energyStorage = new EnergyStorage(0, 0);
 		

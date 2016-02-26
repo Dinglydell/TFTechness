@@ -86,9 +86,9 @@ import dinglydell.tftechness.fluid.TFTFluids;
 import dinglydell.tftechness.item.ItemRod;
 import dinglydell.tftechness.item.ItemTFTMetalSheet;
 import dinglydell.tftechness.item.ItemTFTSteelBucket;
-import dinglydell.tftechness.item.TFCMeta;
 import dinglydell.tftechness.item.TFTAugments;
 import dinglydell.tftechness.item.TFTItems;
+import dinglydell.tftechness.item.TFTMeta;
 import dinglydell.tftechness.metal.AlloyIngred;
 import dinglydell.tftechness.metal.Material;
 import dinglydell.tftechness.metal.MaterialAlloy;
@@ -109,6 +109,7 @@ import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
 import dinglydell.tftechness.util.OreDict;
+import erogenousbeef.bigreactors.common.BigReactors;
 
 @Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion")
 public class TFTechness {
@@ -130,7 +131,7 @@ public class TFTechness {
 	public void preInit(FMLPreInitializationEvent event) {
 		initMaps();
 		readConfig(event);
-		TFCMeta.preInit();
+		TFTMeta.preInit();
 		addMetals();
 
 		addBlocks();
@@ -164,6 +165,7 @@ public class TFTechness {
 		removeTankRecipes(batch);
 		removeCoilRecipes(batch);
 		removeMachineRecipes(batch);
+		removeBigReactorRecipes(batch);
 		for (Material m : materials) {
 			removeGearRecipes(batch, m);
 			removeNuggetIngotRecipes(batch, m);
@@ -171,6 +173,12 @@ public class TFTechness {
 		batch.Execute();
 		replaceMachineRecipes();
 		addRecipes();
+
+	}
+
+	private void removeBigReactorRecipes(RemoveBatch batch) {
+		batch.addCrafting(new ItemStack(BigReactors.blockTurbinePart));
+		batch.addCrafting(TFTMeta.brTurbineController);
 
 	}
 
@@ -367,8 +375,10 @@ public class TFTechness {
 		tankRecipes();
 		coilRecipes();
 		machineCraftingRecipes();
+		bigReactorRecipes();
 		dynamoCraftingRecipes();
 		machineRecipes();
+
 		TFTAugments.addRecipes();
 	}
 
@@ -523,6 +533,25 @@ public class TFTechness {
 				false);
 	}
 
+	private void bigReactorRecipes() {
+		GameRegistry.addRecipe(new ShapedOreRecipe(
+				BigReactors.blockTurbinePart, new Object[] { " g ",
+						"gSg",
+						" g ",
+						Character.valueOf('S'),
+						"plateDoubleSteel",
+						Character.valueOf('g'),
+						"dustGraphite" }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(TFTMeta.brTurbineController,
+				new Object[] { " r ",
+						"rTr",
+						" r ",
+						Character.valueOf('T'),
+						BigReactors.blockTurbinePart,
+						Character.valueOf('r'),
+						"dustRedstone" }));
+	}
+
 	private void machineCraftingRecipes() {
 		ItemStack[] augs = new ItemStack[] {};
 		String machineFrame = "thermalexpansion:machineFrame";
@@ -629,7 +658,7 @@ public class TFTechness {
 							Character.valueOf('C'),
 							TFItems.dustCryotheum,
 							Character.valueOf('i'),
-							TFCMeta.freshIce,
+							TFTMeta.freshIce,
 							Character.valueOf('F'),
 							machineFrame,
 							Character.valueOf('c'),
@@ -660,27 +689,35 @@ public class TFTechness {
 							"gearInvar",
 							Character.valueOf('R'),
 							TEItems.powerCoilGold }));
+			if (RecipeConfig.upgradeCrafting) {
+				TFTCraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.rfForge);
+			} else {
+				TECraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.rfForge);
+			}
 		}
 	}
 
 	private void dynamoCraftingRecipes() {
-		ItemStack[] augs = new ItemStack[] {};
-		if (MachineConfig.dynamoSteamEnabled) {
-			GameRegistry.addRecipe(new RecipeAugmentable(
-					BlockTFTDynamo.dynamoSteam, augs, new Object[] { " t ",
-							"CcC",
-							"crc",
-							Character.valueOf('t'),
-							TEItems.powerCoilSilver,
-							Character.valueOf('C'),
-							"gearCopper",
-							Character.valueOf('r'),
-							"dustRedstone",
-							Character.valueOf('c'),
-							"ingotCopper" }));
+		if (!MachineConfig.bigReactorsOnly) {
+			ItemStack[] augs = new ItemStack[] {};
+			if (MachineConfig.dynamoSteamEnabled) {
+				GameRegistry.addRecipe(new RecipeAugmentable(
+						BlockTFTDynamo.dynamoSteam, augs, new Object[] { " t ",
+								"CcC",
+								"crc",
+								Character.valueOf('t'),
+								TEItems.powerCoilSilver,
+								Character.valueOf('C'),
+								"gearCopper",
+								Character.valueOf('r'),
+								"dustRedstone",
+								Character.valueOf('c'),
+								"ingotCopper" }));
 
+			}
 		}
-
 	}
 
 	private void coilRecipes() {
@@ -981,8 +1018,15 @@ public class TFTechness {
 			batch.addCrafting(BlockMachine.precipitator);
 		}
 
-		if (MachineConfig.dynamoSteamEnabled) {
+		if (MachineConfig.dynamoSteamEnabled || MachineConfig.bigReactorsOnly) {
 			batch.addCrafting(BlockDynamo.dynamoSteam);
+		}
+
+		if (MachineConfig.bigReactorsOnly) {
+			batch.addCrafting(BlockDynamo.dynamoCompression);
+			batch.addCrafting(BlockDynamo.dynamoEnervation);
+			batch.addCrafting(BlockDynamo.dynamoMagmatic);
+			batch.addCrafting(BlockDynamo.dynamoReactant);
 		}
 	}
 
@@ -1038,7 +1082,7 @@ public class TFTechness {
 		statMap.put("Invar", new MetalStat(0.52, 1700, 894));
 		statMap.put("Mithril", new MetalStat(0.9, 660, 500));
 		statMap.put("Electrum", new MetalStat(0.181, 650, 1629));
-		statMap.put("Enderium", new MetalStat(0.5, 1700, 1279));
+		statMap.put("Enderium", new MetalStat(0.5, 1750, 1279));
 		statMap.put("Signalum", new MetalStat(0.45, 900, 1024));
 		statMap.put("Lumium", new MetalStat(0.35, 1200, 2544));
 

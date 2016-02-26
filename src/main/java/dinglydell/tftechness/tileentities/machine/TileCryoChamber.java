@@ -18,7 +18,7 @@ public class TileCryoChamber extends TileTemperature {
 	/** Heat transfer coefficient of air */
 	protected static final float heatTransferCoefficient = 10.45f;
 	/** Surface area of the cube: 6m^2 */
-	protected static final int surfaceArea = 6;
+	protected static final int surfaceArea = 1;
 	protected static final float specificHeat = 1.5f;
 	protected static final int mass = 1200;
 	/**
@@ -34,7 +34,7 @@ public class TileCryoChamber extends TileTemperature {
 
 	protected static final int sliderMarkerIntervals = 10;
 
-	protected static final float[] levelInefficiency = { 4.8f, 4.4f, 4f, 3.5f };
+	protected static final float[] levelInefficiency = { 1f, 0.8f, 0.7f, 0.5f };
 
 	protected float inefficiency;
 
@@ -188,7 +188,7 @@ public class TileCryoChamber extends TileTemperature {
 
 	@Override
 	protected EnergyConfig getEnergyConfig() {
-		energyConsumption = 40;
+		energyConsumption = 20;
 		EnergyConfig cfg = new EnergyConfig();
 		cfg.maxEnergy = 96000;
 		cfg.maxPower = 160;

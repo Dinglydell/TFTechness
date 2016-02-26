@@ -13,7 +13,8 @@
   "screenshots": [],
   "dependencies": [
         "terrafirmacraft",
-        "ThermalFoundation"
+        "ThermalExpansion",
+        "BigReactors"
   ]
 }
 ]

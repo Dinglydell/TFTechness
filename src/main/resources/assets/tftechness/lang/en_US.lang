@@ -50,7 +50,8 @@ tab.TFTechness.machine.cryochamber.3=Certified and guarenteed by Mr A. Suspiciou
 tab.TFTechness.machine.cryochamber.4=*guarenteed not to not spontaneously combust 
 
 tab.TFTechness.machine.rfforge.0=Heats up and melts metals.
-tab.TFTechness.machine.rfforge.1=Not guaranteed to be explosion free
+tab.TFTechness.machine.rfforge.1=Higher tiers are more efficient
+tab.TFTechness.machine.rfforge.2=Not guaranteed to be explosion free
 
 item.metalRod=Rod
 

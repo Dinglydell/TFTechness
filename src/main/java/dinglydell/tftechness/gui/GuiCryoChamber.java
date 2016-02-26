@@ -38,7 +38,7 @@ public class GuiCryoChamber extends GuiAugmentableBase {
 		addElement(new ElementEnergyStored(this, 8, 8,
 				myTile.getEnergyStorage()));
 
-		addElement(new ElementVerticalSlider(this, 152, 8, 16, 61) {
+		addElement(new ElementVerticalSlider(this, 160, 8, 7, 61) {
 
 			@Override
 			public void addTooltip(List<String> list) {
