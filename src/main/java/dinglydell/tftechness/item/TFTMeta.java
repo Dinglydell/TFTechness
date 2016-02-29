@@ -13,7 +13,16 @@ public class TFTMeta {
 	public static ItemStack freshIce;
 	public static ItemStack saltIce;
 
+	public static ItemStack brTurbineHousing;
 	public static ItemStack brTurbineController;
+	public static ItemStack brTurbinePowerPort;
+	public static ItemStack brTurbineFluidPort;
+	public static ItemStack brTurbineRotorBearing;
+	public static ItemStack brTurbineRotorShaft;
+	public static ItemStack brTurbineRotorBlade;
+
+	public static ItemStack brTurbineGlass;
+	public static ItemStack pitchblende;
 
 	public static void preInit() {
 
@@ -21,6 +30,20 @@ public class TFTMeta {
 		saltIce = new ItemStack(TFCBlocks.ice, 1, 0);
 		freshIce = new ItemStack(TFCBlocks.ice, 1, 1);
 
+		pitchblende = new ItemStack(TFCItems.oreChunk, 1, 26);
+
+		brTurbineHousing = new ItemStack(BigReactors.blockTurbinePart);
 		brTurbineController = new ItemStack(BigReactors.blockTurbinePart, 1, 1);
+		brTurbinePowerPort = new ItemStack(BigReactors.blockTurbinePart, 1, 2);
+		brTurbineFluidPort = new ItemStack(BigReactors.blockTurbinePart, 1, 3);
+		brTurbineRotorBearing = new ItemStack(BigReactors.blockTurbinePart, 1,
+				4);
+
+		brTurbineRotorShaft = new ItemStack(BigReactors.blockTurbineRotorPart,
+				1, 0);
+		brTurbineRotorBlade = new ItemStack(BigReactors.blockTurbineRotorPart,
+				1, 1);
+
+		brTurbineGlass = new ItemStack(BigReactors.blockMultiblockGlass, 1, 1);
 	}
 }

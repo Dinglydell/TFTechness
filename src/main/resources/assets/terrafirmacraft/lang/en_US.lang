@@ -12,6 +12,7 @@ item.EnderiumUnshaped.name=Unshaped: Enderium
 item.SignalumUnshaped.name=Unshaped: Signalum
 item.LumiumUnshaped.name=Unshaped: Lumium
 item.BillonUnshaped.name=Unshaped: Billon
+item.UraniumUnshaped.name=Unshaped: Uranium
 
 item.InvarIngot.name=Invar Ingot
 item.ElectrumIngot.name=Electrum Ingot
@@ -20,6 +21,7 @@ item.EnderiumIngot.name=Enderium Ingot
 item.SignalumIngot.name=Signalum Ingot
 item.LumiumIngot.name=Lumium Ingot
 item.BillonIngot.name=Billon Ingot
+item.UraniumIngot.name=Uranium Ingot
 
 item.InvarIngot2x.name=Invar Double Ingot
 item.ElectrumIngot2x.name=Electrum Double Ingot
@@ -28,6 +30,7 @@ item.EnderiumIngot2x.name=Enderium Double Ingot
 item.SignalumIngot2x.name=Signalum Double Ingot
 item.LumiumIngot2x.name=Lumium Double Ingot
 item.BillonIngot2x.name=Billon Double Ingot
+item.UraniumIngot2x.name=Uranium Double Ingot
 
 item.InvarSheet.name=Invar Sheet
 item.ElectrumSheet.name=Electrum Sheet
@@ -36,6 +39,7 @@ item.EnderiumSheet.name=Enderium Sheet
 item.SignalumSheet.name=Signalum Sheet
 item.LumiumSheet.name=Lumium Sheet
 item.BillonSheet.name=Billon Sheet
+item.UraniumSheet.name=Uranium Sheet
 
 item.InvarSheet2x.name=Invar Double Sheet
 item.ElectrumSheet2x.name=Electrum Double Sheet
@@ -44,3 +48,4 @@ item.EnderiumSheet2x.name=Enderium Double Sheet
 item.SignalumSheet2x.name=Signalum Double Sheet
 item.LumiumSheet2x.name=Lumium Double Sheet
 item.BillonSheet2x.name=Billon Double Sheet
+item.UraniumSheet2x.name=Uranium Double Sheet

@@ -54,6 +54,18 @@ dependencies {
 	compile files (
 		"lib/ThermalExpansion-[1.7.10]4.0.3B1-218-dev.jar"
 	)
+	compile files (
+		"lib/BigReactors-0.4.3A.jar"
+	)
+	
+	compile files (
+		"lib/Railcraft_1.7.10-9.8.0.0-dev.jar"
+	)
+	
+	compile files (
+		"lib/ThermalDynamics-[1.7.10]1.1.0-161-dev.jar"
+	)
+	
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html

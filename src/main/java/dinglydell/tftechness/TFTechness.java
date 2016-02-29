@@ -1,6 +1,8 @@
 package dinglydell.tftechness;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,6 +10,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import mods.railcraft.common.blocks.machine.beta.EnumMachineBeta;
+import mods.railcraft.common.fluids.Fluids;
+import mods.railcraft.common.items.ItemPlate.EnumPlate;
+import mods.railcraft.common.items.RailcraftItem;
+import mods.railcraft.common.util.steam.Steam;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -31,7 +38,9 @@ import org.apache.logging.log4j.LogManager;
 
 import cofh.api.modhelpers.ThermalExpansionHelper;
 import cofh.core.util.crafting.RecipeAugmentable;
+import cofh.lib.util.helpers.ItemHelper;
 import cofh.lib.util.helpers.StringHelper;
+import cofh.thermaldynamics.duct.TDDucts;
 import cofh.thermalexpansion.block.TEBlocks;
 import cofh.thermalexpansion.block.dynamo.BlockDynamo;
 import cofh.thermalexpansion.block.machine.BlockMachine;
@@ -48,11 +57,13 @@ import cofh.thermalfoundation.fluid.TFFluids;
 import cofh.thermalfoundation.item.TFItems;
 
 import com.bioxx.tfc.Core.Recipes;
+import com.bioxx.tfc.Core.TFCTabs;
 import com.bioxx.tfc.Core.Metal.Alloy;
 import com.bioxx.tfc.Core.Metal.AlloyManager;
 import com.bioxx.tfc.Core.Metal.MetalRegistry;
 import com.bioxx.tfc.Items.ItemIngot;
 import com.bioxx.tfc.Items.ItemMeltedMetal;
+import com.bioxx.tfc.Items.ItemTerra;
 import com.bioxx.tfc.api.HeatIndex;
 import com.bioxx.tfc.api.HeatRaw;
 import com.bioxx.tfc.api.HeatRegistry;
@@ -109,9 +120,8 @@ import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
 import dinglydell.tftechness.util.OreDict;
-import erogenousbeef.bigreactors.common.BigReactors;
 
-@Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion")
+@Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion;required-after:ThermalDynamics;required-after:BigReactors")
 public class TFTechness {
 	public static final String MODID = "TFTechness";
 	public static final String VERSION = "0.1";
@@ -130,11 +140,14 @@ public class TFTechness {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		initMaps();
+		// nasty
+		nastyHackFixes();
+
 		readConfig(event);
 		TFTMeta.preInit();
 		addMetals();
-
 		addBlocks();
+		addItems();
 		handleFules();
 		registerRecipeTypes();
 
@@ -142,9 +155,71 @@ public class TFTechness {
 		// FluidRegistry.LAVA.getTemperature());
 	}
 
+	private void nastyHackFixes() {
+		// nasty stuff happens here. Cover your eyes.
+		replaceWater();
+		fixWaterToSteam();
+	}
+
+	private void replaceWater() {
+
+		try {
+			Field water = FluidRegistry.class.getDeclaredField("WATER");
+			finalField(water);
+			water.set(null, TFCFluids.FRESHWATER);
+
+			Field tag = Fluids.class.getDeclaredField("tag");
+			tag.setAccessible(true);
+			finalField(tag);
+			tag.set(Fluids.WATER, "freshwater");
+
+			// FluidRegistry.WATER = TFCFluids.FRESHWATER;
+
+			// FluidContainerRegistry.isContainer(TFTMeta.salt);
+			// Field fluidsField =
+			// FluidRegistry.class.getDeclaredField("fluids");
+			// fluidsField.setAccessible(true);
+			// finalField(fluidsField);
+			// BiMap<String, Fluid> fluids = (BiMap<String, Fluid>) fluidsField
+			// .get(null);
+			// fluids.forcePut("water", TFCFluids.FRESHWATER);
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+	}
+
+	private void finalField(Field field) throws Exception {
+		Field modifiers = Field.class.getDeclaredField("modifiers");
+		modifiers.setAccessible(true);
+		modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+	}
+
+	private void fixWaterToSteam() {
+		try {
+			Field steamPerWater = Steam.class
+					.getDeclaredField("STEAM_PER_UNIT_WATER");
+			Field modifiers = Field.class.getDeclaredField("modifiers");
+			modifiers.setAccessible(true);
+			modifiers.setInt(steamPerWater, steamPerWater.getModifiers()
+					& ~Modifier.FINAL);
+
+			steamPerWater.set(null, 1);
+			// Steam.STEAM_PER_UNIT_WATER = 1;
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+	}
+
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		// Requires some TE init
+		registerModOreDict();
 		addTanks();
 		TFTFluids.createFluids();
 		addBuckets();
@@ -160,12 +235,14 @@ public class TFTechness {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(new AnvilRecipeHandler());
+
 		RemoveBatch batch = new RemoveBatch();
 
 		removeTankRecipes(batch);
 		removeCoilRecipes(batch);
 		removeMachineRecipes(batch);
 		removeBigReactorRecipes(batch);
+		removeRailcraftRecipes(batch);
 		for (Material m : materials) {
 			removeGearRecipes(batch, m);
 			removeNuggetIngotRecipes(batch, m);
@@ -176,10 +253,39 @@ public class TFTechness {
 
 	}
 
-	private void removeBigReactorRecipes(RemoveBatch batch) {
-		batch.addCrafting(new ItemStack(BigReactors.blockTurbinePart));
-		batch.addCrafting(TFTMeta.brTurbineController);
+	private void registerModOreDict() {
+		OreDictionary.registerOre("plateIron",
+				RailcraftItem.plate.getStack(EnumPlate.IRON));
+		OreDictionary.registerOre("plateSteel",
+				RailcraftItem.plate.getStack(EnumPlate.STEEL));
+		OreDictionary.registerOre("plateTin",
+				RailcraftItem.plate.getStack(EnumPlate.TIN));
 
+		OreDictionary.registerOre("plateCopper",
+				RailcraftItem.plate.getStack(EnumPlate.COPPER));
+	}
+
+	private void removeBigReactorRecipes(RemoveBatch batch) {
+		batch.addCrafting(TFTMeta.brTurbineHousing);
+		batch.addCrafting(TFTMeta.brTurbineController);
+		batch.addCrafting(TFTMeta.brTurbinePowerPort);
+		batch.addCrafting(TFTMeta.brTurbineFluidPort);
+
+		batch.addCrafting(TFTMeta.brTurbineRotorBearing);
+		batch.addCrafting(TFTMeta.brTurbineRotorBlade);
+		batch.addCrafting(TFTMeta.brTurbineRotorShaft);
+
+	}
+
+	private void removeRailcraftRecipes(RemoveBatch batch) {
+		batch.addCrafting(EnumMachineBeta.BOILER_TANK_LOW_PRESSURE.getItem());
+		batch.addCrafting(EnumMachineBeta.BOILER_TANK_HIGH_PRESSURE.getItem());
+
+		if (MachineConfig.bigReactorsOnly) {
+			batch.addCrafting(EnumMachineBeta.ENGINE_STEAM_HIGH.getItem());
+			batch.addCrafting(EnumMachineBeta.ENGINE_STEAM_HOBBY.getItem());
+			batch.addCrafting(EnumMachineBeta.ENGINE_STEAM_LOW.getItem());
+		}
 	}
 
 	@Mod.EventHandler
@@ -255,6 +361,15 @@ public class TFTechness {
 		addDynamos();
 		addSheetBlocks();
 
+	}
+
+	private void addItems() {
+		TFTItems.yellowCake = new ItemTerra().setUnlocalizedName("yellowCake")
+				.setCreativeTab(TFCTabs.TFC_MATERIALS);
+
+		GameRegistry.registerItem(TFTItems.yellowCake, "yellowCake");
+
+		OreDictionary.registerOre("dustUranium", TFTItems.yellowCake);
 	}
 
 	private void addMachines() {
@@ -376,6 +491,7 @@ public class TFTechness {
 		coilRecipes();
 		machineCraftingRecipes();
 		bigReactorRecipes();
+		railcraftRecipes();
 		dynamoCraftingRecipes();
 		machineRecipes();
 
@@ -495,6 +611,14 @@ public class TFTechness {
 	}
 
 	private void transposerRecipes() {
+		// Pitchblende -> Yellow Cake
+		TransposerManager.addFillRecipe(800,
+				TFTMeta.pitchblende,
+				new ItemStack(TFTItems.yellowCake, 1),
+				new FluidStack(TFFluids.fluidGlowstone, 250),
+				false,
+				false);
+
 		// Billon -> Signalum
 		// Ingot
 		TransposerManager.addFillRecipe(1600,
@@ -534,22 +658,140 @@ public class TFTechness {
 	}
 
 	private void bigReactorRecipes() {
-		GameRegistry.addRecipe(new ShapedOreRecipe(
-				BigReactors.blockTurbinePart, new Object[] { " g ",
+		GameRegistry.addRecipe(new ShapedOreRecipe(TFTMeta.brTurbineHousing,
+				new Object[] { " g ",
 						"gSg",
 						" g ",
 						Character.valueOf('S'),
 						"plateDoubleSteel",
 						Character.valueOf('g'),
 						"dustGraphite" }));
+
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemHelper
+				.cloneStack(TFTMeta.brTurbineGlass, 2), new Object[] { "HTH",
+				Character.valueOf('H'),
+				"blockGlassHardened",
+				Character.valueOf('T'),
+				TFTMeta.brTurbineHousing }));
+
 		GameRegistry.addRecipe(new ShapedOreRecipe(TFTMeta.brTurbineController,
 				new Object[] { " r ",
 						"rTr",
 						" r ",
 						Character.valueOf('T'),
-						BigReactors.blockTurbinePart,
+						TFTMeta.brTurbineHousing,
 						Character.valueOf('r'),
 						"dustRedstone" }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(TFTMeta.brTurbinePowerPort,
+				new Object[] { " g ",
+						"rTr",
+						" c ",
+						Character.valueOf('g'),
+						"plateGold",
+						Character.valueOf('r'),
+						"dustRedstone",
+						Character.valueOf('T'),
+						TFTMeta.brTurbineHousing,
+						Character.valueOf('c'),
+						TEItems.powerCoilSilver }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(TFTMeta.brTurbineFluidPort,
+				new Object[] { " v ",
+						"iTi",
+						" f ",
+						Character.valueOf('v'),
+						"plateInvar",
+						Character.valueOf('i'),
+						"plateIron",
+						Character.valueOf('T'),
+						TFTMeta.brTurbineHousing,
+						Character.valueOf('f'),
+						TDDucts.fluidHardened.itemStack }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(TFTMeta.brTurbineFluidPort,
+				new Object[] { " v ",
+						"iTi",
+						" f ",
+						Character.valueOf('v'),
+						"plateInvar",
+						Character.valueOf('i'),
+						"plateIron",
+						Character.valueOf('T'),
+						TFTMeta.brTurbineHousing,
+						Character.valueOf('f'),
+						TDDucts.fluidHardenedOpaque.itemStack }));
+		GameRegistry.addRecipe(new ShapedOreRecipe(
+				TFTMeta.brTurbineRotorBearing, new Object[] { " s ",
+						"iTi",
+						" f ",
+						Character.valueOf('s'),
+						"plateSteel",
+						Character.valueOf('i'),
+						"plateIron",
+						Character.valueOf('T'),
+						TFTMeta.brTurbineHousing,
+						Character.valueOf('r'),
+						TFTMeta.brTurbineRotorShaft }));
+
+		GameRegistry.addRecipe(new ShapedOreRecipe(TFTMeta.brTurbineRotorShaft,
+				new Object[] { " i ",
+						"ini",
+						" i ",
+						Character.valueOf('i'),
+						"rodWroughtIron",
+						Character.valueOf('n'),
+						"rodInvar" }));
+
+		GameRegistry
+				.addRecipe(new ShapedOreRecipe(TFTMeta.brTurbineRotorBlade,
+						new Object[] { "iii",
+								Character.valueOf('i'),
+								"rodWroughtIron" }));
+
+	}
+
+	private void railcraftRecipes() {
+		GameRegistry.addRecipe(new ShapedOreRecipe(
+				EnumMachineBeta.BOILER_TANK_LOW_PRESSURE.getItem(),
+				new Object[] { "ii ",
+						"ii ",
+						Character.valueOf('i'),
+						"plateIron"
+
+				}));
+		GameRegistry.addRecipe(new ShapedOreRecipe(
+				EnumMachineBeta.BOILER_TANK_HIGH_PRESSURE.getItem(),
+				new Object[] { "ss ",
+						"ss ",
+						Character.valueOf('s'),
+						"plateSteel"
+
+				}));
+		GameRegistry.addRecipe(new ShapedOreRecipe(
+				EnumMachineBeta.TANK_IRON_WALL.getItem(), "ii ", "ii ",
+				Character.valueOf('i'), "plateDoubleIron"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(
+				EnumMachineBeta.TANK_STEEL_WALL.getItem(),
+				new Object[] { "ss ",
+						"ss ",
+						Character.valueOf('s'),
+						"plateDoubleSteel"
+
+				}));
+
+		if (MachineConfig.bigReactorsOnly) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(
+					EnumMachineBeta.ENGINE_STEAM_HOBBY.getItem(),
+					new Object[] { " t ",
+							"GbG",
+							"brb",
+							Character.valueOf('t'),
+							TEItems.powerCoilSilver,
+							Character.valueOf('G'),
+							"gearGold",
+							Character.valueOf('r'),
+							"dustRedstone",
+							Character.valueOf('b'),
+							"ingotBronze" }));
+		}
 	}
 
 	private void machineCraftingRecipes() {
@@ -1088,6 +1330,7 @@ public class TFTechness {
 
 		// TFT
 		statMap.put("Billon", new MetalStat(0.35, 950, 1024));
+		statMap.put("Uranium", new MetalStat(0.12, 1132, 2122));
 	}
 
 	private TankMap[] getTanks() {
@@ -1142,6 +1385,7 @@ public class TFTechness {
 						TFCItems.bronzeIngot, TFCItems.bronzeSheet2x,
 						TFItems.gearBronze, 2, Global.BRONZE,
 						TFItems.nuggetBronze),
+				new Material("Uranium", null, 6, Alloy.EnumTier.TierIV, null),
 				new MaterialAlloy("Invar", TFItems.gearInvar, 5,
 						Alloy.EnumTier.TierIII,
 						new AlloyIngred[] { new AlloyIngred("Wrought Iron",
