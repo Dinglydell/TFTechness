@@ -1,8 +1,12 @@
 package dinglydell.tftechness.tileentities.machine;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import cofh.core.network.PacketCoFHBase;
@@ -24,7 +28,7 @@ import dinglydell.tftechness.fluid.TFTFluids;
 import dinglydell.tftechness.gui.GuiRFForge;
 import dinglydell.tftechness.gui.container.ContainerRFForge;
 
-public class TileRFForge extends TileTemperature {
+public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock {
 
 	protected static final int[] tankCapacity = { 4000, 8000, 16000, 32000 };
 	protected static final float specificHeat = 1.5f;
@@ -93,6 +97,9 @@ public class TileRFForge extends TileTemperature {
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
+		hasMaster = nbt.getBoolean("HasMaster");
+		isMaster = nbt.getBoolean("IsMaster");
+		direction = ForgeDirection.values()[nbt.getInteger("Direction")];
 		tank.readFromNBT(nbt.getCompoundTag("Tank"));
 		targetTemperature = nbt.getFloat("TargetTemperature");
 	}
@@ -100,17 +107,150 @@ public class TileRFForge extends TileTemperature {
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
+		nbt.setBoolean("HasMaster", hasMaster);
+		nbt.setBoolean("IsMaster", isMaster);
+		nbt.setInteger("Direction", direction.ordinal());
 		nbt.setTag("Tank", tank.writeToNBT(new NBTTagCompound()));
 		nbt.setFloat("TargetTemperature", targetTemperature);
 	}
 
 	@Override
 	public void updateEntity() {
-		super.updateEntity();
-		if (!ServerHelper.isClientWorld(this.worldObj)) {
-			heatInventorySlots();
-			handleMoldOutputs();
+		if (hasMaster()) {
+			if (isMaster()) {
+				super.updateEntity();
+				if (!ServerHelper.isClientWorld(this.worldObj)) {
+					heatInventorySlots();
+					handleMoldOutputs();
+				}
+			}
+		} else {
+			setupMultiblock(checkForMultiblock());
+
 		}
+	}
+
+	private void setupMultiblock(ForgeDirection fd) {
+		if (fd != null) {
+			direction = fd;
+			int cx = xCoord + fd.offsetX;
+			int cy = yCoord + fd.offsetY;
+			int cz = zCoord + fd.offsetZ;
+			for (int x = cx - 1; x <= cx + 1; x++) {
+				for (int y = cy - 1; y <= cy + 1; y++) {
+					for (int z = cz - 1; z <= cz + 1; z++) {
+						//if centre block
+						if (x == cx && y == cy && z == cz) {
+							continue;
+						}
+						IRFForgeMultiBlock te = (IRFForgeMultiBlock) worldObj
+								.getTileEntity(x, y, z);
+						te.setHasMaster(true);
+						te.setMasterCoords(xCoord, yCoord, zCoord);
+					}
+				}
+			}
+
+			this.setIsMaster(true);
+		}
+
+	}
+
+	/**
+	 * Probably overcomplicated method that checks whether the multiblock
+	 * structure is valid
+	 */
+	private ForgeDirection checkForMultiblock() {
+
+		boolean eastWest = false;
+		// must either be a block west and east or north and south
+		if (checkBlock(xCoord - 1, yCoord, zCoord)
+				&& checkBlock(xCoord + 1, yCoord, zCoord)) {
+			// must be east/west
+			eastWest = true;
+
+		}
+		boolean northSouth = false;
+		if (checkBlock(xCoord, yCoord, zCoord - 1)
+				&& checkBlock(xCoord, yCoord, zCoord + 1)) {
+			// must be north south
+			northSouth = true;
+		}
+		if (eastWest && northSouth)
+			// cannot be both north/south and east/west
+			return null;
+
+		if (eastWest) {
+			//controller has blocks east/west
+			if (checkBlock(xCoord, yCoord, zCoord + 2)) {
+				//validate south
+				// S C S    N
+				// S   S  W + E
+				// S S S    S
+				if (checkCube(ForgeDirection.SOUTH)) {
+					return ForgeDirection.SOUTH;
+				}
+			}
+
+			//validate north - if south valid will not reach here
+			if (checkCube(ForgeDirection.NORTH)) {
+				return ForgeDirection.NORTH;
+			}
+
+		} else {
+			// controller has blocks north/south
+			if (checkBlock(xCoord + 2, yCoord, zCoord)) {
+				//validate east
+				// S S S    N
+				// C   S  W + E
+				// S S S    S
+				if (checkCube(ForgeDirection.EAST)) {
+					return ForgeDirection.EAST;
+				}
+			}
+			//validate west - if east valid will not reach here
+			if (checkCube(ForgeDirection.WEST)) {
+				return ForgeDirection.WEST;
+			}
+
+		}
+
+		return null;
+
+	}
+
+	private boolean checkCube(ForgeDirection fd) {
+		int cx = xCoord + fd.offsetX;
+		int cy = yCoord + fd.offsetY;
+		int cz = zCoord + fd.offsetZ;
+		for (int x = cx - 1; x <= cx + 1; x++) {
+			for (int y = cy - 1; y <= cy + 1; y++) {
+				for (int z = cz - 1; z <= cz + 1; z++) {
+					//if centre block
+					if (x == cx && y == cy && z == cz) {
+						//must be empty
+						Block block = worldObj.getBlock(x, y, z);
+						if (!(block == null || block.getMaterial() == Material.air)) {
+							return false;
+						} else {
+							continue;
+						}
+					}
+					if (!checkBlock(x, y, z)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	private boolean checkBlock(int x, int y, int z) {
+		if (x == xCoord && y == yCoord && z == zCoord) {
+			return true;
+		}
+		TileEntity te = worldObj.getTileEntity(x, y, z);
+		return (te instanceof IRFForgeMultiBlock && !(te instanceof TileRFForge));
 	}
 
 	protected void handleMoldOutputs() {
@@ -321,6 +461,76 @@ public class TileRFForge extends TileTemperature {
 
 	public FluidTankAdv getTank() {
 		return tank;
+	}
+
+	private boolean isMaster;
+	private boolean hasMaster;
+	private int masterX;
+	private int masterY;
+	private int masterZ;
+	private ForgeDirection direction;
+
+	@Override
+	public boolean hasMaster() {
+		return hasMaster;
+	}
+
+	@Override
+	public boolean isMaster() {
+		return isMaster;
+	}
+
+	@Override
+	public int getMasterX() {
+		return masterX;
+	}
+
+	@Override
+	public int getMasterY() {
+		return masterY;
+	}
+
+	@Override
+	public int getMasterZ() {
+		return masterZ;
+	}
+
+	@Override
+	public void setHasMaster(boolean has) {
+		// if (has) {
+		// throw new IllegalArgumentException(
+		// "RFForge controller cannot have a master");
+		// }
+		hasMaster = has;
+
+	}
+
+	@Override
+	public void setIsMaster(boolean is) {
+		isMaster = is;
+
+	}
+
+	@Override
+	public void setMasterCoords(int x, int y, int z) {
+		masterX = x;
+		masterY = y;
+		masterZ = z;
+	}
+
+	@Override
+	public boolean checkForMaster() {
+		return false;
+	}
+
+	@Override
+	public void reset() {
+		isMaster = false;
+		hasMaster = false;
+		masterX = 0;
+		masterY = 0;
+		masterZ = 0;
+
 	}
 
 	// public FluidTankAlloy getTankB() {

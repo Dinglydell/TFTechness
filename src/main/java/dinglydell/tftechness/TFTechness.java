@@ -81,6 +81,7 @@ import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import dinglydell.tftechness.block.BlockRFForgeCasing;
 import dinglydell.tftechness.block.BlockTFTMetalSheet;
 import dinglydell.tftechness.block.BlockTankFrame;
 import dinglydell.tftechness.block.ItemBlockTankFrame;
@@ -114,6 +115,7 @@ import dinglydell.tftechness.recipe.TFTCraftingHandler;
 import dinglydell.tftechness.render.item.RenderBucket;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.dynamo.TileTFTDynamoSteam;
+import dinglydell.tftechness.tileentities.machine.TileRFForgeCasing;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
 import dinglydell.tftechness.tileentities.machine.TileRFForge;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
@@ -313,6 +315,8 @@ public class TFTechness {
 		GameRegistry.registerTileEntity(TileCryoChamber.class, "CryoChamber");
 
 		GameRegistry.registerTileEntity(TileRFForge.class, "RFForge");
+
+		GameRegistry.registerTileEntity(TileRFForgeCasing.class, "RFForgeCasing");
 	}
 
 	private void registerRecipeTypes() {
@@ -404,6 +408,10 @@ public class TFTechness {
 		BlockTFTMachine.rfForge = ItemBlockTFTMachine
 				.setDefaultTag(new ItemStack(TFTBlocks.machine, 1,
 						BlockTFTMachine.Types.RFFORGE.ordinal()));
+
+		TFTBlocks.rfForgeCasing = new BlockRFForgeCasing()
+				.setBlockName("RFForgeCasing");
+		GameRegistry.registerBlock(TFTBlocks.rfForgeCasing, "RFForgeCasing");
 
 	}
 

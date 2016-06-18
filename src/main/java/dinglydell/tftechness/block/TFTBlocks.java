@@ -11,4 +11,6 @@ public class TFTBlocks {
 	public static Block machine;
 	public static Block dynamo;
 	public static Map<String, Block> moltenMetal = new HashMap();
+
+	public static Block rfForgeCasing;
 }
