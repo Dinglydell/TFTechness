@@ -58,6 +58,18 @@ public class TFTAugments {
 						"dustCryotheum",
 						Character.valueOf('E'),
 						"plateDoubleElectrum" }));
+
+		GameRegistry.addRecipe(new ShapedOreRecipe(rfforgeAutoTemp,
+				new Object[] { "   ",
+						" S ",
+						"dEd",
+						Character.valueOf('S'),
+						"dustSulfur",
+						Character.valueOf('d'),
+						"dustRedstone",
+						Character.valueOf('E'),
+						"plateElectrum" }));
+
 	}
 
 	public static ItemStack rfforgeAutoTemp = null;
@@ -75,11 +87,6 @@ public class TFTAugments {
 	 * The auto temperature augment will always keep the target temperature this
 	 * much below the melting temperature
 	 */
-	public static final int AUTO_TEMP_THRESHHOLD = 5;
-	/**
-	 * The auto temperature augment will keep the target temperature at this
-	 * temperature if the forge is empty
-	 */
-	public static final float AUTO_TEMP_EMPTY_TEMPERATURE = 100;
+	public static final int AUTO_TEMP_THRESHHOLD = 1;
 
 }

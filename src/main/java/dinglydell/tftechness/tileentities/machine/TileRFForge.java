@@ -180,11 +180,10 @@ public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
 					}
 				}
 			}
-			if (minTemp == MAX_TEMPERATURE) {
-				minTemp = TFTAugments.AUTO_TEMP_EMPTY_TEMPERATURE;
+			if (minTemp != MAX_TEMPERATURE) {
+				targetTemperature = minTemp;
+				sendModePacket();
 			}
-			targetTemperature = minTemp;
-			sendModePacket();
 		}
 
 	}
