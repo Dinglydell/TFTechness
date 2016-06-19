@@ -22,6 +22,7 @@ tile.TFTechness.machine.precipitator.name=Glacial Precipitator
 
 tile.TFTechness.machine.cryochamber.name=Cryothermic Chamber
 tile.TFTechness.machine.rfforge.name=Energized Forge
+tile.TFTechness.machine.rfcrucible.name=Energetic Alloy Crucible
 
 tile.TFTechness.dynamo.steam.name=Steam Dynamo
 
@@ -31,6 +32,7 @@ info.TFTechness.machine.precipitator=Freezes fluids into solids.
 
 info.TFTechness.machine.cryochamber=Cools food to reduce decay.
 info.TFTechness.machine.rfforge=Heats & melts metals using the mighty power of RF.
+info.TFTechness.machine.rfcrucible=Mixes molten metals into alloys in a flexible, automatable way
 
 info.TFTechness.tank.mixed.name=Mixed Fluid Tank
 
@@ -45,9 +47,10 @@ info.thermalexpansion.augment.tftCryoEfficiency.0=Increases max power consumptio
 info.thermalexpansion.augment.tftCryoEfficiency.1=Increases max energy spend on cooling
 info.thermalexpansion.augment.tftCryoEfficiency.2=Reduces efficiency
 
-info.thermalexpansion.augment.tftRFForgeAutoTemp=Energized Forge: Automatic Temperature Control
+info.thermalexpansion.augment.tftRFForgeAutoTemp=Energized Forge/Energitic Alloy Crucible: Automatic Temperature Control
 info.thermalexpansion.augment.tftRFForgeAutoTemp.0=Keeps forge temperature just below the lowest melting temperature
-info.thermalexpansion.augment.tftRFForgeAutoTemp.1=of items in the forge
+info.thermalexpansion.augment.tftRFForgeAutoTemp.1=of items in the forge, or just above the melting temperature
+info.thermalexpansion.augment.tftRFForgeAutoTemp.2=of molten metal in the crucible
 
 tab.TFTechness.machine.cryochamber.0=Had enough of your food constantly decaying?
 tab.TFTechness.machine.cryochamber.1=Want to slow down decay to a near stop?
@@ -58,6 +61,10 @@ tab.TFTechness.machine.cryochamber.4=*guaranteed not to not spontaneously combus
 tab.TFTechness.machine.rfforge.0=Heats up and melts metals.
 tab.TFTechness.machine.rfforge.1=Higher tiers are more efficient
 tab.TFTechness.machine.rfforge.2=Not guaranteed to be explosion free
+
+tab.TFTechness.machine.rfcrucible.0=Mixes molten metal
+tab.TFTechness.machine.rfcrucible.1=Higher tiers are more efficient at maintaining temperature
+tab.TFTechness.machine.rfcrucible.2=Crucible must stay hotter than the metal's melting point to work
 
 item.metalRod=Rod
 

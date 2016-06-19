@@ -16,8 +16,10 @@ import com.bioxx.tfc.api.TFC_ItemHeat;
 
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
+import dinglydell.tftechness.tileentities.machine.TileRFCrucible;
 import dinglydell.tftechness.tileentities.machine.TileRFForge;
 import dinglydell.tftechness.tileentities.machine.TileTemperature;
+import dinglydell.tftechness.tileentities.machine.TileTemperatureControl;
 import dinglydell.tftechness.util.MathUtils;
 
 public class TFTWaila implements IWailaDataProvider {
@@ -47,7 +49,7 @@ public class TFTWaila implements IWailaDataProvider {
 			float temp = accessor.getNBTData().getFloat("Temperature");
 			addTemperature(currenttip, temp);
 		}
-		if (te instanceof TileRFForge) {
+		if (te instanceof TileTemperatureControl) {
 			float target = accessor.getNBTData().getFloat("TargetTemperature");
 			addTemperature(currenttip, target, "Target: ");
 		}
@@ -87,9 +89,9 @@ public class TFTWaila implements IWailaDataProvider {
 		if (te instanceof TileTemperature) {
 			tag.setFloat("Temperature", ((TileTemperature) te).getTemperature());
 		}
-		if (te instanceof TileRFForge) {
+		if (te instanceof TileTemperatureControl) {
 			tag.setFloat("TargetTemperature",
-					((TileRFForge) te).targetTemperature);
+					((TileTemperatureControl) te).targetTemperature);
 		}
 		return tag;
 	}
@@ -97,6 +99,8 @@ public class TFTWaila implements IWailaDataProvider {
 	public static void callbackRegister(IWailaRegistrar reg) {
 		reg.registerBodyProvider(new TFTWaila(), TileRFForge.class);
 		reg.registerNBTProvider(new TFTWaila(), TileRFForge.class);
+		reg.registerBodyProvider(new TFTWaila(), TileRFCrucible.class);
+		reg.registerNBTProvider(new TFTWaila(), TileRFCrucible.class);
 		reg.registerBodyProvider(new TFTWaila(), TileCryoChamber.class);
 		reg.registerNBTProvider(new TFTWaila(), TileCryoChamber.class);
 	}

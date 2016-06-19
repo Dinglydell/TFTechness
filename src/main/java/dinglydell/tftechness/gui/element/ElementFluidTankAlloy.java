@@ -24,7 +24,7 @@ public class ElementFluidTankAlloy extends ElementFluidTankMixed {
 			// list.add(StringHelper.localize(""));
 		} else {
 			list.add(StringHelper.getFluidName(((FluidTankAlloy) tank)
-					.getAlloy()));
+					.getAlloyFluid()));
 		}
 
 		list.add("" + amt + " / " + tank.getCapacity() + " mB");

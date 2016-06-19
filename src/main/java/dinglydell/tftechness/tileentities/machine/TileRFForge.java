@@ -19,52 +19,42 @@ import cofh.lib.util.helpers.ServerHelper;
 import com.bioxx.tfc.api.HeatIndex;
 import com.bioxx.tfc.api.HeatRegistry;
 import com.bioxx.tfc.api.Metal;
-import com.bioxx.tfc.api.TFCItems;
 import com.bioxx.tfc.api.TFC_ItemHeat;
 import com.bioxx.tfc.api.Interfaces.ISmeltable;
 
-import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
-import dinglydell.tftechness.config.MetalConfig;
-import dinglydell.tftechness.fluid.FluidMoltenMetal;
 import dinglydell.tftechness.fluid.TFTFluids;
 import dinglydell.tftechness.gui.GuiRFForge;
 import dinglydell.tftechness.gui.container.ContainerRFForge;
 import dinglydell.tftechness.item.TFTAugments;
 
-public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
-		IFluidHandler {
+public class TileRFForge extends TileTemperatureControl implements
+		IRFForgeMultiBlock, IFluidHandler {
 
 	protected static final int[] tankCapacity = { 4000, 8000, 16000, 32000 };
-	protected static final float specificHeat = 1.5f;
-	protected static final int mass = 1200;
-	public static final int MAX_TEMPERATURE = 2000;
-	protected static final float[] levelExposedSurfaceArea = { 0.03f,
-			0.02f,
-			0.01f,
-			0.0075f };
-	protected static final float coolingExposedSurfaceArea = 1;
+
 	// Currently all items have the same properties
 	protected static final float itemSurfaceArea = 0.074f;
 	protected static final float itemMass = 10;
 
 	// protected float internalTemperature = TFTechness.baseTemp;
-	public float targetTemperature = 0;
+
 	protected FluidTankAdv tank = new FluidTankAdv(tankCapacity[0]);
 	/**
-	 * All input slots will have an index >= tankASlotEnd and < this value
+	 * All input slots will have an < this value
 	 */
 	public static final int inputSlotEnd = 6;
 	// protected FluidTankAlloy tankB = new FluidTankAlloy(tankCapacity[0]);
-	private boolean isCooling;
+
 	private int outputTrackerFluid;
 
 	// private FluidTankAdv guiTankA = new FluidTankAdv(tankCapacity[0]);
 	// private FluidTankAdv guiTankB = new FluidTankAdv(tankCapacity[0]);
 
 	public TileRFForge() {
+		super();
 		inventory = new ItemStack[8];
-		internalTemperature = TFTechness.baseTemp;
+
 	}
 
 	@Override
@@ -89,7 +79,6 @@ public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
 	public PacketCoFHBase getGuiPacket() {
 		PacketCoFHBase packet = super.getGuiPacket();
 		packet.addFluidStack(tank.getFluid());
-		packet.addFloat(targetTemperature);
 		return packet;
 
 	}
@@ -98,7 +87,6 @@ public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
 	public void handleGuiPacket(PacketCoFHBase packet) {
 		super.handleGuiPacket(packet);
 		tank.setFluid(packet.getFluidStack());
-		targetTemperature = packet.getFloat();
 	}
 
 	@Override
@@ -108,7 +96,6 @@ public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
 		isMaster = nbt.getBoolean("IsMaster");
 		direction = ForgeDirection.values()[nbt.getInteger("Direction")];
 		tank.readFromNBT(nbt.getCompoundTag("Tank"));
-		targetTemperature = nbt.getFloat("TargetTemperature");
 		outputTrackerFluid = nbt.getInteger("OutputTracker");
 	}
 
@@ -120,7 +107,6 @@ public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
 		nbt.setInteger("Direction", direction.ordinal());
 		nbt.setInteger("OutputTracker", outputTrackerFluid);
 		nbt.setTag("Tank", tank.writeToNBT(new NBTTagCompound()));
-		nbt.setFloat("TargetTemperature", targetTemperature);
 	}
 
 	@Override
@@ -175,14 +161,16 @@ public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
 					HeatIndex index = HeatRegistry.getInstance()
 							.findMatchingIndex(is);
 					if (index != null && index.hasOutput()) {
-						minTemp = Math.min(minTemp, index.meltTemp
-								- TFTAugments.AUTO_TEMP_THRESHHOLD);
+						minTemp = Math.min(minTemp, index.meltTemp);
 					}
 				}
 			}
 			if (minTemp != MAX_TEMPERATURE) {
-				targetTemperature = minTemp;
-				sendModePacket();
+				float oldTarget = targetTemperature;
+				targetTemperature = minTemp - TFTAugments.AUTO_TEMP_THRESHHOLD;
+				if (oldTarget != targetTemperature) {
+					sendModePacket();
+				}
 			}
 		}
 
@@ -327,37 +315,6 @@ public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
 
 	}
 
-	protected void handleMoldOutput(int slot, FluidTankAdv tnk) {
-		if (inventory[slot] != null && tnk.getFluid() != null) {
-			int drainAmt = (int) (1 / (float) MetalConfig.ingotFluidmB * 100);
-			FluidStack fs = tnk.drain(drainAmt, false);
-			FluidMoltenMetal m = (FluidMoltenMetal) fs.getFluid();
-			if (HeatRegistry.getInstance().getMeltingPoint(new ItemStack(
-					m.getMetal().meltedItem)) < internalTemperature) {
-
-				if (inventory[slot].getItem() == TFCItems.ceramicMold) {
-					inventory[slot] = new ItemStack(m.getMetal().meltedItem, 1,
-							99);
-					TFC_ItemHeat.setTemp(inventory[slot], internalTemperature);
-					tnk.drain(drainAmt, true);
-				} else if (inventory[slot].getItem() == m.getMetal().meltedItem
-						&& inventory[slot].getItemDamage() > 0) {
-
-					inventory[slot].setItemDamage(inventory[slot]
-							.getItemDamage() - 1);
-					// Proportion of temperature between the amount added an the
-					// amount in the mold
-					float prop = 1 / (100 - inventory[slot].getItemDamage());
-					float temp = prop * internalTemperature + (1 - prop)
-							* TFC_ItemHeat.getTemp(inventory[slot]);
-					TFC_ItemHeat.setTemp(inventory[slot], temp);
-					tnk.drain(drainAmt, true);
-				}
-			}
-		}
-
-	}
-
 	protected void heatInventorySlots() {
 		for (int i = 0; i < inputSlotEnd; i++) {
 
@@ -398,24 +355,6 @@ public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
 
 			}
 		}
-	}
-
-	@Override
-	protected int spendEnergy(int rf) {
-		float j = rf * TFTechness.rfToJoules;
-		float tmp = j / (mass * specificHeat);
-		if (internalTemperature + tmp > targetTemperature) {
-			tmp = Math.max(0, targetTemperature - internalTemperature);
-			internalTemperature += tmp;
-
-			isCooling = tmp == 0;
-
-			return (int) Math.ceil((tmp * mass * specificHeat)
-					/ TFTechness.rfToJoules);
-		}
-		isCooling = false;
-		internalTemperature += tmp;
-		return rf;
 	}
 
 	@Override
@@ -496,35 +435,6 @@ public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
 	protected void onLevelChange() {
 		super.onLevelChange();
 		tank.setCapacity(tankCapacity[level]);
-	}
-
-	@Override
-	protected float getSurfaceArea() {
-		return isCooling ? coolingExposedSurfaceArea
-				: levelExposedSurfaceArea[level];
-	}
-
-	@Override
-	protected float getSpecificHeat() {
-		return specificHeat;
-	}
-
-	@Override
-	protected int getMass() {
-		return mass;
-	}
-
-	@Override
-	public PacketCoFHBase getModePacket() {
-		PacketCoFHBase packet = super.getModePacket();
-		packet.addFloat(targetTemperature);
-		return packet;
-	}
-
-	@Override
-	protected void handleModePacket(PacketCoFHBase packet) {
-		super.handleModePacket(packet);
-		targetTemperature = packet.getFloat();
 	}
 
 	public FluidTankAdv getTank() {
@@ -613,41 +523,42 @@ public class TileRFForge extends TileTemperature implements IRFForgeMultiBlock,
 	@Override
 	public FluidStack drain(ForgeDirection from, FluidStack resource,
 			boolean doDrain) {
-		if ((from != ForgeDirection.UNKNOWN)
-				&& (this.sideCache[from.ordinal()] != Colours.orange.ordinal() && this.sideCache[from
-						.ordinal()] != Colours.red.ordinal())) {
-			return null;
-		}
+
 		if ((resource == null) || tank.getFluidAmount() == 0
 				|| (resource.getFluid() != tank.getFluid().getFluid())) {
 			return null;
 		}
-		return this.tank.drain(resource.amount, doDrain);
+		return drain(from, resource.amount, doDrain);
 
 	}
 
 	@Override
 	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-		// TODO Auto-generated method stub
-		return null;
+		if ((from != ForgeDirection.UNKNOWN)
+				&& (this.sideCache[from.ordinal()] != Colours.orange.ordinal() && this.sideCache[from
+						.ordinal()] != Colours.red.ordinal())) {
+			return null;
+		}
+		return this.tank.drain(maxDrain, doDrain);
 	}
 
 	@Override
 	public boolean canFill(ForgeDirection from, Fluid fluid) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean canDrain(ForgeDirection from, Fluid fluid) {
-		// TODO Auto-generated method stub
-		return false;
+		return tank.getFluidAmount() > 0
+				&& tank.getFluid().getFluid() == fluid
+				&& !((from != ForgeDirection.UNKNOWN) && (this.sideCache[from
+						.ordinal()] != Colours.orange.ordinal() && this.sideCache[from
+						.ordinal()] != Colours.red.ordinal()));
 	}
 
 	@Override
 	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
-		// TODO Auto-generated method stub
-		return null;
+		return new FluidTankInfo[] { this.tank.getInfo() };
 	}
 
 	// public FluidTankAlloy getTankB() {

@@ -32,8 +32,22 @@ public class FluidTankAlloy extends FluidTankMixed implements IFluidTank {
 		return super.fill(fluid, doFill);
 	}
 
-	public FluidStack getAlloy() {
+	public FluidStack getAlloyFluid() {
 		int totalAmt = getFluidAmount();
+		Metal alloy = getAlloy(totalAmt);
+		return new FluidStack(TFTFluids.metal.get(alloy.name), totalAmt);
+	}
+
+	@Override
+	public FluidStack getFluid() {
+		return getAlloyFluid();
+	}
+
+	public Metal getAlloy() {
+		return getAlloy(getFluidAmount());
+	}
+
+	public Metal getAlloy(int totalAmt) {
 		ArrayList<AlloyMetal> ing = new ArrayList<AlloyMetal>();
 		for (FluidStackFloat fs : getFluids()) {
 			Metal m = ((FluidMoltenMetal) fs.getFluid()).metal;
@@ -44,12 +58,7 @@ public class FluidTankAlloy extends FluidTankMixed implements IFluidTank {
 		if (alloy == null || totalAmt == 0) {
 			alloy = MetalRegistry.instance.getMetalFromString("Unknown");
 		}
-		return new FluidStack(TFTFluids.metal.get(alloy.name), totalAmt);
-	}
-
-	@Override
-	public FluidStack getFluid() {
-		return currentAlloy;
+		return alloy;
 	}
 
 	@Override
@@ -65,7 +74,7 @@ public class FluidTankAlloy extends FluidTankMixed implements IFluidTank {
 			amt += fs.amount;
 		}
 		FluidStack fs;
-		currentAlloy = getAlloy();
+		currentAlloy = getAlloyFluid();
 		if (currentAlloy == null) {
 			fs = new FluidStack(TFTFluids.metal.get("Unknown"), (int) amt);
 		} else {

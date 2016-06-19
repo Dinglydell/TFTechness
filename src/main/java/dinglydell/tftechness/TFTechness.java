@@ -115,9 +115,10 @@ import dinglydell.tftechness.recipe.TFTCraftingHandler;
 import dinglydell.tftechness.render.item.RenderBucket;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.dynamo.TileTFTDynamoSteam;
-import dinglydell.tftechness.tileentities.machine.TileRFForgeCasing;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
+import dinglydell.tftechness.tileentities.machine.TileRFCrucible;
 import dinglydell.tftechness.tileentities.machine.TileRFForge;
+import dinglydell.tftechness.tileentities.machine.TileRFForgeCasing;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
@@ -316,7 +317,10 @@ public class TFTechness {
 
 		GameRegistry.registerTileEntity(TileRFForge.class, "RFForge");
 
-		GameRegistry.registerTileEntity(TileRFForgeCasing.class, "RFForgeCasing");
+		GameRegistry.registerTileEntity(TileRFForgeCasing.class,
+				"RFForgeCasing");
+
+		GameRegistry.registerTileEntity(TileRFCrucible.class, "RFCrucible");
 	}
 
 	private void registerRecipeTypes() {
@@ -412,6 +416,10 @@ public class TFTechness {
 		TFTBlocks.rfForgeCasing = new BlockRFForgeCasing()
 				.setBlockName("RFForgeCasing");
 		GameRegistry.registerBlock(TFTBlocks.rfForgeCasing, "RFForgeCasing");
+
+		BlockTFTMachine.rfCrucible = ItemBlockTFTMachine
+				.setDefaultTag(new ItemStack(TFTBlocks.machine, 1,
+						BlockTFTMachine.Types.RFCRUCIBLE.ordinal()));
 
 	}
 

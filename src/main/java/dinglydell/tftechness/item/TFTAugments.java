@@ -21,7 +21,7 @@ public class TFTAugments {
 
 		rfforgeAutoTemp = TEAugments.itemAugment
 				.addItem(515, RFFORGE_AUTO_TEMP);
-		TEAugments.itemAugment.addAugmentData(515, RFFORGE_AUTO_TEMP, 1, 2);
+		TEAugments.itemAugment.addAugmentData(515, RFFORGE_AUTO_TEMP, 1, 3);
 
 	}
 
