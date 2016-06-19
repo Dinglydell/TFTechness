@@ -1290,10 +1290,9 @@ public class TFTechness {
 
 	private void removeNuggetIngotRecipes(RemoveBatch batch, Material m) {
 		if (m.nugget != null) {
-			// batch.addCrafting(new ItemStack(m.ingot), new ItemStack[] {
-			// m.nugget
-			// });
-			batch.addCrafting(new ItemStack(m.ingot));
+			batch.addCrafting(new ItemStack(m.ingot),
+					new ItemStack[] { m.nugget });
+			//batch.addCrafting(new ItemStack(m.ingot));
 		}
 	}
 
