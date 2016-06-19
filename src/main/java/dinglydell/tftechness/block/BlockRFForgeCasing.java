@@ -22,6 +22,18 @@ public class BlockRFForgeCasing extends Block implements ITileEntityProvider {
 	public void breakBlock(World world, int x, int y, int z, Block block,
 			int meta) {
 		super.breakBlock(world, x, y, z, block, meta);
+		//		TileRFForgeCasing trfc = (TileRFForgeCasing) world.getTileEntity(x,
+		//				y,
+		//				z);
+		//		if (trfc.hasMaster()) {
+		//			TileEntity te = world.getTileEntity(trfc.getMasterX(),
+		//					trfc.getMasterY(),
+		//					trfc.getMasterZ());
+		//			if (te instanceof TileRFForge) {
+		//				TileRFForge trf = (TileRFForge) te;
+		//				trf.destroyMultiblock();
+		//			}
+		//		}
 		world.removeTileEntity(x, y, z);
 	}
 

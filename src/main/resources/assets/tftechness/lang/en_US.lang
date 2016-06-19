@@ -38,16 +38,22 @@ item.thermalexpansion.augment.tftCryoEfficiency0.name=Coolant Chamber
 item.thermalexpansion.augment.tftCryoEfficiency1.name=Cryothermic Induction Coil
 item.thermalexpansion.augment.tftCryoEfficiency2.name=Cryothermic Infuser
 
+item.thermalexpansion.augment.tftRFForgeAutoTemp.name=Auto Temperature Control
+
 info.thermalexpansion.augment.tftCryoEfficiency=Cryothermic Chamber: Cooling
 info.thermalexpansion.augment.tftCryoEfficiency.0=Increases max power consumption
 info.thermalexpansion.augment.tftCryoEfficiency.1=Increases max energy spend on cooling
 info.thermalexpansion.augment.tftCryoEfficiency.2=Reduces efficiency
 
+info.thermalexpansion.augment.tftRFForgeAutoTemp=Energized Forge: Automatic Temperature Control
+info.thermalexpansion.augment.tftRFForgeAutoTemp.0=Keeps forge temperature just below the lowest melting temperature
+info.thermalexpansion.augment.tftRFForgeAutoTemp.1=of items in the forge
+
 tab.TFTechness.machine.cryochamber.0=Had enough of your food constantly decaying?
 tab.TFTechness.machine.cryochamber.1=Want to slow down decay to a near stop?
 tab.TFTechness.machine.cryochamber.2=Well you've come to the right place! Place your food in here and never have to worry about food decay again!
-tab.TFTechness.machine.cryochamber.3=Certified and guarenteed by Mr A. Suspiciousfool as 100% safe!
-tab.TFTechness.machine.cryochamber.4=*guarenteed not to not spontaneously combust 
+tab.TFTechness.machine.cryochamber.3=Certified and guaranteed by Mr A. Suspiciousfool as 100% safe!
+tab.TFTechness.machine.cryochamber.4=*guaranteed not to not spontaneously combust 
 
 tab.TFTechness.machine.rfforge.0=Heats up and melts metals.
 tab.TFTechness.machine.rfforge.1=Higher tiers are more efficient
