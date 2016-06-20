@@ -73,6 +73,9 @@ item.redSteelBucket.name=Red Steel Bucket
 
 fluid.moltenMetal=Molten
 
+metal.solid=Solid
+metal.molten=Molten
+
 metal.bismuth=Bismuth
 metal.bismuth bronze=Bismuth Bronze
 metal.bronze=Bronze

@@ -3,11 +3,16 @@ package dinglydell.tftechness.gui;
 import java.util.List;
 
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import cofh.lib.gui.element.ElementButton;
 import cofh.lib.gui.element.ElementEnergyStored;
 import cofh.lib.util.helpers.StringHelper;
 import cofh.thermalexpansion.gui.client.GuiAugmentableBase;
 import cofh.thermalexpansion.gui.element.ElementSlotOverlay;
+
+import com.bioxx.tfc.api.Metal;
+
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.gui.container.ContainerRFCrucible;
 import dinglydell.tftechness.gui.element.ElementFluidTankAlloy;
@@ -20,8 +25,10 @@ import dinglydell.tftechness.tileentities.machine.TileTFTMachine.Colours;
 public class GuiRFCrucible extends GuiAugmentableBase implements ISliderHandler {
 
 	public static final int maxTempScale = GuiRFForge.maxTempScale;
+	public static final String TEXTURE_PATH = TFTechness.MODID
+			+ ":textures/gui/machine/RFCrucible.png";
 	public static final ResourceLocation TEXTURE = new ResourceLocation(
-			TFTechness.MODID + ":textures/gui/machine/RFCrucible.png");
+			TEXTURE_PATH);
 
 	protected TileRFCrucible myTile;
 
@@ -54,10 +61,12 @@ public class GuiRFCrucible extends GuiAugmentableBase implements ISliderHandler 
 		moldSlotYellow = (ElementSlotOverlay) addElement(new ElementSlotOverlay(
 				this, 154, 53).setSlotInfo(Colours.yellow.gui(), 0, 2));
 
+		addElement(new ElementButton(this, 67, 45, "LockUnlock", 176, 0, 176,
+				0, 45, 25, TEXTURE_PATH));
+
 		addElement(new ElementEnergyStored(this, 8, 8,
 				myTile.getEnergyStorage()));
 		final GuiUtils gu = new GuiUtils();
-
 		addElement(new ElementVerticalSlider(this, 28, 8, 7, 49) {
 
 			@Override
@@ -87,6 +96,29 @@ public class GuiRFCrucible extends GuiAugmentableBase implements ISliderHandler 
 				myTile.getAlloyTank()).setSize(16, 42));
 
 		// buttonList.add(new GuiButton(0, 140, 8, 7, 49, ""));
+	}
+
+	@Override
+	protected void drawGuiContainerForegroundLayer(int x, int y) {
+		super.drawGuiContainerForegroundLayer(x, y);
+		if (myTile.getAlloyTank().getFluidAmount() == 0) {
+			return;
+		}
+		Metal m = myTile.getAlloyTank().getAlloy();
+		itemRender.renderItemAndEffectIntoGUI(fontRendererObj,
+				this.mc.getTextureManager(),
+				new ItemStack(m.ingot),
+				80,
+				15);
+		String name = StringHelper.localize(m.name) + " (";
+		if (myTile.isHotEnough()) {
+			name += StringHelper.localize("metal.molten");
+		} else {
+			name += StringHelper.localize("metal.solid");
+		}
+		name += ")";
+		fontRendererObj.drawString(name, getCenteredOffset(name), 33, 0);
+
 	}
 
 	@Override

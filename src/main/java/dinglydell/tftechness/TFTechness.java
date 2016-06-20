@@ -468,10 +468,10 @@ public class TFTechness {
 					.getDouble();
 			double sh = metalConfig.get(key, "SpecificHeat", heat.specificHeat)
 					.getDouble();
-			int ingotMass = metalConfig.get(key,
+			entry.getValue().ingotMass = metalConfig.get(key,
 					"IngotMass",
 					entry.getValue().ingotMass).getInt();
-			heat = new HeatRaw(sh, melt);
+			entry.getValue().heat = new HeatRaw(sh, melt);
 
 		}
 

@@ -330,7 +330,9 @@ public class TileRFForge extends TileTemperatureControl implements
 							index.specificHeat,
 							itemMass);
 					temp += change;
-					internalTemperature -= change * 0.001;
+					float energy = change * index.specificHeat * itemMass;
+					internalTemperature -= energy
+							/ (getMass() * getSpecificHeat());
 					// if (internalTemperature > temp) {
 					// temp += TFC_ItemHeat.getTempIncrease(is);
 					// } else {

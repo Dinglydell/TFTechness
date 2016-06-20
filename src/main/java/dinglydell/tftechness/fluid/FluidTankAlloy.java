@@ -14,6 +14,8 @@ import com.bioxx.tfc.Core.Metal.AlloyMetal;
 import com.bioxx.tfc.Core.Metal.MetalRegistry;
 import com.bioxx.tfc.api.Metal;
 
+import dinglydell.tftechness.metal.MetalSnatcher;
+
 /** A mixed fluid tank that stores molten fluids and creates alloys */
 public class FluidTankAlloy extends FluidTankMixed implements IFluidTank {
 
@@ -86,5 +88,20 @@ public class FluidTankAlloy extends FluidTankMixed implements IFluidTank {
 	public void setFluid(FluidStack fs) {
 		setFluid(new FluidStackFloat(fs.getFluid(), fs.amount));
 
+	}
+
+	public float getMeltTemp() {
+		Metal alloy = getAlloy();
+		if (alloy.name.equals("Unknown")) {
+			float melt = 0;
+			for (FluidStackFloat fs : getFluids()) {
+				Metal m = ((FluidMoltenMetal) fs.getFluid()).metal;
+				melt = Math.max(melt,
+						MetalSnatcher.getHeatIndexFromMetal(m).meltTemp);
+			}
+			return melt;
+		} else {
+			return MetalSnatcher.getHeatIndexFromMetal(alloy).meltTemp;
+		}
 	}
 }

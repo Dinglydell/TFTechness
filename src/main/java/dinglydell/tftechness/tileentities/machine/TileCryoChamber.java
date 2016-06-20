@@ -27,7 +27,7 @@ public class TileCryoChamber extends TileTemperature {
 	 */
 	protected static final float heatMultiplier = heatTransferCoefficient
 			* surfaceArea / (20 * mass * specificHeat);
-	/** The hightest temperature the device desires to be */
+	/** The highest temperature the device desires to be */
 	protected static final float targetTemperatureMax = -5;
 	/** The lowest temperature the device desires to be */
 	protected static final float targetTemperatureMin = -6;

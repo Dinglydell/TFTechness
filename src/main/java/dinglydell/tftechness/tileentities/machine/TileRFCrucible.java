@@ -10,22 +10,23 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import cofh.core.network.PacketCoFHBase;
 import cofh.lib.util.helpers.ServerHelper;
-
-import com.bioxx.tfc.api.HeatIndex;
-
+import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
+import dinglydell.tftechness.config.MetalConfig;
 import dinglydell.tftechness.fluid.FluidStackFloat;
 import dinglydell.tftechness.fluid.FluidTankAlloy;
 import dinglydell.tftechness.gui.GuiRFCrucible;
 import dinglydell.tftechness.gui.container.ContainerRFCrucible;
 import dinglydell.tftechness.item.TFTAugments;
 import dinglydell.tftechness.metal.MetalSnatcher;
+import dinglydell.tftechness.metal.MetalStat;
 
 public class TileRFCrucible extends TileTemperatureControl implements
 		IFluidHandler {
 
 	protected static final int[] tankCapacity = { 4000, 8000, 16000, 32000 };
 	protected FluidTankAlloy tank = new FluidTankAlloy(tankCapacity[0]);
+	protected float tankFluidTemperature = 0;
 
 	public TileRFCrucible() {
 		super();
@@ -37,7 +38,33 @@ public class TileRFCrucible extends TileTemperatureControl implements
 		super.updateEntity();
 		if (!ServerHelper.isClientWorld(this.worldObj)) {
 			adjustTargetTemperature();
-			handleMoldOutput(0, tank);
+			heatFluids();
+			if (isHotEnough()) {
+				handleMoldOutput(0, tank);
+			}
+		}
+	}
+
+	private void heatFluids() {
+
+		//HeatIndex hi = MetalSnatcher.getHeatIndexFromMetal(tank.getAlloy());
+		if (!tank.isEmpty()) {
+			MetalStat stats = TFTechness.statMap.get(tank.getAlloy().name);
+			float mass = stats.ingotMass * tank.getFluidAmount()
+					/ MetalConfig.ingotFluidmB;
+			// Total surface area of the fluid in the container (m^2 - 2 (top/bottom) * 4 (other sides) * height)
+			float surfaceArea = 2 + 4 * Math.min(tank.getFluidAmount() / 1000f,
+					1);
+			float change = getTemperatureChange(tankFluidTemperature,
+					internalTemperature,
+					surfaceArea,
+					stats.heat.specificHeat,
+					mass);
+			tankFluidTemperature += change;
+			// amount of energy (joules) transfered into the fluid...
+			float e = change * mass * stats.heat.specificHeat;
+			// ...to calculate the effect on the internal temperature of the crucible
+			internalTemperature -= e / (getMass() * getSpecificHeat());
 		}
 	}
 
@@ -60,12 +87,14 @@ public class TileRFCrucible extends TileTemperatureControl implements
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		tank.readFromNBT(nbt.getCompoundTag("Tank"));
+		tankFluidTemperature = nbt.getFloat("FluidTemperature");
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		nbt.setTag("Tank", tank.writeToNBT(new NBTTagCompound()));
+		nbt.setFloat("FluidTemperature", tankFluidTemperature);
 	}
 
 	@Override
@@ -90,14 +119,45 @@ public class TileRFCrucible extends TileTemperatureControl implements
 	protected SideConfig getSideConfig() {
 
 		SideConfig cfg = new SideConfig();
-		cfg.numConfig = 4;
-		cfg.slotGroups = new int[][] { new int[0], { 0 }, { 1 }, { 0, 1 } };
-		cfg.allowInsertionSide = new boolean[] { false, true, false, true };
-		cfg.allowExtractionSide = new boolean[] { false, true, true, true };
-		cfg.allowInsertionSlot = new boolean[] { true, false, false };
-		cfg.allowExtractionSlot = new boolean[] { true, true, false };
-		cfg.sideTex = new int[] { 0, 1, 4, 7 };
-		cfg.defaultSides = new byte[] { 1, 1, 2, 2, 2, 2 };
+		cfg.numConfig = 8;
+		cfg.slotGroups = new int[][] { new int[0],
+				{ 0, 1 },
+				{ 2, 3 },
+				{ 4 },
+				{ 2, 3, 4 },
+				{ 0 },
+				{ 1 },
+				{ 0, 1, 2, 3, 4 } };
+		cfg.allowInsertionSide = new boolean[] { false,
+				true,
+				false,
+				false,
+				false,
+				true,
+				true,
+				true };
+		cfg.allowExtractionSide = new boolean[] { false,
+				true,
+				true,
+				true,
+				true,
+				false,
+				false,
+				true };
+		cfg.allowInsertionSlot = new boolean[] { true,
+				true,
+				false,
+				false,
+				false,
+				false };
+		cfg.allowExtractionSlot = new boolean[] { true,
+				true,
+				true,
+				true,
+				true,
+				false };
+		cfg.sideTex = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+		cfg.defaultSides = new byte[] { 3, 1, 2, 2, 2, 2 };
 		return cfg;
 	}
 
@@ -113,6 +173,7 @@ public class TileRFCrucible extends TileTemperatureControl implements
 	@Override
 	public PacketCoFHBase getGuiPacket() {
 		PacketCoFHBase packet = super.getGuiPacket();
+		packet.addFloat(tankFluidTemperature);
 		packet.addInt(tank.getFluids().size());
 		for (FluidStackFloat fs : tank.getFluids()) {
 			packet.addFluidStack(fs.getFluidStack());
@@ -124,6 +185,7 @@ public class TileRFCrucible extends TileTemperatureControl implements
 	@Override
 	public void handleGuiPacket(PacketCoFHBase packet) {
 		super.handleGuiPacket(packet);
+		tankFluidTemperature = packet.getFloat();
 		int amt = packet.getInt();
 		tank.empty();
 		for (int i = 0; i < amt; i++) {
@@ -142,9 +204,8 @@ public class TileRFCrucible extends TileTemperatureControl implements
 		return new ContainerRFCrucible(inv, this);
 	}
 
-	protected boolean isHotEnough() {
-		HeatIndex hi = MetalSnatcher.getHeatIndexFromMetal(tank.getAlloy());
-		return hi.meltTemp < internalTemperature;
+	public boolean isHotEnough() {
+		return tank.getMeltTemp() < tankFluidTemperature || tank.isEmpty();
 	}
 
 	@Override
@@ -161,7 +222,22 @@ public class TileRFCrucible extends TileTemperatureControl implements
 		if (!canFill(from, resource.getFluid())) {
 			return 0;
 		}
-		return tank.fill(resource, doFill);
+		int amt = tank.fill(resource, doFill);
+		if (doFill && amt > 0) {
+			int prev = tank.getFluidAmount() - amt;
+			if (prev == 0) {
+				//If the tank was previously empty, internal fluid temperature is inherited from the incoming fluid
+				tankFluidTemperature = resource.getFluid()
+						.getTemperature(resource);
+			} else {
+				// Calculate the new temperature of the combined fluids
+				float e = prev * internalTemperature + amt
+						* resource.getFluid().getTemperature(resource);
+				tankFluidTemperature = e / tank.getFluidAmount();
+
+			}
+		}
+		return amt;
 	}
 
 	@Override
