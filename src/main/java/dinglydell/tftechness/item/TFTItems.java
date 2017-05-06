@@ -14,6 +14,7 @@ public class TFTItems {
 	public static Map<String, Item> sheets2x = new HashMap();
 	public static Map<String, Item> rods = new HashMap();
 	public static Map<String, Item> buckets = new HashMap();
+	public static Map<String, Item> plans = new HashMap();
 
 	public static Item yellowCake;
 

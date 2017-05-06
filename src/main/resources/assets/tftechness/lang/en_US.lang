@@ -38,6 +38,9 @@ info.TFTechness.machine.rfanvil=Automatically bashes metals to make cool shapes
 
 info.TFTechness.tank.mixed.name=Mixed Fluid Tank
 
+info.TFTechness.toggleAnvilWeldOn=Turn Weld Mode On
+info.TFTechness.toggleAnvilWeldOff=Turn Weld Mode Off
+
 item.thermalexpansion.augment.tftCryoEfficiency0.name=Coolant Chamber
 item.thermalexpansion.augment.tftCryoEfficiency1.name=Cryothermic Induction Coil
 item.thermalexpansion.augment.tftCryoEfficiency2.name=Cryothermic Infuser
@@ -69,6 +72,8 @@ tab.TFTechness.machine.rfcrucible.1=Higher tiers are more efficient at maintaini
 tab.TFTechness.machine.rfcrucible.2=Crucible must stay hotter than the metal's melting point to work
 
 tab.TFTechness.machine.rfanvil.0=Bashes metals into a (hopefully) useful shape.
+tab.TFTechness.machine.rfanvil.weld=Weld Cost: 
+tab.TFTechness.machine.rfanvil.work=Work Cost: 
 
 item.metalRod=Rod
 

@@ -16,36 +16,51 @@ import com.bioxx.tfc.api.Crafting.AnvilReq;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.config.MetalConfig;
 import dinglydell.tftechness.gui.GuiRFAnvil;
+import dinglydell.tftechness.gui.IPlanHandler;
 import dinglydell.tftechness.gui.container.ContainerRFAnvil;
 
-public class TileRFAnvil extends TileTFTMachine {
+public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 	public static final int inputSlotEnd = 1;
 	protected static final float itemSurfaceArea = 0.074f;
 	protected static final float itemMass = 10;
-	protected String plan = "pickaxe";
+	public static final int FLUX_SLOT = 2;
+	public static final int OUTPUT_SLOT = 3;
+	protected String plan = "";
 
 	protected int requiredEnergy = 1;
 	protected int initialRequiredEnergy = 1;
+	public boolean weldMode;
 
 	public TileRFAnvil() {
 		super();
-		inventory = new ItemStack[3];
+		inventory = new ItemStack[5];
 
 	}
 
 	@Override
 	protected boolean shouldActivate() {
-		AnvilManager manager = AnvilManager.getInstance();
 		//plan = "pickaxe";
-		AnvilRecipe recipe = manager.findMatchingRecipe(new AnvilRecipe(
-				inventory[0], null, plan, false, AnvilReq.REDSTEEL.Tier));
+		AnvilRecipe recipe = findRecipe();
+		if (this.weldMode) {
+
+			return recipe != null && hasWeldableTemperature(0)
+					&& hasWeldableTemperature(1);
+		}
 
 		return recipe != null && hasWorkableTemperature(0);
 
 	}
 
-	// TODO: Centralised location for this sort of thing
-	protected boolean hasWorkableTemperature(int slot) {
+	private boolean hasWeldableTemperature(int slot) {
+		return hasSolidTemperature(slot, MetalConfig.weldableTemperature);
+	}
+
+	/**
+	 * Returns true if the item in slot is solid and has a temperature of at
+	 * least (temperature * melting point)
+	 */
+	private boolean hasSolidTemperature(int slot, float temperature) {
+
 		HeatRegistry heatReg = HeatRegistry.getInstance();
 		ItemStack is = inventory[slot];
 
@@ -53,13 +68,22 @@ public class TileRFAnvil extends TileTFTMachine {
 			HeatIndex index = heatReg.findMatchingIndex(is);
 			if (index != null) {
 				float temp = TFC_ItemHeat.getTemp(is);
-				float workTemp = index.meltTemp
-						* MetalConfig.workableTemperature;
+				float workTemp = index.meltTemp * temperature;
 				return temp < index.meltTemp && temp > workTemp;
 
 			}
 		}
 		return false;
+	}
+
+	public void setMode(boolean mode) {
+		this.weldMode = mode;
+		sendModePacket();
+	}
+
+	// TODO: Centralised location for this sort of thing
+	protected boolean hasWorkableTemperature(int slot) {
+		return hasSolidTemperature(slot, MetalConfig.workableTemperature);
 	}
 
 	@Override
@@ -70,24 +94,41 @@ public class TileRFAnvil extends TileTFTMachine {
 
 	@Override
 	protected void onActivate() {
-		AnvilManager manager = AnvilManager.getInstance();
-		AnvilRecipe recipe = manager.findMatchingRecipe(new AnvilRecipe(
-				inventory[0], null, plan, false, AnvilReq.REDSTEEL.Tier));
 
-		initialRequiredEnergy = recipe.anvilreq * 1000;
+		initialRequiredEnergy = getRecipeCost();
 		requiredEnergy = initialRequiredEnergy;
+	}
+
+	private AnvilRecipe findRecipe() {
+		AnvilManager manager = AnvilManager.getInstance();
+		if (this.weldMode) {
+			return manager.findMatchingWeldRecipe(new AnvilRecipe(inventory[0],
+					inventory[1], "", 0, inventory[FLUX_SLOT] != null,
+					AnvilReq.REDSTEEL.Tier, null));
+		}
+		return manager.findMatchingRecipe(new AnvilRecipe(inventory[0], null,
+				plan, false, AnvilReq.REDSTEEL.Tier));
 	}
 
 	@Override
 	protected void onDeactivate() {
 		if (requiredEnergy <= 0) {
-			AnvilManager manager = AnvilManager.getInstance();
-			AnvilRecipe recipe = manager.findMatchingRecipe(new AnvilRecipe(
-					inventory[0], null, plan, false, AnvilReq.REDSTEEL.Tier));
-			inventory[1] = recipe.result.copy();
-			TFC_ItemHeat.setTemp(inventory[1],
-					TFC_ItemHeat.getTemp(inventory[0]));
+			AnvilRecipe recipe = findRecipe();
+			inventory[OUTPUT_SLOT] = recipe.result.copy();
+			float newTemperature = TFC_ItemHeat.getTemp(inventory[0]);
 			inventory[0] = null;
+			if (weldMode) {
+				newTemperature = (newTemperature + TFC_ItemHeat
+						.getTemp(inventory[1])) / 2;
+				inventory[1] = null;
+			}
+			TFC_ItemHeat.setTemp(inventory[OUTPUT_SLOT], newTemperature);
+			if (recipe.isFlux()) {
+				inventory[FLUX_SLOT].stackSize--;
+				if (inventory[FLUX_SLOT].stackSize <= 0) {
+					inventory[FLUX_SLOT] = null;
+				}
+			}
 
 		}
 		requiredEnergy = 1;
@@ -193,12 +234,13 @@ public class TileRFAnvil extends TileTFTMachine {
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
-
+		this.weldMode = nbt.getBoolean("WeldMode");
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
+		nbt.setBoolean("WeldMode", this.weldMode);
 
 	}
 
@@ -220,9 +262,38 @@ public class TileRFAnvil extends TileTFTMachine {
 
 	@Override
 	public int getScaledProgress(int arg0) {
-		// TODO Auto-generated method stub
+
 		float num = (1 - (float) requiredEnergy / initialRequiredEnergy) * arg0;
 		return (int) num;
+	}
+
+	@Override
+	public PacketCoFHBase getModePacket() {
+		PacketCoFHBase localPacketCoFHBase = super.getModePacket();
+
+		localPacketCoFHBase.addBool(this.weldMode);
+
+		return localPacketCoFHBase;
+	}
+
+	@Override
+	protected void handleModePacket(PacketCoFHBase paramPacketCoFHBase) {
+		super.handleModePacket(paramPacketCoFHBase);
+
+		this.weldMode = paramPacketCoFHBase.getBool();
+		markDirty();
+		callNeighborTileChange();
+	}
+
+	public int getRecipeCost() {
+		AnvilRecipe recipe = findRecipe();
+		return recipe == null ? -1 : (1 + recipe.anvilreq) * 1000;
+	}
+
+	@Override
+	public void setPlan(String p) {
+		this.plan = p;
+
 	}
 
 }

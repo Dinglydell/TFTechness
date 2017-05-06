@@ -79,6 +79,7 @@ import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import dinglydell.tftechness.block.BlockRFForgeCasing;
@@ -95,6 +96,7 @@ import dinglydell.tftechness.config.MachineConfig;
 import dinglydell.tftechness.config.MetalConfig;
 import dinglydell.tftechness.config.RecipeConfig;
 import dinglydell.tftechness.fluid.TFTFluids;
+import dinglydell.tftechness.gui.TFTGuiHandler;
 import dinglydell.tftechness.item.ItemRod;
 import dinglydell.tftechness.item.ItemTFTMetalSheet;
 import dinglydell.tftechness.item.ItemTFTSteelBucket;
@@ -140,6 +142,16 @@ public class TFTechness {
 	public static Map<String, MetalStat> statMap = new HashMap();
 	public static Map<String, Material> materialMap;
 	public static TankMap[] tankMap;
+
+	private static TFTechness instance;
+
+	public static TFTechness getInstance() {
+		return instance;
+	}
+
+	public TFTechness() {
+		instance = this;
+	}
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -223,6 +235,7 @@ public class TFTechness {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		// Requires some TE init
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, new TFTGuiHandler());
 		registerModOreDict();
 		addTanks();
 		TFTFluids.createFluids();
@@ -294,6 +307,7 @@ public class TFTechness {
 
 	@Mod.EventHandler
 	public void loadComplete(FMLLoadCompleteEvent event) {
+
 		// enderium & other pyrotheum recipes don't get registered until now
 		if (RecipeConfig.replaceMachine) {
 			replaceSmelterRecipes();
