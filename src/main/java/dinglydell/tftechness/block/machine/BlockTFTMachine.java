@@ -20,8 +20,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.BlockTETFTBase;
-import dinglydell.tftechness.tileentities.machine.TileRFCrucible;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
+import dinglydell.tftechness.tileentities.machine.TileRFAnvil;
+import dinglydell.tftechness.tileentities.machine.TileRFCrucible;
 import dinglydell.tftechness.tileentities.machine.TileRFForge;
 import dinglydell.tftechness.tileentities.machine.TileTFTAccumulator;
 import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
@@ -38,7 +39,7 @@ public class BlockTFTMachine extends BlockTETFTBase {
 
 	public enum Types {
 		EXTRUDER, ACCUMULATOR, PRECIPITATOR, CRYOCHAMBER(true), RFFORGE(true), RFCRUCIBLE(
-				true);
+				true), RFANVIL;
 		private boolean tftechness = false;
 
 		private Types() {
@@ -82,6 +83,8 @@ public class BlockTFTMachine extends BlockTETFTBase {
 			return new TileRFForge();
 		case RFCRUCIBLE:
 			return new TileRFCrucible();
+		case RFANVIL:
+			return new TileRFAnvil();
 		}
 		return null;
 

@@ -23,6 +23,7 @@ tile.TFTechness.machine.precipitator.name=Glacial Precipitator
 tile.TFTechness.machine.cryochamber.name=Cryothermic Chamber
 tile.TFTechness.machine.rfforge.name=Energized Forge
 tile.TFTechness.machine.rfcrucible.name=Energetic Alloy Crucible
+tile.TFTechness.machine.rfanvil.name=Flux Anvil
 
 tile.TFTechness.dynamo.steam.name=Steam Dynamo
 
@@ -33,6 +34,7 @@ info.TFTechness.machine.precipitator=Freezes fluids into solids.
 info.TFTechness.machine.cryochamber=Cools food to reduce decay.
 info.TFTechness.machine.rfforge=Heats & melts metals using the mighty power of RF.
 info.TFTechness.machine.rfcrucible=Mixes molten metals into alloys in a flexible, automatable way
+info.TFTechness.machine.rfanvil=Automatically bashes metals to make cool shapes
 
 info.TFTechness.tank.mixed.name=Mixed Fluid Tank
 
@@ -65,6 +67,8 @@ tab.TFTechness.machine.rfforge.2=Not guaranteed to be explosion free
 tab.TFTechness.machine.rfcrucible.0=Mixes molten metal
 tab.TFTechness.machine.rfcrucible.1=Higher tiers are more efficient at maintaining temperature
 tab.TFTechness.machine.rfcrucible.2=Crucible must stay hotter than the metal's melting point to work
+
+tab.TFTechness.machine.rfanvil.0=Bashes metals into a (hopefully) useful shape.
 
 item.metalRod=Rod
 

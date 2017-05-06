@@ -20,7 +20,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -81,6 +80,7 @@ import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
 import dinglydell.tftechness.block.BlockRFForgeCasing;
 import dinglydell.tftechness.block.BlockTFTMetalSheet;
 import dinglydell.tftechness.block.BlockTankFrame;
@@ -116,6 +116,7 @@ import dinglydell.tftechness.render.item.RenderBucket;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.dynamo.TileTFTDynamoSteam;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
+import dinglydell.tftechness.tileentities.machine.TileRFAnvil;
 import dinglydell.tftechness.tileentities.machine.TileRFCrucible;
 import dinglydell.tftechness.tileentities.machine.TileRFForge;
 import dinglydell.tftechness.tileentities.machine.TileRFForgeCasing;
@@ -225,7 +226,7 @@ public class TFTechness {
 		registerModOreDict();
 		addTanks();
 		TFTFluids.createFluids();
-		addBuckets();
+		addBuckets(event);
 		TFTAugments.init();
 		registerTileEntities();
 
@@ -321,6 +322,8 @@ public class TFTechness {
 				"RFForgeCasing");
 
 		GameRegistry.registerTileEntity(TileRFCrucible.class, "RFCrucible");
+
+		GameRegistry.registerTileEntity(TileRFAnvil.class, "RFAnvil");
 	}
 
 	private void registerRecipeTypes() {
@@ -331,7 +334,7 @@ public class TFTechness {
 
 	}
 
-	private void addBuckets() {
+	private void addBuckets(FMLInitializationEvent event) {
 		RenderBucket bucketRenderer = new RenderBucket();
 		for (FluidContainerData fcd : FluidContainerRegistry
 				.getRegisteredFluidContainerData()) {
@@ -341,8 +344,6 @@ public class TFTechness {
 							|| fluid == FluidRegistry.LAVA
 							|| fluid == TFCFluids.LAVA
 							|| fluid == TFCFluids.FRESHWATER || fluid == TFCFluids.SALTWATER)) {
-				IIcon icon = fcd.filledContainer.getItem()
-						.getIconFromDamage(fcd.filledContainer.getItemDamage());
 				ItemTFTSteelBucket bucket = new ItemTFTSteelBucket(fluid,
 						fcd.filledContainer,
 						BucketConfig.upsideDown.contains(fluid.getName()),
@@ -357,9 +358,10 @@ public class TFTechness {
 				FluidContainerRegistry.registerFluidContainer(fcd.fluid,
 						bucketStack,
 						bucket.getEmpty());
-
-				MinecraftForgeClient.registerItemRenderer(bucket,
-						bucketRenderer);
+				if (event.getSide() == Side.CLIENT) {
+					MinecraftForgeClient.registerItemRenderer(bucket,
+							bucketRenderer);
+				}
 			}
 		}
 	}
