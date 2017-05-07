@@ -43,6 +43,10 @@ info.TFTechness.RFAnvil.toggleWeldOff=Turn Weld Mode Off
 info.TFTechness.RFAnvil.plan=Selected Plan: 
 info.TFTechness.RFAnvil.plan.none=Select a plan
 
+info.TFTechness.RFCrucible.toggleLockOn=Lock Output
+info.TFTechness.RFCrucible.toggleLockOff=Unlock Output
+info.TFTechness.RFCrucible.lock=Locked to: 
+
 item.thermalexpansion.augment.tftCryoEfficiency0.name=Coolant Chamber
 item.thermalexpansion.augment.tftCryoEfficiency1.name=Cryothermic Induction Coil
 item.thermalexpansion.augment.tftCryoEfficiency2.name=Cryothermic Infuser

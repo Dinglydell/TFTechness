@@ -14,6 +14,7 @@ import cofh.thermalexpansion.gui.element.ElementSlotOverlay;
 import com.bioxx.tfc.api.Metal;
 
 import dinglydell.tftechness.TFTechness;
+import dinglydell.tftechness.fluid.FluidMoltenMetal;
 import dinglydell.tftechness.gui.container.ContainerRFCrucible;
 import dinglydell.tftechness.gui.element.ElementFluidTankAlloy;
 import dinglydell.tftechness.gui.element.ElementSlotMiniTank;
@@ -37,6 +38,7 @@ public class GuiRFCrucible extends GuiAugmentableBase implements ISliderHandler 
 	protected ElementSlotOverlay tankSlotRed;
 	protected ElementSlotOverlay moldSlotOrange;
 	protected ElementSlotOverlay moldSlotYellow;
+	protected ElementButton locked;
 
 	public GuiRFCrucible(InventoryPlayer inv, TileRFCrucible te) {
 		super(new ContainerRFCrucible(inv, te), te, inv.player, TEXTURE);
@@ -60,9 +62,9 @@ public class GuiRFCrucible extends GuiAugmentableBase implements ISliderHandler 
 				this, 154, 53).setSlotInfo(Colours.orange.gui(), 0, 2));
 		moldSlotYellow = (ElementSlotOverlay) addElement(new ElementSlotOverlay(
 				this, 154, 53).setSlotInfo(Colours.yellow.gui(), 0, 2));
-		ElementButton btn = new ElementButton(this, 80, 45, "LockUnlock", 176,
-				0, 176, 16, 16, 16, TEXTURE_PATH);
-		addElement(btn);
+		locked = new ElementButton(this, 80, 53, "LockUnlock", 176, 0, 176, 16,
+				16, 16, TEXTURE_PATH);
+		addElement(locked);
 		addElement(new ElementEnergyStored(this, 8, 8,
 				myTile.getEnergyStorage()));
 		final GuiUtils gu = new GuiUtils();
@@ -108,7 +110,7 @@ public class GuiRFCrucible extends GuiAugmentableBase implements ISliderHandler 
 				this.mc.getTextureManager(),
 				new ItemStack(m.ingot),
 				80,
-				15);
+				12);
 		String name = StringHelper.localize(m.name) + " (";
 		if (myTile.isHotEnough()) {
 			name += StringHelper.localize("metal.molten");
@@ -116,13 +118,23 @@ public class GuiRFCrucible extends GuiAugmentableBase implements ISliderHandler 
 			name += StringHelper.localize("metal.solid");
 		}
 		name += ")";
-		fontRendererObj.drawString(name, getCenteredOffset(name), 33, 0);
-		Metal target = myTile.getTargetFluid().getMetal();
-		itemRender.renderItemAndEffectIntoGUI(fontRendererObj,
-				this.mc.getTextureManager(),
-				new ItemStack(target.ingot),
-				80,
-				40);
+		fontRendererObj.drawString(name, getCenteredOffset(name), 30, 0);
+		FluidMoltenMetal targetFluid = myTile.getTargetFluid();
+		if (myTile.getLocked() && targetFluid != null) {
+			Metal target = targetFluid.getMetal();
+			String targetText = StringHelper
+					.localize("info.TFTechness.RFCrucible.lock")
+					+ StringHelper.localize(target.name);
+			fontRendererObj.drawString(targetText,
+					getCenteredOffset(targetText),
+					42,
+					0);
+			//itemRender.renderItemAndEffectIntoGUI(fontRendererObj,
+			//		this.mc.getTextureManager(),
+			//		new ItemStack(target.ingot),
+			//		80,
+			//		46);
+		}
 	}
 
 	@Override
@@ -142,7 +154,15 @@ public class GuiRFCrucible extends GuiAugmentableBase implements ISliderHandler 
 		tankSlotRed.setVisible(myTile.hasSide(2));
 		moldSlotOrange.setVisible(myTile.hasSide(4));
 		moldSlotYellow.setVisible(myTile.hasSide(3));
-
+		if (myTile.getLocked()) {
+			this.locked.setToolTip("info.TFTechness.RFCrucible.toggleLockOff");
+			this.locked.setSheetX(176);
+			this.locked.setHoverX(176);
+		} else {
+			this.locked.setToolTip("info.TFTechness.RFCrucible.toggleLockOn");
+			this.locked.setSheetX(192);
+			this.locked.setHoverX(192);
+		}
 		if (myTile.hasSide(4)) {
 			tankSlotRed.slotRender = 1;
 			moldSlotYellow.slotRender = 1;

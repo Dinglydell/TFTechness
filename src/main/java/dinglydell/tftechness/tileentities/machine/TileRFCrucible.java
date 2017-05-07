@@ -42,10 +42,7 @@ public class TileRFCrucible extends TileTemperatureControl implements
 		if (!ServerHelper.isClientWorld(this.worldObj)) {
 			adjustTargetTemperature();
 			heatFluids();
-			if (!locked) {
-				targetFluid = (FluidMoltenMetal) tank.getAlloyFluid()
-						.getFluid();
-			}
+
 			if (isHotEnough() && tank.getAlloyFluid().getFluid() == targetFluid) {
 				handleMoldOutput(0, tank);
 			}
@@ -106,7 +103,9 @@ public class TileRFCrucible extends TileTemperatureControl implements
 		nbt.setTag("Tank", tank.writeToNBT(new NBTTagCompound()));
 		nbt.setFloat("FluidTemperature", tankFluidTemperature);
 		nbt.setBoolean("Locked", locked);
-		(new FluidStack(targetFluid, 1)).writeToNBT(nbt);
+		if (targetFluid != null) {
+			(new FluidStack(targetFluid, 1)).writeToNBT(nbt);
+		}
 	}
 
 	@Override
@@ -186,7 +185,13 @@ public class TileRFCrucible extends TileTemperatureControl implements
 	public PacketCoFHBase getGuiPacket() {
 		PacketCoFHBase packet = super.getGuiPacket();
 		packet.addFloat(tankFluidTemperature);
+
+		packet.addBool(targetFluid != null);
+		if (targetFluid != null) {
+			packet.addFluidStack(new FluidStack(targetFluid, 1));
+		}
 		packet.addInt(tank.getFluids().size());
+
 		for (FluidStackFloat fs : tank.getFluids()) {
 			packet.addFluidStack(fs.getFluidStack());
 		}
@@ -198,7 +203,11 @@ public class TileRFCrucible extends TileTemperatureControl implements
 	public void handleGuiPacket(PacketCoFHBase packet) {
 		super.handleGuiPacket(packet);
 		tankFluidTemperature = packet.getFloat();
+		if (packet.getBool()) {
+			targetFluid = (FluidMoltenMetal) packet.getFluidStack().getFluid();
+		}
 		int amt = packet.getInt();
+
 		tank.empty();
 		for (int i = 0; i < amt; i++) {
 			tank.setFluid(packet.getFluidStack());
@@ -298,12 +307,16 @@ public class TileRFCrucible extends TileTemperatureControl implements
 	protected void handleModePacket(PacketCoFHBase packet) {
 		super.handleModePacket(packet);
 		this.locked = packet.getBool();
+		targetFluid = locked ? (FluidMoltenMetal) tank.getAlloyFluid()
+				.getFluid() : null;
 		markDirty();
 		callNeighborTileChange();
 	}
 
 	public void setLocked(boolean locked) {
 		this.locked = locked;
+		targetFluid = locked ? (FluidMoltenMetal) tank.getAlloyFluid()
+				.getFluid() : null;
 		this.sendModePacket();
 	}
 
