@@ -110,12 +110,26 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 	private AnvilRecipe findRecipe(String plan) {
 		AnvilManager manager = AnvilManager.getInstance();
 		if (this.weldMode) {
-			return manager.findMatchingWeldRecipe(new AnvilRecipe(inventory[0],
-					inventory[1], "", 0, inventory[FLUX_SLOT] != null,
-					AnvilReq.REDSTEEL.Tier, null));
+			AnvilRecipe recipe = manager
+					.findMatchingWeldRecipe(new AnvilRecipe(inventory[0],
+							inventory[1], "", 0, inventory[FLUX_SLOT] != null,
+							AnvilReq.REDSTEEL.Tier, null));
+			if (recipe == null) {
+				recipe = manager.findMatchingWeldRecipe(new AnvilRecipe(
+						inventory[1], inventory[0], "", 0,
+						inventory[FLUX_SLOT] != null, AnvilReq.REDSTEEL.Tier,
+						null));
+			}
+			return recipe;
 		}
-		return manager.findMatchingRecipe(new AnvilRecipe(inventory[0],
-				inventory[1], plan, false, AnvilReq.REDSTEEL.Tier));
+		AnvilRecipe recipe = manager
+				.findMatchingRecipe(new AnvilRecipe(inventory[0], inventory[1],
+						plan, false, AnvilReq.REDSTEEL.Tier));
+		if (recipe == null) {
+			recipe = manager.findMatchingRecipe(new AnvilRecipe(inventory[1],
+					inventory[0], plan, false, AnvilReq.REDSTEEL.Tier));
+		}
+		return recipe;
 
 	}
 

@@ -52,7 +52,7 @@ public class TileRFForge extends TileTemperatureControl implements
 	// private FluidTankAdv guiTankB = new FluidTankAdv(tankCapacity[0]);
 
 	public TileRFForge() {
-		super();
+		super(true);
 		inventory = new ItemStack[8];
 
 	}
@@ -117,6 +117,7 @@ public class TileRFForge extends TileTemperatureControl implements
 		if (!ServerHelper.isClientWorld(this.worldObj)) {
 			adjustTargetTemperature();
 			transferOutputFluid();
+			transferOutput();
 			heatInventorySlots();
 			handleMoldOutputs();
 		}
@@ -145,6 +146,30 @@ public class TileRFForge extends TileTemperatureControl implements
 						this.outputTrackerFluid = j;
 						break;
 					}
+				}
+			}
+		}
+
+	}
+
+	protected void transferOutput() {
+		if (!this.augmentAutoOutput) {
+			return;
+		}
+		for (int i = 0; i < inputSlotEnd; i++) {
+			if (inventory[i] == null) {
+				continue;
+			}
+			HeatIndex index = HeatRegistry.getInstance()
+					.findMatchingIndex(inventory[i]);
+			float temp = TFC_ItemHeat.getTemp(inventory[i]);
+			if (temp <= index.meltTemp * 0.99) {
+				continue;
+			}
+			for (int j = 0; j < 6; j++) {
+				if (this.sideCache[j] == Colours.yellow.ordinal()) {
+					//TODO: investigate exactly how this function works
+					this.transferItem(i, AUTO_TRANSFER[this.level], j);
 				}
 			}
 		}
@@ -341,6 +366,26 @@ public class TileRFForge extends TileTemperatureControl implements
 					TFC_ItemHeat.setTemp(is, temp);
 					if (temp > index.meltTemp
 							&& is.getItem() instanceof ISmeltable) {
+						if (hasAugment(TFTAugments.RFFORGE_AUTO_EJECT, 1)) {
+							int j;
+							for (j = 0; j < 6; j++) {
+								if (this.sideCache[j] == Colours.yellow
+										.ordinal()) {
+									//TODO: investigate exactly how this function works
+									if (this.transferItem(i,
+											AUTO_TRANSFER[this.level],
+											j)) {
+										TFC_ItemHeat
+												.setTemp(is, index.meltTemp);
+										break;
+									}
+								}
+							}
+							if (j < 6) {
+								continue;
+							}
+
+						}
 						ISmeltable its = (ISmeltable) is.getItem();
 						Metal m = its.getMetalType(is);
 						if (m != null) {

@@ -39,7 +39,7 @@ public class BlockTFTMachine extends BlockTETFTBase {
 
 	public enum Types {
 		EXTRUDER, ACCUMULATOR, PRECIPITATOR, CRYOCHAMBER(true), RFFORGE(true), RFCRUCIBLE(
-				true), RFANVIL;
+				true), RFANVIL(true);
 		private boolean tftechness = false;
 
 		private Types() {

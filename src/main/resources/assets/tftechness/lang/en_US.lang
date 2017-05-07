@@ -49,6 +49,8 @@ item.thermalexpansion.augment.tftCryoEfficiency2.name=Cryothermic Infuser
 
 item.thermalexpansion.augment.tftRFForgeAutoTemp.name=Auto Temperature Control
 
+item.thermalexpansion.augment.tftRFForgeAutoEject.name=Auto Solid Ejector
+
 info.thermalexpansion.augment.tftCryoEfficiency=Cryothermic Chamber: Cooling
 info.thermalexpansion.augment.tftCryoEfficiency.0=Increases max power consumption
 info.thermalexpansion.augment.tftCryoEfficiency.1=Increases max energy spend on cooling
@@ -58,6 +60,11 @@ info.thermalexpansion.augment.tftRFForgeAutoTemp=Energized Forge/Energitic Alloy
 info.thermalexpansion.augment.tftRFForgeAutoTemp.0=Keeps forge temperature just below the lowest melting temperature
 info.thermalexpansion.augment.tftRFForgeAutoTemp.1=of items in the forge, or just above the melting temperature
 info.thermalexpansion.augment.tftRFForgeAutoTemp.2=of molten metal in the crucible
+
+info.thermalexpansion.augment.tftRFForgeAutoEject=Energized Forge: Automatic Hot-Solid Output
+info.thermalexpansion.augment.tftRFForgeAutoEject.0=Attempts to automatically send solids out of the forge just as they 
+info.thermalexpansion.augment.tftRFForgeAutoEject.1= are about to melt, ensuring you never accidentally melt your lead
+info.thermalexpansion.augment.tftRFForgeAutoEject.2=ingot again. Also useful for automatically feeding the Flux Anvil.
 
 tab.TFTechness.machine.cryochamber.0=Had enough of your food constantly decaying?
 tab.TFTechness.machine.cryochamber.1=Want to slow down decay to a near stop?

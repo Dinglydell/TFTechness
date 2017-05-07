@@ -23,6 +23,10 @@ public class TFTAugments {
 				.addItem(515, RFFORGE_AUTO_TEMP);
 		TEAugments.itemAugment.addAugmentData(515, RFFORGE_AUTO_TEMP, 1, 3);
 
+		rfforgeAutoEject = TEAugments.itemAugment.addItem(516,
+				RFFORGE_AUTO_EJECT);
+		TEAugments.itemAugment.addAugmentData(516, RFFORGE_AUTO_EJECT, 1, 3);
+
 	}
 
 	public static void addRecipes() {
@@ -70,12 +74,25 @@ public class TFTAugments {
 						Character.valueOf('E'),
 						"plateElectrum" }));
 
+		GameRegistry.addRecipe(new ShapedOreRecipe(rfforgeAutoEject,
+				new Object[] { "   ",
+						" S ",
+						"dGd",
+						Character.valueOf('S'),
+						"dustSulfur",
+						Character.valueOf('d'),
+						"dustRedstone",
+						Character.valueOf('G'),
+						"plateGold" }));
+
 	}
 
-	public static ItemStack rfforgeAutoTemp = null;
+	public static ItemStack rfforgeAutoTemp;
+	public static ItemStack rfforgeAutoEject;
 	public static ItemStack[] cryoUpgrades = new ItemStack[3];
 	public static final String CRYO_UPGRADE = "tftCryoEfficiency";
 	public static final String RFFORGE_AUTO_TEMP = "tftRFForgeAutoTemp";
+	public static final String RFFORGE_AUTO_EJECT = "tftRFForgeAutoEject";
 
 	public static final double[] CRYO_UPGRADE_ENERGY_MOD = { 1, 1.5, 2, 3 };
 	public static final float[] CRYO_UPGRADE_INEFFICIENCY_MOD = { 1,

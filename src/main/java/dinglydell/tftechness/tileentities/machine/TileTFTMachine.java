@@ -18,6 +18,7 @@ import dinglydell.tftechness.tileentities.IAugmentNBT;
 
 public abstract class TileTFTMachine extends TileAugmentable implements
 		IAugmentNBT {
+	protected static final int[] AUTO_TRANSFER = { 8, 16, 32, 64 };
 
 	public static IIcon getTexture(TileAugmentable tile, int side, int render) {
 		if (side < 2) {
@@ -71,10 +72,16 @@ public abstract class TileTFTMachine extends TileAugmentable implements
 				}
 			} else {
 				lastEnergyConsumption = 0;
-				if (redstoneControlOrDisable() && shouldActivate()) {
-					isActive = true;
-					onActivate();
+				if (redstoneControlOrDisable()) {
+					//if (timeCheck()) {
+					//	transferOutput();
+					//}
+					if (shouldActivate()) {
+						isActive = true;
+						onActivate();
+					}
 				}
+
 			}
 		}
 	}
@@ -223,6 +230,10 @@ public abstract class TileTFTMachine extends TileAugmentable implements
 
 	public int getLevel() {
 		return level;
+	}
+
+	protected void transferOutput() {
+
 	}
 
 	protected abstract boolean shouldActivate();

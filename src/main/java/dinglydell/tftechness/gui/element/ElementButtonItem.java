@@ -22,7 +22,7 @@ public class ElementButtonItem extends ElementButtonBase {
 	protected static final RenderItem ITEM_RENDERER = new RenderItem();
 	private static final String TEXTURE = TFTechness.MODID
 			+ ":textures/gui/elements/ButtonItem.png";
-	private static final int TEX_WIDTH = 20;
+	private static final int TEX_WIDTH = 40;
 	private static final int TEX_HEIGHT = 20;
 	private static final int WIDTH = 20;
 	private static final int HEIGHT = 20;
@@ -87,7 +87,12 @@ public class ElementButtonItem extends ElementButtonBase {
 	public void drawBackground(int mouseX, int mouseY, float gameTicks) {
 		GL11.glColor4f(1, 1, 1, 1);
 		RenderHelper.bindTexture(texture);
-		drawTexturedModalRect(posX, posY, 0, 0, sizeX, sizeY);
+		if (intersectsWith(mouseX, mouseY)) {
+			drawTexturedModalRect(posX, posY, sizeX, 0, sizeX, sizeY);
+
+		} else {
+			drawTexturedModalRect(posX, posY, 0, 0, sizeX, sizeY);
+		}
 		renderInventorySlot(itemStack, posX + (sizeX - 16) / 2, posY
 				+ (sizeY - 16) / 2);
 

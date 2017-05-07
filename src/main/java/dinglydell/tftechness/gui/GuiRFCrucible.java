@@ -19,7 +19,6 @@ import dinglydell.tftechness.gui.element.ElementFluidTankAlloy;
 import dinglydell.tftechness.gui.element.ElementSlotMiniTank;
 import dinglydell.tftechness.gui.element.ElementVerticalSlider;
 import dinglydell.tftechness.gui.element.ElementVerticalSliderSlideable;
-import dinglydell.tftechness.network.PacketTFT;
 import dinglydell.tftechness.tileentities.machine.TileRFCrucible;
 import dinglydell.tftechness.tileentities.machine.TileTFTMachine.Colours;
 
@@ -61,8 +60,8 @@ public class GuiRFCrucible extends GuiAugmentableBase implements ISliderHandler 
 				this, 154, 53).setSlotInfo(Colours.orange.gui(), 0, 2));
 		moldSlotYellow = (ElementSlotOverlay) addElement(new ElementSlotOverlay(
 				this, 154, 53).setSlotInfo(Colours.yellow.gui(), 0, 2));
-		ElementButton btn = new ElementButton(this, 67, 45, "LockUnlock", 176,
-				0, 176, 0, 45, 25, TEXTURE_PATH);
+		ElementButton btn = new ElementButton(this, 80, 45, "LockUnlock", 176,
+				0, 176, 16, 16, 16, TEXTURE_PATH);
 		addElement(btn);
 		addElement(new ElementEnergyStored(this, 8, 8,
 				myTile.getEnergyStorage()));
@@ -118,15 +117,21 @@ public class GuiRFCrucible extends GuiAugmentableBase implements ISliderHandler 
 		}
 		name += ")";
 		fontRendererObj.drawString(name, getCenteredOffset(name), 33, 0);
-
+		Metal target = myTile.getTargetFluid().getMetal();
+		itemRender.renderItemAndEffectIntoGUI(fontRendererObj,
+				this.mc.getTextureManager(),
+				new ItemStack(target.ingot),
+				80,
+				40);
 	}
 
 	@Override
 	public void handleElementButtonClick(String buttonName, int mouseButton) {
 
 		if (buttonName.equalsIgnoreCase("LockUnlock")) {
-			PacketTFT
-					.sendRFCruciblePacketToServer(ContainerRFCrucible.CommandType.LOCK_UNLOCK);
+			this.myTile.setLocked(!this.myTile.getLocked());
+			//PacketTFT
+			//	.sendRFCruciblePacketToServer(ContainerRFCrucible.CommandType.LOCK_UNLOCK);
 		}
 	}
 

@@ -29,8 +29,10 @@ public abstract class TileTemperatureControl extends TileTemperature {
 	public float targetTemperature = 0;
 
 	protected boolean isCooling;
+	protected boolean fastCooling;
 
-	public TileTemperatureControl() {
+	public TileTemperatureControl(boolean fastCooling) {
+		this.fastCooling = fastCooling;
 		internalTemperature = TFTechness.baseTemp;
 	}
 
@@ -75,7 +77,7 @@ public abstract class TileTemperatureControl extends TileTemperature {
 
 	@Override
 	protected float getSurfaceArea() {
-		return isCooling ? coolingExposedSurfaceArea
+		return (isCooling && fastCooling) ? coolingExposedSurfaceArea
 				: levelExposedSurfaceArea[level];
 	}
 

@@ -13,6 +13,7 @@ import cofh.lib.util.helpers.ServerHelper;
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.block.machine.BlockTFTMachine;
 import dinglydell.tftechness.config.MetalConfig;
+import dinglydell.tftechness.fluid.FluidMoltenMetal;
 import dinglydell.tftechness.fluid.FluidStackFloat;
 import dinglydell.tftechness.fluid.FluidTankAlloy;
 import dinglydell.tftechness.gui.GuiRFCrucible;
@@ -27,9 +28,11 @@ public class TileRFCrucible extends TileTemperatureControl implements
 	protected static final int[] tankCapacity = { 4000, 8000, 16000, 32000 };
 	protected FluidTankAlloy tank = new FluidTankAlloy(tankCapacity[0]);
 	protected float tankFluidTemperature = 0;
+	protected boolean locked;
+	protected FluidMoltenMetal targetFluid;
 
 	public TileRFCrucible() {
-		super();
+		super(false);
 		inventory = new ItemStack[2];
 	}
 
@@ -39,7 +42,11 @@ public class TileRFCrucible extends TileTemperatureControl implements
 		if (!ServerHelper.isClientWorld(this.worldObj)) {
 			adjustTargetTemperature();
 			heatFluids();
-			if (isHotEnough()) {
+			if (!locked) {
+				targetFluid = (FluidMoltenMetal) tank.getAlloyFluid()
+						.getFluid();
+			}
+			if (isHotEnough() && tank.getAlloyFluid().getFluid() == targetFluid) {
 				handleMoldOutput(0, tank);
 			}
 		}
@@ -88,6 +95,9 @@ public class TileRFCrucible extends TileTemperatureControl implements
 		super.readFromNBT(nbt);
 		tank.readFromNBT(nbt.getCompoundTag("Tank"));
 		tankFluidTemperature = nbt.getFloat("FluidTemperature");
+		locked = nbt.getBoolean("Locked");
+		targetFluid = (FluidMoltenMetal) FluidStack.loadFluidStackFromNBT(nbt)
+				.getFluid();
 	}
 
 	@Override
@@ -95,6 +105,8 @@ public class TileRFCrucible extends TileTemperatureControl implements
 		super.writeToNBT(nbt);
 		nbt.setTag("Tank", tank.writeToNBT(new NBTTagCompound()));
 		nbt.setFloat("FluidTemperature", tankFluidTemperature);
+		nbt.setBoolean("Locked", locked);
+		(new FluidStack(targetFluid, 1)).writeToNBT(nbt);
 	}
 
 	@Override
@@ -273,6 +285,36 @@ public class TileRFCrucible extends TileTemperatureControl implements
 	@Override
 	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
 		return new FluidTankInfo[] { tank.getInfo() };
+	}
+
+	@Override
+	public PacketCoFHBase getModePacket() {
+		PacketCoFHBase packet = super.getModePacket();
+		packet.addBool(this.locked);
+		return packet;
+	}
+
+	@Override
+	protected void handleModePacket(PacketCoFHBase packet) {
+		super.handleModePacket(packet);
+		this.locked = packet.getBool();
+		markDirty();
+		callNeighborTileChange();
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+		this.sendModePacket();
+	}
+
+	public boolean getLocked() {
+
+		return this.locked;
+	}
+
+	public FluidMoltenMetal getTargetFluid() {
+
+		return this.targetFluid;
 	}
 
 }
