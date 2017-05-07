@@ -43,7 +43,8 @@ public class TileRFCrucible extends TileTemperatureControl implements
 			adjustTargetTemperature();
 			heatFluids();
 
-			if (isHotEnough() && tank.getAlloyFluid().getFluid() == targetFluid) {
+			if (isHotEnough()
+					&& (!locked || tank.getAlloyFluid().getFluid() == targetFluid)) {
 				handleMoldOutput(0, tank);
 			}
 		}
