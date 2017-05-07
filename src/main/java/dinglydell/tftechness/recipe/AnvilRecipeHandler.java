@@ -1,6 +1,7 @@
 package dinglydell.tftechness.recipe;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -175,5 +176,16 @@ public class AnvilRecipeHandler {
 			manager.addRecipe(new AnvilRecipe(new ItemStack(material),
 					new ItemStack(it), gearPlan, req, gear));
 		}
+	}
+
+	public static ItemStack getResultFromPlan(String plan) {
+		AnvilManager manager = AnvilManager.getInstance();
+		List<AnvilRecipe> recipes = manager.getRecipeList();
+		for (AnvilRecipe r : recipes) {
+			if (plan.equals(r.plan)) {
+				return r.getCraftingResult();
+			}
+		}
+		return null;
 	}
 }

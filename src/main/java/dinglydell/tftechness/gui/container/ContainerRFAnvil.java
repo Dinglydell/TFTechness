@@ -16,7 +16,7 @@ public class ContainerRFAnvil extends ContainerTEBase {
 		super(inv, te);
 		addSlotToContainer(new SlotAnvilIn(te, 0, 34, 31));
 		addSlotToContainer(new SlotAnvilIn(te, 1, 58, 31));
-		addSlotToContainer(new SlotAnvilFlux(te, 2, 46, 53));
+		addSlotToContainer(new SlotAnvilFlux(te, 2, 34, 53));
 		addSlotToContainer(new SlotRemoveOnly(te, 3, 113, 31));
 		addSlotToContainer(new SlotEnergy(te, te.getChargeSlot(), 8, 53));
 

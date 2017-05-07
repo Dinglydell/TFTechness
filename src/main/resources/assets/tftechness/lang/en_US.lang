@@ -38,8 +38,10 @@ info.TFTechness.machine.rfanvil=Automatically bashes metals to make cool shapes
 
 info.TFTechness.tank.mixed.name=Mixed Fluid Tank
 
-info.TFTechness.toggleAnvilWeldOn=Turn Weld Mode On
-info.TFTechness.toggleAnvilWeldOff=Turn Weld Mode Off
+info.TFTechness.RFAnvil.toggleWeldOn=Turn Weld Mode On
+info.TFTechness.RFAnvil.toggleWeldOff=Turn Weld Mode Off
+info.TFTechness.RFAnvil.plan=Selected Plan: 
+info.TFTechness.RFAnvil.plan.none=Select a plan
 
 item.thermalexpansion.augment.tftCryoEfficiency0.name=Coolant Chamber
 item.thermalexpansion.augment.tftCryoEfficiency1.name=Cryothermic Induction Coil

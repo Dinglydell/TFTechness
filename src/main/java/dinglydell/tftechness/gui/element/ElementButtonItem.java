@@ -1,21 +1,36 @@
 package dinglydell.tftechness.gui.element;
 
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+
 import cofh.lib.gui.GuiBase;
 import cofh.lib.gui.element.ElementButtonBase;
+import cofh.lib.render.RenderHelper;
+import dinglydell.tftechness.TFTechness;
 
 public class ElementButtonItem extends ElementButtonBase {
 
 	//private GuiBase gui;
 	private ItemStack itemStack;
 	private String name;
+	private String tooltip;
 	protected static final RenderItem ITEM_RENDERER = new RenderItem();
+	private static final String TEXTURE = TFTechness.MODID
+			+ ":textures/gui/elements/ButtonItem.png";
+	private static final int TEX_WIDTH = 20;
+	private static final int TEX_HEIGHT = 20;
+	private static final int WIDTH = 20;
+	private static final int HEIGHT = 20;
 
 	public ElementButtonItem(GuiBase gui, int posX, int posY, String name,
-			int sizeX, int sizeY, ItemStack is) {
-		super(gui, posX, posY, sizeX, sizeY);
+			ItemStack is) {
+		super(gui, posX, posY, WIDTH, HEIGHT);
+		setTexture(TEXTURE, TEX_WIDTH, TEX_HEIGHT);
 		this.itemStack = is;
 		setName(name);
 	}
@@ -70,7 +85,11 @@ public class ElementButtonItem extends ElementButtonBase {
 
 	@Override
 	public void drawBackground(int mouseX, int mouseY, float gameTicks) {
-		renderInventorySlot(itemStack, posX, posY);
+		GL11.glColor4f(1, 1, 1, 1);
+		RenderHelper.bindTexture(texture);
+		drawTexturedModalRect(posX, posY, 0, 0, sizeX, sizeY);
+		renderInventorySlot(itemStack, posX + (sizeX - 16) / 2, posY
+				+ (sizeY - 16) / 2);
 
 	}
 
@@ -88,4 +107,21 @@ public class ElementButtonItem extends ElementButtonBase {
 		return false;
 	}
 
+	public void setItem(ItemStack itemStack) {
+		this.itemStack = itemStack;
+
+	}
+
+	public void setTooltip(String tooltip) {
+		this.tooltip = tooltip;
+	}
+
+	@Override
+	public void addTooltip(List<String> list) {
+
+		if (tooltip != null) {
+
+			list.add(tooltip);
+		}
+	}
 }

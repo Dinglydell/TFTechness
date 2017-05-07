@@ -28,7 +28,7 @@ public class TFTGuiHandler implements IGuiHandler {
 		switch (TFTGui.values()[ID]) {
 		case AnvilPlanSelection:
 			return new GuiRFAnvilPlanSelection(
-					(IPlanHandler) world.getTileEntity(x, y, z));
+					(IPlanHandler) world.getTileEntity(x, y, z), player);
 
 		}
 		return null;

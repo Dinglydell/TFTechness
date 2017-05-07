@@ -2,15 +2,22 @@ package dinglydell.tftechness.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import cofh.lib.gui.element.ElementButton;
 import cofh.lib.gui.element.ElementDualScaled;
 import cofh.lib.gui.element.ElementEnergyStored;
 import cofh.lib.gui.element.ElementSimple;
+import cofh.lib.util.helpers.StringHelper;
 import cofh.thermalexpansion.gui.client.GuiAugmentableBase;
 import cofh.thermalexpansion.gui.element.ElementSlotOverlay;
+
+import com.bioxx.tfc.api.TFCItems;
+
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.gui.container.ContainerRFAnvil;
+import dinglydell.tftechness.gui.element.ElementButtonItem;
+import dinglydell.tftechness.recipe.AnvilRecipeHandler;
 import dinglydell.tftechness.tileentities.machine.TileRFAnvil;
 
 public class GuiRFAnvil extends GuiAugmentableBase {
@@ -29,13 +36,15 @@ public class GuiRFAnvil extends GuiAugmentableBase {
 	protected ElementDualScaled progress;
 
 	private ElementButton mode;
-	private ElementButton plan;
+	private ElementButtonItem plan;
 
 	private ElementSimple modeOverlay;
 
 	//private TabInfo tabInfo;
 
 	private EntityPlayer player;
+
+	//private static ItemStack blueprint = new ItemStack(TFCItems.blueprint);
 
 	public GuiRFAnvil(InventoryPlayer inv, TileRFAnvil te) {
 		super(new ContainerRFAnvil(inv, te), te, inv.player, TEXTURE);
@@ -90,9 +99,8 @@ public class GuiRFAnvil extends GuiAugmentableBase {
 		this.mode = (ElementButton) addElement(new ElementButton(this, 80, 53,
 				"Mode", 176, 0, 176, 16, 176, 32, 16, 16, TFTechness.MODID
 						+ ":textures/gui/machine/RFAnvil.png"));
-		this.plan = (ElementButton) addElement(new ElementButton(this, 58, 31,
-				"Plans", 176, 48, 176, 48, 176, 48, 16, 16, TFTechness.MODID
-						+ ":textures/gui/machine/RFAnvil.png"));
+		this.plan = (ElementButtonItem) addElement(new ElementButtonItem(this,
+				57, 52, "Plans", new ItemStack(TFCItems.blueprint)));
 		//this.modeOverlay = ((ElementSimple) addElement(new ElementSimple(this,
 		//		58, 31)
 		//		.setTextureOffsets(176, 48)
@@ -109,20 +117,32 @@ public class GuiRFAnvil extends GuiAugmentableBase {
 		// this.slotInput.setVisible(this.myTile.hasSide(1));
 		//this.slotOutput.setVisible(this.myTile.hasSide(2));
 		if (this.myTile.weldMode) {
-			this.mode.setToolTip("info.TFTechness.toggleAnvilWeldOff");
+			this.mode.setToolTip("info.TFTechness.RFAnvil.toggleWeldOff");
 			this.mode.setSheetX(176);
 			this.mode.setHoverX(176);
 			//this.modeOverlay.setVisible(false);
 			this.plan.setVisible(false);
 		} else {
-			this.mode.setToolTip("info.TFTechness.toggleAnvilWeldOn");
+			this.mode.setToolTip("info.TFTechness.RFAnvil.toggleWeldOn");
 			this.mode.setSheetX(192);
 			this.mode.setHoverX(192);
 			this.plan.setVisible(true);
 			//this.modeOverlay.setVisible(true);
 		}
 		this.progress.setQuantity(this.myTile.getScaledProgress(24));
-
+		//AnvilManager manager = AnvilManager.getInstance();
+		if (myTile.getPlan().equals("")) {
+			this.plan.setItem(new ItemStack(TFCItems.blueprint));
+			this.plan.setTooltip(StringHelper
+					.localize("info.TFTechness.RFAnvil.plan.none"));
+		} else {
+			ItemStack item = myTile.getResult();
+			this.plan.setTooltip(StringHelper
+					.localize("info.TFTechness.RFAnvil.plan")
+					+ StringHelper.localize("gui.plans." + myTile.getPlan()));
+			this.plan.setItem(item != null ? item : AnvilRecipeHandler
+					.getResultFromPlan(myTile.getPlan()));
+		}
 		//this.speed.setQuantity(this.myTile.getScaledSpeed(16));
 	}
 

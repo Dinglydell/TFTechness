@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import cofh.core.gui.GuiBaseAdv;
+import cofh.lib.util.helpers.StringHelper;
 
 import com.bioxx.tfc.api.Crafting.AnvilManager;
 import com.bioxx.tfc.api.Crafting.AnvilRecipe;
@@ -17,13 +19,17 @@ import dinglydell.tftechness.gui.element.ElementButtonItem;
 
 public class GuiRFAnvilPlanSelection extends GuiBaseAdv {
 	public static final ResourceLocation TEXTURE = new ResourceLocation(
-			TFTechness.MODID + ":textures/gui/machine/RFAnvil.png");
+			TFTechness.MODID + ":textures/gui/machine/RFAnvilPlanSelect.png");
 	private IPlanHandler planHandler;
 	private Map<String, ItemStack> plans;
+	private EntityPlayer player;
 
-	public GuiRFAnvilPlanSelection(IPlanHandler planHandler) {
+	public GuiRFAnvilPlanSelection(IPlanHandler planHandler, EntityPlayer player) {
 		super(new ContainerRFAnvilPlanSelection(planHandler), TEXTURE);
 		this.planHandler = planHandler;
+		xSize = 256;
+		drawInventory = false;
+		this.player = player;
 	}
 
 	@Override
@@ -31,12 +37,21 @@ public class GuiRFAnvilPlanSelection extends GuiBaseAdv {
 		super.initGui();
 
 		plans = getRecipes();
-		int xOffset = 5;
-		int yOffset = 14;
+
+		int margin = 8;
+		int xOffset = margin;
+		int yOffset = margin;
 		for (Entry<String, ItemStack> p : plans.entrySet()) {
 
-			addElement(new ElementButtonItem(this, guiLeft + xOffset, guiTop
-					+ yOffset, p.getKey(), 16, 16, p.getValue()));
+			((ElementButtonItem) addElement(new ElementButtonItem(this,
+					xOffset, yOffset, p.getKey(), p.getValue())))
+					.setTooltip(StringHelper.localize("gui.plans." + p.getKey()));
+			xOffset += 20;
+			if (xOffset >= (xSize - margin)) {
+				xOffset = margin;
+				yOffset += 20;
+			}
+
 		}
 	}
 
@@ -45,8 +60,15 @@ public class GuiRFAnvilPlanSelection extends GuiBaseAdv {
 		Map<String, ItemStack> plans = new HashMap<String, ItemStack>();
 		List<AnvilRecipe> recipes = manager.getRecipeList();
 		for (AnvilRecipe r : recipes) {
-			if (r.plan != null && !plans.containsKey(r.plan)) {
-				plans.put(r.plan, r.getCraftingResult());
+			if (r.plan != null && !r.plan.equals("")
+					&& !plans.containsKey(r.plan)) {
+				ItemStack result = planHandler.getResult(r.plan);
+				if (result == null) {
+					plans.put(r.plan, r.getCraftingResult());
+				} else {
+					plans.put(r.plan, result);
+				}
+
 			}
 		}
 		return plans;
@@ -55,6 +77,8 @@ public class GuiRFAnvilPlanSelection extends GuiBaseAdv {
 	public void handleElementButtonClick(String p, int paramInt) {
 		playSound("random.click", 1.0F, 1.0F);
 		planHandler.setPlan(p);
+		planHandler.openGui(player);
+
 	}
 
 }

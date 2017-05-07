@@ -25,7 +25,7 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 	protected static final float itemMass = 10;
 	public static final int FLUX_SLOT = 2;
 	public static final int OUTPUT_SLOT = 3;
-	protected String plan = "";
+	private String plan = "";
 
 	protected int requiredEnergy = 1;
 	protected int initialRequiredEnergy = 1;
@@ -40,6 +40,9 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 	@Override
 	protected boolean shouldActivate() {
 		//plan = "pickaxe";
+		if (inventory[OUTPUT_SLOT] != null) {
+			return false;
+		}
 		AnvilRecipe recipe = findRecipe();
 		if (this.weldMode) {
 
@@ -47,7 +50,8 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 					&& hasWeldableTemperature(1);
 		}
 
-		return recipe != null && hasWorkableTemperature(0);
+		return recipe != null && hasWorkableTemperature(0)
+				&& (recipe.input2 == null || hasWorkableTemperature(1));
 
 	}
 
@@ -100,14 +104,19 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 	}
 
 	private AnvilRecipe findRecipe() {
+		return findRecipe(plan);
+	}
+
+	private AnvilRecipe findRecipe(String plan) {
 		AnvilManager manager = AnvilManager.getInstance();
 		if (this.weldMode) {
 			return manager.findMatchingWeldRecipe(new AnvilRecipe(inventory[0],
 					inventory[1], "", 0, inventory[FLUX_SLOT] != null,
 					AnvilReq.REDSTEEL.Tier, null));
 		}
-		return manager.findMatchingRecipe(new AnvilRecipe(inventory[0], null,
-				plan, false, AnvilReq.REDSTEEL.Tier));
+		return manager.findMatchingRecipe(new AnvilRecipe(inventory[0],
+				inventory[1], plan, false, AnvilReq.REDSTEEL.Tier));
+
 	}
 
 	@Override
@@ -117,7 +126,7 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 			inventory[OUTPUT_SLOT] = recipe.result.copy();
 			float newTemperature = TFC_ItemHeat.getTemp(inventory[0]);
 			inventory[0] = null;
-			if (weldMode) {
+			if (recipe.input2 != null) {
 				newTemperature = (newTemperature + TFC_ItemHeat
 						.getTemp(inventory[1])) / 2;
 				inventory[1] = null;
@@ -235,13 +244,14 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		this.weldMode = nbt.getBoolean("WeldMode");
+		this.plan = nbt.getString("Plan");
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		nbt.setBoolean("WeldMode", this.weldMode);
-
+		nbt.setString("Plan", this.plan);
 	}
 
 	@Override
@@ -269,18 +279,19 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 
 	@Override
 	public PacketCoFHBase getModePacket() {
-		PacketCoFHBase localPacketCoFHBase = super.getModePacket();
+		PacketCoFHBase packet = super.getModePacket();
 
-		localPacketCoFHBase.addBool(this.weldMode);
-
-		return localPacketCoFHBase;
+		packet.addBool(this.weldMode);
+		packet.addString(this.plan);
+		return packet;
 	}
 
 	@Override
-	protected void handleModePacket(PacketCoFHBase paramPacketCoFHBase) {
-		super.handleModePacket(paramPacketCoFHBase);
+	protected void handleModePacket(PacketCoFHBase packet) {
+		super.handleModePacket(packet);
 
-		this.weldMode = paramPacketCoFHBase.getBool();
+		this.weldMode = packet.getBool();
+		this.plan = packet.getString();
 		markDirty();
 		callNeighborTileChange();
 	}
@@ -293,7 +304,22 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 	@Override
 	public void setPlan(String p) {
 		this.plan = p;
+		this.sendModePacket();
+		this.openInventory();
+	}
 
+	public ItemStack getResult() {
+		AnvilRecipe recipe = findRecipe();
+		return recipe == null ? null : recipe.result;
+	}
+
+	public ItemStack getResult(String plan) {
+		AnvilRecipe recipe = findRecipe(plan);
+		return recipe == null ? null : recipe.result;
+	}
+
+	public String getPlan() {
+		return plan;
 	}
 
 }

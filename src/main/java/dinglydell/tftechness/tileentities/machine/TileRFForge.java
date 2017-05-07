@@ -448,7 +448,7 @@ public class TileRFForge extends TileTemperatureControl implements
 	private int masterX;
 	private int masterY;
 	private int masterZ;
-	private ForgeDirection direction;
+	private ForgeDirection direction = ForgeDirection.UP;
 
 	@Override
 	public boolean hasMaster() {
