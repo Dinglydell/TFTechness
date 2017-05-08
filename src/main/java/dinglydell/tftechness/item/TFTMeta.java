@@ -12,6 +12,7 @@ public class TFTMeta {
 	public static ItemStack salt;
 	public static ItemStack freshIce;
 	public static ItemStack saltIce;
+	public static ItemStack anvilRedSteel;
 
 	public static ItemStack brTurbineHousing;
 	public static ItemStack brTurbineController;
@@ -29,6 +30,8 @@ public class TFTMeta {
 		salt = new ItemStack(TFCItems.powder, 1, 9);
 		saltIce = new ItemStack(TFCBlocks.ice, 1, 0);
 		freshIce = new ItemStack(TFCBlocks.ice, 1, 1);
+
+		anvilRedSteel = new ItemStack(TFCBlocks.anvil, 1, 7);
 
 		pitchblende = new ItemStack(TFCItems.oreChunk, 1, 26);
 

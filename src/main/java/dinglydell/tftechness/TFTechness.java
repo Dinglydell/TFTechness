@@ -67,6 +67,7 @@ import com.bioxx.tfc.api.HeatIndex;
 import com.bioxx.tfc.api.HeatRaw;
 import com.bioxx.tfc.api.HeatRegistry;
 import com.bioxx.tfc.api.Metal;
+import com.bioxx.tfc.api.TFCBlocks;
 import com.bioxx.tfc.api.TFCFluids;
 import com.bioxx.tfc.api.TFCItems;
 import com.bioxx.tfc.api.Constant.Global;
@@ -436,6 +437,10 @@ public class TFTechness {
 		BlockTFTMachine.rfCrucible = ItemBlockTFTMachine
 				.setDefaultTag(new ItemStack(TFTBlocks.machine, 1,
 						BlockTFTMachine.Types.RFCRUCIBLE.ordinal()));
+
+		BlockTFTMachine.rfAnvil = ItemBlockTFTMachine
+				.setDefaultTag(new ItemStack(TFTBlocks.machine, 1,
+						BlockTFTMachine.Types.RFANVIL.ordinal()));
 
 	}
 
@@ -969,6 +974,52 @@ public class TFTechness {
 			} else {
 				TECraftingHandler
 						.addMachineUpgradeRecipes(BlockTFTMachine.rfForge);
+			}
+		}
+		if (MachineConfig.rfCrucibleEnabled) {
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(
+					BlockTFTMachine.rfCrucible, augs, new Object[] { " P ",
+							"bFb",
+							"gRg",
+							Character.valueOf('P'),
+							TFItems.dustPyrotheum,
+							Character.valueOf('b'),
+							TFCBlocks.fireBrick,
+							Character.valueOf('F'),
+							machineFrame,
+							Character.valueOf('g'),
+							"gearInvar",
+							Character.valueOf('R'),
+							TEItems.powerCoilGold }));
+			if (RecipeConfig.upgradeCrafting) {
+				TFTCraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.rfCrucible);
+			} else {
+				TECraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.rfCrucible);
+			}
+		}
+		if (MachineConfig.rfAnvilEnabled) {
+			NEIRecipeWrapper.addMachineRecipe(new RecipeMachine(
+					BlockTFTMachine.rfAnvil, augs, new Object[] { " P ",
+							"bFb",
+							"gRg",
+							Character.valueOf('P'),
+							TFTMeta.anvilRedSteel,
+							Character.valueOf('b'),
+							"gearTin",
+							Character.valueOf('F'),
+							machineFrame,
+							Character.valueOf('g'),
+							"gearCopper",
+							Character.valueOf('R'),
+							TEItems.powerCoilGold }));
+			if (RecipeConfig.upgradeCrafting) {
+				TFTCraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.rfAnvil);
+			} else {
+				TECraftingHandler
+						.addMachineUpgradeRecipes(BlockTFTMachine.rfAnvil);
 			}
 		}
 	}

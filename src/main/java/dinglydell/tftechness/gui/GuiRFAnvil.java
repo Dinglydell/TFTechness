@@ -26,12 +26,13 @@ public class GuiRFAnvil extends GuiAugmentableBase {
 
 	protected TileRFAnvil myTile;
 
-	protected ElementSlotOverlay[] inputSlots = new ElementSlotOverlay[6];
-	protected ElementSlotOverlay[] inputRowSlots = new ElementSlotOverlay[6];
+	protected ElementSlotOverlay inputSlotABlue;
+	protected ElementSlotOverlay inputSlotAGreen;
+	protected ElementSlotOverlay inputSlotBBlue;
+	protected ElementSlotOverlay inputSlotBPurple;
+	protected ElementSlotOverlay outputSlotOrange;
 	//protected ElementSlotOverlay tankSlotOrange;
 	//protected ElementSlotOverlay tankSlotRed;
-	protected ElementSlotOverlay moldSlotOrange;
-	protected ElementSlotOverlay moldSlotYellow;
 
 	protected ElementDualScaled progress;
 
@@ -85,7 +86,8 @@ public class GuiRFAnvil extends GuiAugmentableBase {
 		//		break;
 		//	}
 		//}
-
+		this.outputSlotOrange = (ElementSlotOverlay) addElement(new ElementSlotOverlay(
+				this, 113, 31));
 		addElement(new ElementEnergyStored(this, 8, 8,
 				myTile.getEnergyStorage()));
 		this.progress = ((ElementDualScaled) addElement(new ElementDualScaled(
@@ -116,6 +118,7 @@ public class GuiRFAnvil extends GuiAugmentableBase {
 		super.updateElementInformation();
 		// this.slotInput.setVisible(this.myTile.hasSide(1));
 		//this.slotOutput.setVisible(this.myTile.hasSide(2));
+		outputSlotOrange.setVisible(myTile.hasSide(2));
 		if (this.myTile.weldMode) {
 			this.mode.setToolTip("info.TFTechness.RFAnvil.toggleWeldOff");
 			this.mode.setSheetX(176);

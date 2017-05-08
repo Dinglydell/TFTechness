@@ -113,12 +113,11 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 			AnvilRecipe recipe = manager
 					.findMatchingWeldRecipe(new AnvilRecipe(inventory[0],
 							inventory[1], "", 0, inventory[FLUX_SLOT] != null,
-							AnvilReq.REDSTEEL.Tier, null));
+							getTier(), null));
 			if (recipe == null) {
 				recipe = manager.findMatchingWeldRecipe(new AnvilRecipe(
 						inventory[1], inventory[0], "", 0,
-						inventory[FLUX_SLOT] != null, AnvilReq.REDSTEEL.Tier,
-						null));
+						inventory[FLUX_SLOT] != null, getTier(), null));
 			}
 			return recipe;
 		}
@@ -161,44 +160,32 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 	@Override
 	protected SideConfig getSideConfig() {
 		SideConfig cfg = new SideConfig();
-		cfg.numConfig = 8;
+		cfg.numConfig = 5;
+		//index of inventory slots available at each step of configuration
 		cfg.slotGroups = new int[][] { new int[0],
 				{ 0, 1 },
-				{ 2, 3 },
-				{ 4 },
-				{ 2, 3, 4 },
+				{ OUTPUT_SLOT },
 				{ 0 },
 				{ 1 },
-				{ 0, 1, 2, 3, 4 } };
-		cfg.allowInsertionSide = new boolean[] { false,
-				true,
-				false,
-				false,
-				false,
-				true,
-				true,
-				true };
+				{ 0, 1, OUTPUT_SLOT } };
+		//unsure, possibly whether something can be inserted on a side with this config
+		cfg.allowInsertionSide = new boolean[] { true, false, true, true, true };
+		//whether something can be extracted on a side with this config
 		cfg.allowExtractionSide = new boolean[] { false,
 				true,
-				true,
-				true,
-				true,
 				false,
 				false,
 				true };
-		cfg.allowInsertionSlot = new boolean[] { true,
-				true,
-				false,
-				false,
-				false,
-				false };
-		cfg.allowExtractionSlot = new boolean[] { true,
-				true,
-				true,
-				true,
-				true,
-				false };
-		cfg.sideTex = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+		//index corresponds to slot index - whether something can be inserted in this slot
+		cfg.allowInsertionSlot = new boolean[] { true, true, false, true, false };
+		cfg.allowExtractionSlot = new boolean[] { true, true, true, true, false };
+		//colour of each config
+		cfg.sideTex = new int[] { Colours.blue.ordinal(),
+				Colours.orange.ordinal(),
+				Colours.green.ordinal(),
+				Colours.purple.ordinal(),
+				Colours.grey.ordinal() };
+		//default for the 6 sides
 		cfg.defaultSides = new byte[] { 3, 1, 2, 2, 2, 2 };
 		return cfg;
 	}
@@ -334,6 +321,11 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 
 	public String getPlan() {
 		return plan;
+	}
+
+	public int getTier() {
+
+		return AnvilReq.REDSTEEL.Tier + this.level;
 	}
 
 }

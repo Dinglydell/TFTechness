@@ -36,6 +36,7 @@ public class BlockTFTMachine extends BlockTETFTBase {
 	public static ItemStack cryoChamber;
 	public static ItemStack rfForge;
 	public static ItemStack rfCrucible;
+	public static ItemStack rfAnvil;
 
 	public enum Types {
 		EXTRUDER, ACCUMULATOR, PRECIPITATOR, CRYOCHAMBER(true), RFFORGE(true), RFCRUCIBLE(

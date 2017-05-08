@@ -12,6 +12,8 @@ public class MachineConfig {
 	public static boolean dynamoCompressionEnabled;
 	public static boolean rfForgeEnabled;
 	public static boolean bigReactorsOnly;
+	public static boolean rfCrucibleEnabled;
+	public static boolean rfAnvilEnabled;
 
 	public static void loadConfig(Configuration config) {
 		config.addCustomCategoryComment("Machines",
@@ -55,6 +57,16 @@ public class MachineConfig {
 						"Machines",
 						true,
 						"This is a machine added by TFTechness - a forge used to heat metals using the power of RF.");
+		rfCrucibleEnabled = config
+				.getBoolean("energeticAlloyCrucible",
+						"Machines",
+						true,
+						"This is a machine added by TFTechness - a crucible used to mix alloys using the power of RF.");
+		rfAnvilEnabled = config
+				.getBoolean("fluxAnvil",
+						"Machines",
+						true,
+						"This is a machine added by TFTechness - uses RF to bash metals into useful shapes");
 	}
 
 }

@@ -16,6 +16,7 @@ import com.bioxx.tfc.api.TFC_ItemHeat;
 
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
+import dinglydell.tftechness.tileentities.machine.TileRFAnvil;
 import dinglydell.tftechness.tileentities.machine.TileRFCrucible;
 import dinglydell.tftechness.tileentities.machine.TileRFForge;
 import dinglydell.tftechness.tileentities.machine.TileTemperature;
@@ -40,6 +41,7 @@ public class TFTWaila implements IWailaDataProvider {
 		return currenttip;
 	}
 
+	// TODO localiszation
 	@Override
 	public List<String> getWailaBody(ItemStack itemStack,
 			List<String> currenttip, IWailaDataAccessor accessor,
@@ -52,6 +54,9 @@ public class TFTWaila implements IWailaDataProvider {
 		if (te instanceof TileTemperatureControl) {
 			float target = accessor.getNBTData().getFloat("TargetTemperature");
 			addTemperature(currenttip, target, "Target: ");
+		}
+		if (te instanceof TileRFAnvil) {
+			currenttip.add("Tier: " + accessor.getNBTData().getInteger("Tier"));
 		}
 		return currenttip;
 	}
@@ -93,6 +98,9 @@ public class TFTWaila implements IWailaDataProvider {
 			tag.setFloat("TargetTemperature",
 					((TileTemperatureControl) te).targetTemperature);
 		}
+		if (te instanceof TileRFAnvil) {
+			tag.setInteger("Tier", ((TileRFAnvil) te).getTier());
+		}
 		return tag;
 	}
 
@@ -103,6 +111,9 @@ public class TFTWaila implements IWailaDataProvider {
 		reg.registerNBTProvider(new TFTWaila(), TileRFCrucible.class);
 		reg.registerBodyProvider(new TFTWaila(), TileCryoChamber.class);
 		reg.registerNBTProvider(new TFTWaila(), TileCryoChamber.class);
+		reg.registerBodyProvider(new TFTWaila(), TileRFAnvil.class);
+		reg.registerNBTProvider(new TFTWaila(), TileRFAnvil.class);
+
 	}
 
 }
