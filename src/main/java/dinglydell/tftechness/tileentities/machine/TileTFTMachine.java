@@ -48,6 +48,10 @@ public abstract class TileTFTMachine extends TileAugmentable implements
 	protected int lastEnergyConsumption;
 	protected EnergyConfig energyConfig;
 	protected byte level;
+	/**
+	 * Key: Value Side config: output slots
+	 * */
+	protected Map<Integer, int[]> outputSlots = new HashMap();
 
 	public TileTFTMachine() {
 		sideConfig = getSideConfig();
@@ -73,9 +77,7 @@ public abstract class TileTFTMachine extends TileAugmentable implements
 			} else {
 				lastEnergyConsumption = 0;
 				if (redstoneControlOrDisable()) {
-					//if (timeCheck()) {
-					//	transferOutput();
-					//}
+					transferOutput();
 					if (shouldActivate()) {
 						isActive = true;
 						onActivate();
@@ -233,6 +235,24 @@ public abstract class TileTFTMachine extends TileAugmentable implements
 	}
 
 	protected void transferOutput() {
+		if (!this.augmentAutoOutput || this.outputSlots.isEmpty()) {
+			return;
+		}
+		for (int side = 0; side < 6; side++) {
+
+			//HeatIndex index = HeatRegistry.getInstance()
+			//		.findMatchingIndex(inventory[i]);
+			//float temp = TFC_ItemHeat.getTemp(inventory[i]);
+			//if (temp <= index.meltTemp * 0.99) {
+			//	continue;
+			//}
+			//
+			if (outputSlots.containsKey((int) this.sideCache[side])) {
+				//TODO: investigate exactly how this function works
+				for (int slot : outputSlots.get((int) this.sideCache[side]))
+					this.transferItem(slot, AUTO_TRANSFER[this.level], side);
+			}
+		}
 
 	}
 

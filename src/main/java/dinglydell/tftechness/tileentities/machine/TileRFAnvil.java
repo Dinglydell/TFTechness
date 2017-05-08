@@ -34,6 +34,8 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 	public TileRFAnvil() {
 		super();
 		inventory = new ItemStack[5];
+		//side config 2 will cause output slot auto transfered
+		outputSlots.put(2, new int[] { OUTPUT_SLOT });
 
 	}
 
@@ -160,7 +162,7 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 	@Override
 	protected SideConfig getSideConfig() {
 		SideConfig cfg = new SideConfig();
-		cfg.numConfig = 5;
+		cfg.numConfig = 6;
 		//index of inventory slots available at each step of configuration
 		cfg.slotGroups = new int[][] { new int[0],
 				{ 0, 1 },
@@ -168,10 +170,16 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 				{ 0 },
 				{ 1 },
 				{ 0, 1, OUTPUT_SLOT } };
-		//unsure, possibly whether something can be inserted on a side with this config
-		cfg.allowInsertionSide = new boolean[] { true, false, true, true, true };
+		//whether something can be inserted on a side with this config
+		cfg.allowInsertionSide = new boolean[] { false,
+				true,
+				false,
+				true,
+				true,
+				true };
 		//whether something can be extracted on a side with this config
 		cfg.allowExtractionSide = new boolean[] { false,
+				false,
 				true,
 				false,
 				false,
@@ -180,13 +188,14 @@ public class TileRFAnvil extends TileTFTMachine implements IPlanHandler {
 		cfg.allowInsertionSlot = new boolean[] { true, true, false, true, false };
 		cfg.allowExtractionSlot = new boolean[] { true, true, true, true, false };
 		//colour of each config
-		cfg.sideTex = new int[] { Colours.blue.ordinal(),
+		cfg.sideTex = new int[] { Colours.none.ordinal(),
+				Colours.blue.ordinal(),
 				Colours.orange.ordinal(),
 				Colours.green.ordinal(),
 				Colours.purple.ordinal(),
 				Colours.grey.ordinal() };
 		//default for the 6 sides
-		cfg.defaultSides = new byte[] { 3, 1, 2, 2, 2, 2 };
+		cfg.defaultSides = new byte[] { 1, 0, 0, 0, 0, 0 };
 		return cfg;
 	}
 

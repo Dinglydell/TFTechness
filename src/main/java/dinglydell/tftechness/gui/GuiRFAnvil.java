@@ -19,6 +19,7 @@ import dinglydell.tftechness.gui.container.ContainerRFAnvil;
 import dinglydell.tftechness.gui.element.ElementButtonItem;
 import dinglydell.tftechness.recipe.AnvilRecipeHandler;
 import dinglydell.tftechness.tileentities.machine.TileRFAnvil;
+import dinglydell.tftechness.tileentities.machine.TileTFTMachine.Colours;
 
 public class GuiRFAnvil extends GuiAugmentableBase {
 	public static final ResourceLocation TEXTURE = new ResourceLocation(
@@ -87,7 +88,15 @@ public class GuiRFAnvil extends GuiAugmentableBase {
 		//	}
 		//}
 		this.outputSlotOrange = (ElementSlotOverlay) addElement(new ElementSlotOverlay(
-				this, 113, 31));
+				this, 113, 31).setSlotInfo(Colours.orange.gui(), 0, 2));
+		this.inputSlotABlue = (ElementSlotOverlay) addElement(new ElementSlotOverlay(
+				this, 34, 31).setSlotInfo(Colours.blue.gui(), 0, 2));
+		this.inputSlotBBlue = (ElementSlotOverlay) addElement(new ElementSlotOverlay(
+				this, 58, 31).setSlotInfo(Colours.blue.gui(), 0, 2));
+		this.inputSlotAGreen = (ElementSlotOverlay) addElement(new ElementSlotOverlay(
+				this, 34, 31).setSlotInfo(Colours.green.gui(), 0, 2));
+		this.inputSlotBPurple = (ElementSlotOverlay) addElement(new ElementSlotOverlay(
+				this, 58, 31).setSlotInfo(Colours.purple.gui(), 0, 2));
 		addElement(new ElementEnergyStored(this, 8, 8,
 				myTile.getEnergyStorage()));
 		this.progress = ((ElementDualScaled) addElement(new ElementDualScaled(
@@ -119,6 +128,10 @@ public class GuiRFAnvil extends GuiAugmentableBase {
 		// this.slotInput.setVisible(this.myTile.hasSide(1));
 		//this.slotOutput.setVisible(this.myTile.hasSide(2));
 		outputSlotOrange.setVisible(myTile.hasSide(2));
+		inputSlotABlue.setVisible(myTile.hasSide(1));
+		inputSlotBBlue.setVisible(myTile.hasSide(1));
+		inputSlotAGreen.setVisible(myTile.hasSide(3));
+		inputSlotBPurple.setVisible(myTile.hasSide(4));
 		if (this.myTile.weldMode) {
 			this.mode.setToolTip("info.TFTechness.RFAnvil.toggleWeldOff");
 			this.mode.setSheetX(176);

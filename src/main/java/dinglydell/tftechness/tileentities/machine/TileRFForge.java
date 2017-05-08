@@ -152,30 +152,30 @@ public class TileRFForge extends TileTemperatureControl implements
 
 	}
 
-	protected void transferOutput() {
-		if (!this.augmentAutoOutput) {
-			return;
-		}
-		for (int i = 0; i < inputSlotEnd; i++) {
-			if (inventory[i] == null) {
-				continue;
-			}
-			HeatIndex index = HeatRegistry.getInstance()
-					.findMatchingIndex(inventory[i]);
-			float temp = TFC_ItemHeat.getTemp(inventory[i]);
-			if (temp <= index.meltTemp * 0.99) {
-				continue;
-			}
-			for (int j = 0; j < 6; j++) {
-				if (this.sideCache[j] == Colours.yellow.ordinal()) {
-					//TODO: investigate exactly how this function works
-					this.transferItem(i, AUTO_TRANSFER[this.level], j);
-				}
-			}
-		}
-
-	}
-
+	//protected void transferOutput() {
+	//	if (!this.augmentAutoOutput) {
+	//		return;
+	//	}
+	//	for (int i = 0; i < inputSlotEnd; i++) {
+	//		if (inventory[i] == null) {
+	//			continue;
+	//		}
+	//		HeatIndex index = HeatRegistry.getInstance()
+	//				.findMatchingIndex(inventory[i]);
+	//		float temp = TFC_ItemHeat.getTemp(inventory[i]);
+	//		if (temp <= index.meltTemp * 0.99) {
+	//			continue;
+	//		}
+	//		for (int j = 0; j < 6; j++) {
+	//			if (this.sideCache[j] == Colours.yellow.ordinal()) {
+	//				//TODO: investigate exactly how this function works
+	//				this.transferItem(i, AUTO_TRANSFER[this.level], j);
+	//			}
+	//		}
+	//	}
+	//
+	//}
+	//
 	private void adjustTargetTemperature() {
 		if (hasAugment(TFTAugments.RFFORGE_AUTO_TEMP, 1)) {
 			float minTemp = MAX_TEMPERATURE;
