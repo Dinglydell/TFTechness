@@ -14,7 +14,8 @@
   "dependencies": [
         "terrafirmacraft",
         "ThermalExpansion",
-        "BigReactors"
+        "BigReactors",
+        "techresearch"
   ]
 }
 ]

@@ -44,6 +44,7 @@ import cofh.thermalexpansion.block.TEBlocks;
 import cofh.thermalexpansion.block.dynamo.BlockDynamo;
 import cofh.thermalexpansion.block.machine.BlockMachine;
 import cofh.thermalexpansion.block.tank.BlockTank;
+import cofh.thermalexpansion.item.TEAugments;
 import cofh.thermalexpansion.item.TEItems;
 import cofh.thermalexpansion.plugins.nei.handlers.NEIRecipeWrapper;
 import cofh.thermalexpansion.util.FuelHandler;
@@ -83,6 +84,9 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
+import dinglydell.techresearch.TechResearchSettings;
+import dinglydell.techresearch.researchtype.ResearchType;
+import dinglydell.techresearch.techtree.TechTree;
 import dinglydell.tftechness.block.BlockRFForgeCasing;
 import dinglydell.tftechness.block.BlockTFTMetalSheet;
 import dinglydell.tftechness.block.BlockTankFrame;
@@ -128,7 +132,7 @@ import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
 import dinglydell.tftechness.util.OreDict;
 
-@Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion;required-after:ThermalDynamics;required-after:BigReactors")
+@Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion;required-after:ThermalDynamics;required-after:BigReactors;required-after:techresearch")
 public class TFTechness {
 	public static final String MODID = "TFTechness";
 	public static final String VERSION = "0.1";
@@ -167,9 +171,18 @@ public class TFTechness {
 		addItems();
 		handleFules();
 		registerRecipeTypes();
-
+		setupTechResearch();
 		// TFTechness.logger.info("LAVA: " +
 		// FluidRegistry.LAVA.getTemperature());
+	}
+
+	private void setupTechResearch() {
+		TechResearchSettings.disableDefaultTree();
+		TechResearchSettings.disableDefaultExperiments();
+		Map<ResearchType, Double> metalCosts = new HashMap<ResearchType, Double>();
+		metalCosts.put(ResearchType.research, 10.0);
+		TechTree.addTechNode(ResearchType.metallurgy
+				.generateTechNode(metalCosts));
 	}
 
 	private void nastyHackFixes() {
@@ -259,6 +272,7 @@ public class TFTechness {
 		removeTankRecipes(batch);
 		removeCoilRecipes(batch);
 		removeMachineRecipes(batch);
+
 		removeBigReactorRecipes(batch);
 		removeRailcraftRecipes(batch);
 		for (Material m : materials) {
@@ -527,12 +541,48 @@ public class TFTechness {
 		tankRecipes();
 		coilRecipes();
 		machineCraftingRecipes();
+		augmentRecipes();
 		bigReactorRecipes();
 		railcraftRecipes();
 		dynamoCraftingRecipes();
 		machineRecipes();
 
 		TFTAugments.addRecipes();
+	}
+
+	private void augmentRecipes() {
+		GameRegistry.addRecipe(new ShapedOreRecipe(TEItems.pneumaticServo,
+				" g ", "rsr", Character.valueOf('s'), "plateIron", Character
+						.valueOf('g'), "blockGlass", Character.valueOf('r'),
+				"dustRedstone"));
+		// Auto output 
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ItemHelper
+				.cloneStack(TEAugments.generalAutoOutput, 8), "plateTin",
+				TEItems.pneumaticServo));
+		// Auto input
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ItemHelper
+				.cloneStack(TEAugments.generalAutoInput, 8), TFCBlocks.hopper,
+				TEItems.pneumaticServo));
+		// Reconfigurable sides
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ItemHelper
+				.cloneStack(TEAugments.generalReconfigSides, 8), "plateTin",
+				"plateGold"));
+		// Redstone control
+		GameRegistry.addRecipe(new ShapelessOreRecipe(ItemHelper
+				.cloneStack(TEAugments.generalRedstoneControl, 8), "plateTin",
+				"dustRedstone"));
+
+		// Secondary sieve I
+		GameRegistry.addRecipe(new ShapelessOreRecipe(
+				TEAugments.machineSecondary[0], "plateDoubleBronze",
+				"materialCloth"));
+		// Secondary sieve II
+		GameRegistry.addRecipe(new ShapedOreRecipe(
+				TEAugments.machineSecondary[1], " p ", "gHg", Character
+						.valueOf('p'), "plateDoubleBronze", Character
+						.valueOf('g'), "dustGlowstone", Character.valueOf('H'),
+				"blockGlassHardened"));
+
 	}
 
 	private void machineRecipes() {
@@ -1333,6 +1383,7 @@ public class TFTechness {
 	}
 
 	private void removeMachineRecipes(RemoveBatch batch) {
+		batch.addCrafting(TEItems.pneumaticServo);
 		if (MachineConfig.extruderEnabled) {
 			batch.addCrafting(BlockMachine.extruder);
 		}
