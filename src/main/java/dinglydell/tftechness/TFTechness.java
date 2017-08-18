@@ -10,11 +10,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import mods.railcraft.api.crafting.RailcraftCraftingManager;
 import mods.railcraft.common.blocks.anvil.BlockRCAnvil;
 import mods.railcraft.common.blocks.machine.beta.EnumMachineBeta;
 import mods.railcraft.common.fluids.Fluids;
 import mods.railcraft.common.items.ItemPlate.EnumPlate;
 import mods.railcraft.common.items.RailcraftItem;
+import mods.railcraft.common.items.RailcraftToolItems;
 import mods.railcraft.common.util.steam.Steam;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -142,7 +144,7 @@ import dinglydell.tftechness.tileentities.machine.TileTFTExtruder;
 import dinglydell.tftechness.tileentities.machine.TileTFTPrecipitator;
 import dinglydell.tftechness.util.OreDict;
 
-@Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion;required-after:ThermalDynamics;required-after:BigReactors;required-after:techresearch")
+@Mod(modid = TFTechness.MODID, version = TFTechness.VERSION, dependencies = "required-after:terrafirmacraft;required-after:ThermalFoundation;required-after:ThermalExpansion;required-after:ThermalDynamics;required-after:BigReactors;required-after:techresearch;required-after:Railcraft")
 public class TFTechness {
 	public static final String MODID = "TFTechness";
 	public static final String VERSION = "0.1";
@@ -151,6 +153,8 @@ public class TFTechness {
 	public static final float rfToJoules = 6.275f;
 	/** The degree symbol */
 	public static final String degrees = "\u00b0";
+	private static final int COKE_CREOSOTE = 500;
+	private static final int COKE_COOK_TIME = 1800;
 	public static org.apache.logging.log4j.Logger logger = LogManager
 			.getLogger("TFTechness");
 	public static Material[] materials;
@@ -179,11 +183,23 @@ public class TFTechness {
 		addMetals();
 		addBlocks();
 		addItems();
+		addRailcraftMachineRecipes();
 		handleFules();
 		registerRecipeTypes();
 		setupTechResearch();
 		// TFTechness.logger.info("LAVA: " +
 		// FluidRegistry.LAVA.getTemperature());
+	}
+
+	private void addRailcraftMachineRecipes() {
+		if (RailcraftToolItems.getCoalCoke() != null)
+			RailcraftCraftingManager.cokeOven.addRecipe(TFTMeta.bituminousCoal,
+					true,
+					false,
+					RailcraftToolItems.getCoalCoke(),
+					Fluids.CREOSOTE.get(COKE_CREOSOTE),
+					COKE_COOK_TIME);
+
 	}
 
 	private void setupTechResearch() {

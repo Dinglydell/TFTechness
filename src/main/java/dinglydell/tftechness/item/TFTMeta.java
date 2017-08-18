@@ -23,7 +23,12 @@ public class TFTMeta {
 	public static ItemStack brTurbineRotorBlade;
 
 	public static ItemStack brTurbineGlass;
+
 	public static ItemStack pitchblende;
+
+	public static ItemStack bituminousCoal;
+
+	public static ItemStack lignite;
 
 	public static void preInit() {
 
@@ -34,6 +39,10 @@ public class TFTMeta {
 		anvilRedSteel = new ItemStack(TFCBlocks.anvil, 1, 7);
 
 		pitchblende = new ItemStack(TFCItems.oreChunk, 1, 26);
+
+		bituminousCoal = new ItemStack(TFCItems.oreChunk, 1, 14);
+
+		lignite = new ItemStack(TFCItems.oreChunk, 1, 15);
 
 		brTurbineHousing = new ItemStack(BigReactors.blockTurbinePart);
 		brTurbineController = new ItemStack(BigReactors.blockTurbinePart, 1, 1);
@@ -48,5 +57,6 @@ public class TFTMeta {
 				1, 1);
 
 		brTurbineGlass = new ItemStack(BigReactors.blockMultiblockGlass, 1, 1);
+
 	}
 }
