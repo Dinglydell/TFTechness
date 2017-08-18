@@ -93,6 +93,11 @@ item.metalRod=Rod
 item.blueSteelBucket.name=Blue Steel Bucket
 item.redSteelBucket.name=Red Steel Bucket
 
+tech.tftechness.gears=Gears
+tech.tftechness.tanks=Portable Tanks
+
+gui.tftechness.anvilplan=Anvil Plan
+
 fluid.moltenMetal=Molten
 
 metal.solid=Solid

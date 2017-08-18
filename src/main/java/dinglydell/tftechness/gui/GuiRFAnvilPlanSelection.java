@@ -1,6 +1,7 @@
 package dinglydell.tftechness.gui;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,8 +15,12 @@ import cofh.lib.util.helpers.StringHelper;
 import com.bioxx.tfc.api.Crafting.AnvilManager;
 import com.bioxx.tfc.api.Crafting.AnvilRecipe;
 
+import dinglydell.techresearch.PlayerTechDataExtendedProps;
+import dinglydell.techresearch.techtree.TechNode;
+import dinglydell.techresearch.techtree.TechTree;
 import dinglydell.tftechness.TFTechness;
 import dinglydell.tftechness.gui.element.ElementButtonItem;
+import dinglydell.tftechness.tech.TechNodePlan;
 
 public class GuiRFAnvilPlanSelection extends GuiBaseAdv {
 	public static final ResourceLocation TEXTURE = new ResourceLocation(
@@ -23,6 +28,7 @@ public class GuiRFAnvilPlanSelection extends GuiBaseAdv {
 	private IPlanHandler planHandler;
 	private Map<String, ItemStack> plans;
 	private EntityPlayer player;
+	private PlayerTechDataExtendedProps ptdep;
 
 	public GuiRFAnvilPlanSelection(IPlanHandler planHandler, EntityPlayer player) {
 		super(new ContainerRFAnvilPlanSelection(planHandler), TEXTURE);
@@ -30,6 +36,7 @@ public class GuiRFAnvilPlanSelection extends GuiBaseAdv {
 		xSize = 256;
 		drawInventory = false;
 		this.player = player;
+		this.ptdep = PlayerTechDataExtendedProps.get(player);
 	}
 
 	@Override
@@ -59,7 +66,17 @@ public class GuiRFAnvilPlanSelection extends GuiBaseAdv {
 		AnvilManager manager = AnvilManager.getInstance();
 		Map<String, ItemStack> plans = new HashMap<String, ItemStack>();
 		List<AnvilRecipe> recipes = manager.getRecipeList();
+		HashSet<String> bannedPlans = new HashSet<String>();
+		for (Entry<String, TechNode> entry : TechTree.nodes.entrySet()) {
+			if (entry.getValue() instanceof TechNodePlan
+					&& !ptdep.hasCompleted(entry.getValue())) {
+				bannedPlans.addAll(((TechNodePlan) entry.getValue()).plans);
+			}
+		}
 		for (AnvilRecipe r : recipes) {
+			if (bannedPlans.contains(r.plan)) {
+				continue;
+			}
 			if (r.plan != null && !r.plan.equals("")
 					&& !plans.containsKey(r.plan)) {
 				ItemStack result = planHandler.getResult(r.plan);

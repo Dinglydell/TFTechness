@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import mods.railcraft.common.blocks.anvil.BlockRCAnvil;
 import mods.railcraft.common.blocks.machine.beta.EnumMachineBeta;
 import mods.railcraft.common.fluids.Fluids;
 import mods.railcraft.common.items.ItemPlate.EnumPlate;
@@ -56,6 +57,7 @@ import cofh.thermalexpansion.util.crafting.TransposerManager;
 import cofh.thermalfoundation.fluid.TFFluids;
 import cofh.thermalfoundation.item.TFItems;
 
+import com.bioxx.tfc.TerraFirmaCraft;
 import com.bioxx.tfc.Core.Recipes;
 import com.bioxx.tfc.Core.TFCTabs;
 import com.bioxx.tfc.Core.Metal.Alloy;
@@ -76,17 +78,21 @@ import com.bioxx.tfc.api.Enums.EnumSize;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import dinglydell.techresearch.TechResearchSettings;
 import dinglydell.techresearch.researchtype.ResearchType;
+import dinglydell.techresearch.techtree.TechNodeType;
 import dinglydell.techresearch.techtree.TechTree;
+import dinglydell.techresearch.util.MapBuilder;
 import dinglydell.tftechness.block.BlockRFForgeCasing;
 import dinglydell.tftechness.block.BlockTFTMetalSheet;
 import dinglydell.tftechness.block.BlockTankFrame;
@@ -101,6 +107,7 @@ import dinglydell.tftechness.config.MachineConfig;
 import dinglydell.tftechness.config.MetalConfig;
 import dinglydell.tftechness.config.RecipeConfig;
 import dinglydell.tftechness.fluid.TFTFluids;
+import dinglydell.tftechness.gui.GuiHandlerTech;
 import dinglydell.tftechness.gui.TFTGuiHandler;
 import dinglydell.tftechness.item.ItemRod;
 import dinglydell.tftechness.item.ItemTFTMetalSheet;
@@ -120,6 +127,9 @@ import dinglydell.tftechness.recipe.RecipeShapelessUpgrade;
 import dinglydell.tftechness.recipe.RemoveBatch;
 import dinglydell.tftechness.recipe.TFTCraftingHandler;
 import dinglydell.tftechness.render.item.RenderBucket;
+import dinglydell.tftechness.tech.TechNodePlan;
+import dinglydell.tftechness.tech.event.PlayerEventHandler;
+import dinglydell.tftechness.tech.experiment.TFTExperiments;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.dynamo.TileTFTDynamoSteam;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
@@ -179,16 +189,67 @@ public class TFTechness {
 	private void setupTechResearch() {
 		TechResearchSettings.disableDefaultTree();
 		TechResearchSettings.disableDefaultExperiments();
-		Map<ResearchType, Double> metalCosts = new HashMap<ResearchType, Double>();
-		metalCosts.put(ResearchType.research, 10.0);
+
+		setupTechTree();
+		TFTExperiments.setupExperiments();
+		setupTechEventHandlers();
+
+	}
+
+	private void setupTechTree() {
 		TechTree.addTechNode(ResearchType.metallurgy
-				.generateTechNode(metalCosts));
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.research, 20.0).getMap()));
+		TechTree.addTechNode(ResearchType.smithing
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.research, 20.0).getMap()));
+
+		TechTree.addTechNode(new TechNodePlan("gears", TechNodeType.types
+				.get("application"), new MapBuilder<ResearchType, Double>()
+				.put(ResearchType.metallurgy, 5.0)
+				.put(ResearchType.smithing, 5.0).put(ResearchType.motion, 5.0)
+				.getMap()).addPlan(AnvilRecipeHandler.gearPlan));
+		TechTree.addTechNode(new TechNodePlan("tanks", TechNodeType.types
+				.get("application"), new MapBuilder<ResearchType, Double>()
+				.put(ResearchType.metallurgy, 5.0)
+				.put(ResearchType.smithing, 5.0).getMap())
+				.addPlan(AnvilRecipeHandler.tankPlan));
+
+	}
+
+	private void setupTechEventHandlers() {
+		MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
+
 	}
 
 	private void nastyHackFixes() {
 		// nasty stuff happens here. Cover your eyes.
+		replaceGuiHandler();
 		replaceWater();
 		fixWaterToSteam();
+	}
+
+	// this is possibly the worst atrocity I've ever committed
+	private void replaceGuiHandler() {
+		try {
+			Field clientGuiHandlersField = NetworkRegistry.class
+					.getDeclaredField("clientGuiHandlers");
+			clientGuiHandlersField.setAccessible(true);
+			Map<ModContainer, IGuiHandler> clientGuiHandlers = (Map<ModContainer, IGuiHandler>) clientGuiHandlersField
+					.get(NetworkRegistry.INSTANCE);
+			ModContainer tfc = null;
+			for (Entry<ModContainer, IGuiHandler> entry : clientGuiHandlers
+					.entrySet()) {
+				if (entry.getKey().getMod() instanceof TerraFirmaCraft) {
+					tfc = entry.getKey();
+					break;
+				}
+			}
+			clientGuiHandlers.put(tfc, new GuiHandlerTech());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private void replaceWater() {
@@ -312,7 +373,7 @@ public class TFTechness {
 	private void removeRailcraftRecipes(RemoveBatch batch) {
 		batch.addCrafting(EnumMachineBeta.BOILER_TANK_LOW_PRESSURE.getItem());
 		batch.addCrafting(EnumMachineBeta.BOILER_TANK_HIGH_PRESSURE.getItem());
-
+		batch.addCrafting(BlockRCAnvil.getStack());
 		if (MachineConfig.bigReactorsOnly) {
 			batch.addCrafting(EnumMachineBeta.ENGINE_STEAM_HIGH.getItem());
 			batch.addCrafting(EnumMachineBeta.ENGINE_STEAM_HOBBY.getItem());

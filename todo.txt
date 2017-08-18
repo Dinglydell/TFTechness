@@ -1,4 +1,5 @@
 -rf blast furnace/blomery(?)
--rf forge/crucible
+-rf forge/crucible (CHECK)
 -molten metal
 -proper recipe balancing - when should tech become available?
+   answer: when it's research ofc

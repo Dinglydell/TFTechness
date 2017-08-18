@@ -53,6 +53,7 @@ public class GuiRFAnvil extends GuiAugmentableBase {
 
 		myTile = te;
 		player = inv.player;
+		//PlayerTechDataExtendedProps.get(player).regenerateTechChoices();
 		generateInfo("tab." + TFTechness.MODID + ".machine.rfanvil", 1);
 	}
 

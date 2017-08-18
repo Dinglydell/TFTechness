@@ -5,9 +5,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
-
-import org.lwjgl.opengl.GL11;
-
 import cofh.lib.gui.GuiBase;
 import cofh.lib.gui.element.ElementButtonBase;
 import cofh.lib.render.RenderHelper;
@@ -85,7 +82,7 @@ public class ElementButtonItem extends ElementButtonBase {
 
 	@Override
 	public void drawBackground(int mouseX, int mouseY, float gameTicks) {
-		GL11.glColor4f(1, 1, 1, 1);
+		//GL11.glColor4f(1, 1, 1, 1);
 		RenderHelper.bindTexture(texture);
 		if (intersectsWith(mouseX, mouseY)) {
 			drawTexturedModalRect(posX, posY, sizeX, 0, sizeX, sizeY);
