@@ -12,6 +12,7 @@ import java.util.Random;
 
 import mods.railcraft.api.crafting.RailcraftCraftingManager;
 import mods.railcraft.common.blocks.anvil.BlockRCAnvil;
+import mods.railcraft.common.blocks.machine.alpha.EnumMachineAlpha;
 import mods.railcraft.common.blocks.machine.beta.EnumMachineBeta;
 import mods.railcraft.common.fluids.Fluids;
 import mods.railcraft.common.items.ItemPlate.EnumPlate;
@@ -92,6 +93,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import dinglydell.techresearch.TechResearchSettings;
 import dinglydell.techresearch.researchtype.ResearchType;
+import dinglydell.techresearch.techtree.TechNode;
 import dinglydell.techresearch.techtree.TechNodeType;
 import dinglydell.techresearch.techtree.TechTree;
 import dinglydell.techresearch.util.MapBuilder;
@@ -230,6 +232,11 @@ public class TFTechness {
 				.put(ResearchType.metallurgy, 5.0)
 				.put(ResearchType.smithing, 5.0).getMap())
 				.addPlan(AnvilRecipeHandler.tankPlan));
+
+		TechTree.addTechNode(new TechNode("coke", TechNodeType.types
+				.get("application"), new MapBuilder<ResearchType, Double>()
+				.put(ResearchType.processing, 10.0).getMap())
+				.addItemUnlocked(EnumMachineAlpha.COKE_OVEN.getItem()));
 
 	}
 
@@ -390,6 +397,7 @@ public class TFTechness {
 		batch.addCrafting(EnumMachineBeta.BOILER_TANK_LOW_PRESSURE.getItem());
 		batch.addCrafting(EnumMachineBeta.BOILER_TANK_HIGH_PRESSURE.getItem());
 		batch.addCrafting(BlockRCAnvil.getStack());
+		batch.addCrafting(EnumMachineAlpha.BLAST_FURNACE.getItem());
 		if (MachineConfig.bigReactorsOnly) {
 			batch.addCrafting(EnumMachineBeta.ENGINE_STEAM_HIGH.getItem());
 			batch.addCrafting(EnumMachineBeta.ENGINE_STEAM_HOBBY.getItem());
