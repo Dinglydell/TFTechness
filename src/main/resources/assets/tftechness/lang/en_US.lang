@@ -95,6 +95,13 @@ item.redSteelBucket.name=Red Steel Bucket
 
 tech.tftechness.gears=Gears
 tech.tftechness.tanks=Portable Tanks
+tech.techresearch.steam=Steam Power
+tech.techresearch.lowBoilers=Low Pressure Boilers
+tech.techresearch.highBoilers=High Pressure Boilers
+tech.techresearch.steamLocomotive=Steam Locomotives
+tech.techresearch.liquidFirebox=Liquid Fueled Firebox
+
+research.techresearch.fluidDynamics=Fluid Dynamics
 
 gui.tftechness.anvilplan=Anvil Plan
 

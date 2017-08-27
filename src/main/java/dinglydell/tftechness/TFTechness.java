@@ -14,6 +14,7 @@ import mods.railcraft.api.crafting.RailcraftCraftingManager;
 import mods.railcraft.common.blocks.anvil.BlockRCAnvil;
 import mods.railcraft.common.blocks.machine.alpha.EnumMachineAlpha;
 import mods.railcraft.common.blocks.machine.beta.EnumMachineBeta;
+import mods.railcraft.common.carts.EnumCart;
 import mods.railcraft.common.fluids.Fluids;
 import mods.railcraft.common.items.ItemPlate.EnumPlate;
 import mods.railcraft.common.items.RailcraftItem;
@@ -24,6 +25,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -92,6 +94,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import dinglydell.techresearch.TechResearchSettings;
+import dinglydell.techresearch.item.TRItems;
 import dinglydell.techresearch.researchtype.ResearchType;
 import dinglydell.techresearch.techtree.TechNode;
 import dinglydell.techresearch.techtree.TechNodeType;
@@ -134,6 +137,7 @@ import dinglydell.tftechness.render.item.RenderBucket;
 import dinglydell.tftechness.tech.TechNodePlan;
 import dinglydell.tftechness.tech.event.PlayerEventHandler;
 import dinglydell.tftechness.tech.experiment.TFTExperiments;
+import dinglydell.tftechness.tech.researchtype.TFTResearchTypes;
 import dinglydell.tftechness.tileentities.TETFTMetalSheet;
 import dinglydell.tftechness.tileentities.dynamo.TileTFTDynamoSteam;
 import dinglydell.tftechness.tileentities.machine.TileCryoChamber;
@@ -207,7 +211,8 @@ public class TFTechness {
 	private void setupTechResearch() {
 		TechResearchSettings.disableDefaultTree();
 		TechResearchSettings.disableDefaultExperiments();
-
+		TechNodeType.RegisterType(new TechNodeType("prototype", 0x22B1C7,
+				EnumChatFormatting.BLUE));
 		setupTechTree();
 		TFTExperiments.setupExperiments();
 		setupTechEventHandlers();
@@ -215,12 +220,48 @@ public class TFTechness {
 	}
 
 	private void setupTechTree() {
-		TechTree.addTechNode(ResearchType.metallurgy
+
+		TechNode notebook = TechTree.addTechNode(new TechNode("notebook",
+				TechNodeType.types.get("application"),
+				(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.research, 10.0).getMap()))
+				.addItemUnlocked(TRItems.notebook));
+
+		TechNode metallurgy = TechTree.addTechNode(ResearchType.metallurgy
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
 						.put(ResearchType.research, 20.0).getMap()));
-		TechTree.addTechNode(ResearchType.smithing
+		TechNode smithing = TechTree.addTechNode(ResearchType.smithing
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
 						.put(ResearchType.research, 20.0).getMap()));
+
+		TechNode motion = TechTree.addTechNode(ResearchType.motion
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.research, 20.0).getMap()));
+		TechTree.addTechNode(ResearchType.science
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.research, 20.0).getMap())
+				.addRequirementAny(motion).addRequirementAny(metallurgy));
+		TechTree.addTechNode(ResearchType.physics
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.science, 20.0).getMap()));
+		TechTree.addTechNode(ResearchType.biology
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.science, 20.0).getMap()));
+
+		TechTree.addTechNode(TFTResearchTypes.fluidDynamics
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.physics, 20.0).getMap()));
+
+		TechTree.addTechNode(ResearchType.electrics
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.physics, 20.0).getMap()));
+
+		TechTree.addTechNode(ResearchType.zoology
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.biology, 20.0).getMap()));
+		TechTree.addTechNode(ResearchType.botany
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.biology, 20.0).getMap()));
 
 		TechTree.addTechNode(new TechNodePlan("gears", TechNodeType.types
 				.get("application"), new MapBuilder<ResearchType, Double>()
@@ -238,6 +279,88 @@ public class TFTechness {
 				.put(ResearchType.processing, 10.0).getMap())
 				.addItemUnlocked(EnumMachineAlpha.COKE_OVEN.getItem()));
 
+		TechNode steam = new TechNode("steam",
+				TechNodeType.types.get("theory"),
+				new MapBuilder<ResearchType, Double>()
+						.put(TFTResearchTypes.fluidDynamics, 10.0).getMap());
+		TechTree.addTechNode(steam);
+
+		TechNode lowBoilers = TechTree
+				.addTechNode(new TechNode("lowBoilers", TechNodeType.types
+						.get("application"),
+						new MapBuilder<ResearchType, Double>()
+								.put(TFTResearchTypes.fluidDynamics, 10.0)
+								.getMap())
+						.addRequirementAll(steam)
+						.addItemUnlocked(EnumMachineBeta.BOILER_FIREBOX_SOLID
+								.getItem())
+						.addItemUnlocked(EnumMachineBeta.BOILER_TANK_LOW_PRESSURE
+								.getItem()));
+
+		TechTree.addTechNode(new TechNode("liquidFirebox", TechNodeType.types
+				.get("application"), new MapBuilder<ResearchType, Double>()
+				.put(TFTResearchTypes.fluidDynamics, 15.0).getMap())
+				.addRequirementAll(lowBoilers)
+				.addItemUnlocked(EnumMachineBeta.BOILER_FIREBOX_FLUID.getItem()));
+
+		TechNode highBoilers = TechTree.addTechNode(new TechNode("highBoilers",
+				TechNodeType.types.get("application"),
+				new MapBuilder<ResearchType, Double>()
+						.put(TFTResearchTypes.fluidDynamics, 10.0).getMap())
+				.addRequirementAll(lowBoilers)
+				.addItemUnlocked(EnumMachineBeta.BOILER_TANK_HIGH_PRESSURE
+						.getItem()));
+		TechTree.addTechNode(new TechNode("steamLocomotive", TechNodeType.types
+				.get("application"), new MapBuilder<ResearchType, Double>()
+				.put(TFTResearchTypes.fluidDynamics, 10.0)
+				.put(ResearchType.motion, 10.0).getMap())
+				.addRequirementAll(highBoilers)
+				.addItemUnlocked(EnumCart.LOCO_STEAM_SOLID.getCartItem()));
+		//TODO: Method of obtaining electrics
+		TechNode induction = TechTree.addTechNode(new TechNode("induction",
+				TechNodeType.types.get("theory"),
+				new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.electrics, 10.0)
+						.put(ResearchType.motion, 10.0).getMap()));
+
+		TechNode steamEngine = TechTree.addTechNode(new TechNode("steamEngine",
+				TechNodeType.types.get("prototype"),
+				new MapBuilder<ResearchType, Double>()
+						.put(TFTResearchTypes.fluidDynamics, 10.0)
+						.put(ResearchType.motion, 10.0)
+						.put(ResearchType.electrics, 10.0).getMap())
+				.addRequirementAll(induction)
+				.addItemUnlocked(EnumMachineBeta.ENGINE_STEAM_LOW.getItem()));
+
+		TechNode turbines = TechTree.addTechNode(new TechNode("steamTurbine",
+				TechNodeType.types.get("application"),
+				new MapBuilder<ResearchType, Double>()
+						.put(TFTResearchTypes.fluidDynamics, 10.0)
+						.put(ResearchType.motion, 10.0)
+						.put(ResearchType.electrics, 10.0).getMap())
+				.addRequirementAll(steamEngine)
+				.addItemUnlocked(TFTMeta.brTurbineController)
+				.addItemUnlocked(TFTMeta.brTurbineFluidPort)
+				.addItemUnlocked(TFTMeta.brTurbineGlass)
+				.addItemUnlocked(TFTMeta.brTurbineHousing)
+				.addItemUnlocked(TFTMeta.brTurbineRotorBearing)
+				.addItemUnlocked(TFTMeta.brTurbineRotorShaft)
+				.addItemUnlocked(TFTMeta.brTurbineRotorBlade)
+				.addItemUnlocked(TFTMeta.brTurbinePowerPort));
+
+		//tracks
+		TechNode woodTrack = TechTree.addTechNode(new TechNode("woodTrack",
+				TechNodeType.types.get("application"),
+				new MapBuilder<ResearchType, Double>().put(ResearchType.motion,
+						10.0).getMap()).addItemUnlocked(TFTMeta.trackWood)
+				.addItemUnlocked(TFTMeta.trackWoodJunction));
+
+		//		TechNode switches = TechTree.addTechNode(new TechNode("switches",
+		//				TechNodeType.types.get("application"),
+		//				new MapBuilder<ResearchType, Double>().put(ResearchType.motion,
+		//						10.0).getMap())
+		//						.addItemUnlocked(TFTMeta.trackWoodSwitch)
+		//						.addItemUnlocked(TFTMeta.trackWye));
 	}
 
 	private void setupTechEventHandlers() {
@@ -619,6 +742,7 @@ public class TFTechness {
 	}
 
 	private void addRecipes() {
+		techResearchRecipes();
 		for (Material m : materials) {
 			unshapedMetalRecipe(m);
 			nuggetIngotBlockRecipe(m);
@@ -633,6 +757,13 @@ public class TFTechness {
 		machineRecipes();
 
 		TFTAugments.addRecipes();
+	}
+
+	private void techResearchRecipes() {
+		//TODO: better recipe
+		GameRegistry.addRecipe(new ShapelessOreRecipe(TRItems.notebook,
+				Items.book, "dustRedstone"));
+
 	}
 
 	private void augmentRecipes() {

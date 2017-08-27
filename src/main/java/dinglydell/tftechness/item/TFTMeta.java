@@ -1,5 +1,6 @@
 package dinglydell.tftechness.item;
 
+import mods.railcraft.common.blocks.RailcraftBlocks;
 import net.minecraft.item.ItemStack;
 
 import com.bioxx.tfc.api.TFCBlocks;
@@ -30,6 +31,9 @@ public class TFTMeta {
 
 	public static ItemStack lignite;
 
+	public static ItemStack trackWood;
+	public static ItemStack trackWoodJunction;
+
 	public static void preInit() {
 
 		salt = new ItemStack(TFCItems.powder, 1, 9);
@@ -57,6 +61,9 @@ public class TFTMeta {
 				1, 1);
 
 		brTurbineGlass = new ItemStack(BigReactors.blockMultiblockGlass, 1, 1);
+
+		trackWood = new ItemStack(RailcraftBlocks.getBlockTrack(), 1, 736);
+		trackWoodJunction = new ItemStack(RailcraftBlocks.getBlockTrack(), 1, 0);
 
 	}
 }
