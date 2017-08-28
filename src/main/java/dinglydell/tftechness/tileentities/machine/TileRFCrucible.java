@@ -94,8 +94,10 @@ public class TileRFCrucible extends TileTemperatureControl implements
 		tank.readFromNBT(nbt.getCompoundTag("Tank"));
 		tankFluidTemperature = nbt.getFloat("FluidTemperature");
 		locked = nbt.getBoolean("Locked");
-		targetFluid = (FluidMoltenMetal) FluidStack.loadFluidStackFromNBT(nbt)
-				.getFluid();
+		FluidStack fs = FluidStack.loadFluidStackFromNBT(nbt);
+		if (fs != null) {
+			targetFluid = (FluidMoltenMetal) fs.getFluid();
+		}
 	}
 
 	@Override
