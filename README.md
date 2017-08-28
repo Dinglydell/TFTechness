@@ -10,7 +10,7 @@ Before it's too late, just go.
 
 On your own head be it.
 
-This is a (terrible) attempt to string together [TerraFirmaCraft](https://github.com/Deadrik/TFCraft) and various tech mods (namely [team CoFH](https://github.com/CoFH) mods and [Railcraft](https://github.com/Railcraft/Railcraft) so that they play together all nice-nice, and CoFH acts a bit more TFCraft-y.
+This is a (terrible) attempt to string together [TerraFirmaCraft](https://github.com/Deadrik/TFCraft) and various tech mods (namely [team CoFH](https://github.com/CoFH) mods and [Railcraft](https://github.com/Railcraft/Railcraft)) so that they play together all nice-nice, and CoFH acts a bit more TFCraft-y.
 
 Although not done yet, the plan is to balance the mods so that (stock) TFCraft acts as the early-mid game, and CoFH (and potentially other tech mods) as the late game.
 
@@ -37,8 +37,8 @@ Features so far:
 * [Early WIP] Used [TechResearch](https://github.com/Dinglydell/TechResearch) such that some recipes (or anvil plans) will require you to research tech before being available
 
 Mods in use (and relies upon):
-*[TerraFirmaCraft](https://github.com/Deadrik/TFCraft) (obviously)
-*[ThermalExpansion](https://github.com/CoFH/ThermalExpansion), [ThermalFoundation](https://github.com/CoFH/ThermalFoundation), [ThermalDynamics](https://github.com/CoFH/ThermalDynamics)
-*[Railcraft](https://github.com/Railcraft/Railcraft)
-*[BigReactors](https://github.com/erogenousbeef/BigReactors)
-*[TechResearch](https://github.com/Dinglydell/TechResearch) (I made dis)
+* [TerraFirmaCraft](https://github.com/Deadrik/TFCraft) (obviously)
+* [ThermalExpansion](https://github.com/CoFH/ThermalExpansion), [ThermalFoundation](https://github.com/CoFH/ThermalFoundation), [ThermalDynamics](https://github.com/CoFH/ThermalDynamics)
+* [Railcraft](https://github.com/Railcraft/Railcraft)
+* [BigReactors](https://github.com/erogenousbeef/BigReactors)
+* [TechResearch](https://github.com/Dinglydell/TechResearch) (I made dis)
