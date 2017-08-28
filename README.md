@@ -16,7 +16,7 @@ Although not done yet, the plan is to balance the mods so that (stock) TFCraft a
 
 The ultimate goal (which will probably never be reached) is to allow for a TerraFirmaCraft game that starts out being survival-y, manual, tedious, and all the things good ol' TFCraft is, and eventually lead to full automation of everything with the four of us sitting around a table talking about how much happier we were back in the TFCraft days; "Who'd a thought thirty years ago we'd all be sittin' here drinking Chateau de Chassilier?"
 
-Ideally it'll eventually move away from its reliance on ThermalExpansion (and other team CoFH mods ... and non-team CoFH mods for that matter) and become its own independent mod (this is very unlikely to happen ever)
+Ideally it'll eventually move away from its reliance on ThermalExpansion (and other team CoFH mods ... and non-team CoFH mods for that matter) and become its own independent mod (this is very unlikely to happen ever). However once TFC2 is released I may write this from scratch in an attempt to do this using significant amount of stuff I've learned from working on this project 
 
 Features so far:
 * Added (heatable) TFC metals (ingots, sheets, double ingots, double sheets, unshaped metal) for all ThermalFoundation metals.
@@ -36,7 +36,7 @@ Features so far:
 * Hacked water such that any mod that tries to use water will instead use TFC's fresh water
 * [Early WIP] Used [TechResearch](https://github.com/Dinglydell/TechResearch) such that some recipes (or anvil plans) will require you to research tech before being available
 
-Mods in use (and relies upon):
+Mods in use (and relied upon):
 * [TerraFirmaCraft](https://github.com/Deadrik/TFCraft) (obviously)
 * [ThermalExpansion](https://github.com/CoFH/ThermalExpansion), [ThermalFoundation](https://github.com/CoFH/ThermalFoundation), [ThermalDynamics](https://github.com/CoFH/ThermalDynamics)
 * [Railcraft](https://github.com/Railcraft/Railcraft)
