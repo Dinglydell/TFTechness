@@ -33,11 +33,12 @@ public class TFTExperiments {
 
 		bucket = new Experiment("bucket",
 				(new MapBuilder<ResearchType, Double>()
-						.put(TFTResearchTypes.fluidDynamics, 20.0).getMap()));
+						.put(TFTResearchTypes.fluidDynamics, 20.0).getMap()),
+				20 * 60);
 
 		jump = new Experiment("jump",
 				(new MapBuilder<ResearchType, Double>()
-						.put(ResearchType.motion, 20.0).getMap()));
+						.put(ResearchType.motion, 20.0).getMap()), 20 * 60 * 2);
 		hurtGeneral = new Experiment("hurt",
 				(new MapBuilder<ResearchType, Double>()
 						.put(ResearchType.zoology, 20.0).getMap()));

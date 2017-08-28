@@ -95,13 +95,31 @@ item.redSteelBucket.name=Red Steel Bucket
 
 tech.tftechness.gears=Gears
 tech.tftechness.tanks=Portable Tanks
+
 tech.techresearch.steam=Steam Power
 tech.techresearch.lowBoilers=Low Pressure Boilers
 tech.techresearch.highBoilers=High Pressure Boilers
 tech.techresearch.steamLocomotive=Steam Locomotives
 tech.techresearch.liquidFirebox=Liquid Fueled Firebox
 
+tech.techresearch.induction=Induction
+tech.techresearch.steamEngine=Steam Generator
+tech.techresearch.steamTurbine=Steam Induction Turbine
+
+tech.techresearch.woodTrack=Wooden Tracks
+
 research.techresearch.fluidDynamics=Fluid Dynamics
+
+
+experiment.techresearch.jump=Jumping
+experiment.techresearch.anvil=Anvils
+experiment.techresearch.bucket=Buckets
+experiment.techresearch.hurt=Hurting
+experiment.techresearch.hurtFall=Falling
+experiment.techresearch.hurtHot=Burning
+experiment.techresearch.hurtCactus=Prickling
+experiment.techresearch.hurtStarve=Starving
+experiment.techresearch.hurtSuffocate=Suffocating
 
 gui.tftechness.anvilplan=Anvil Plan
 

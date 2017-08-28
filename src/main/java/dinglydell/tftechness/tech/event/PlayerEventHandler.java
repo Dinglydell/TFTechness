@@ -1,7 +1,5 @@
 package dinglydell.tftechness.tech.event;
 
-import java.util.Random;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -14,6 +12,7 @@ import dinglydell.techresearch.PlayerTechDataExtendedProps;
 import dinglydell.tftechness.tech.experiment.TFTExperiments;
 
 public class PlayerEventHandler {
+
 	@SubscribeEvent
 	public void onAnvilCraft(AnvilCraftEvent event) {
 		EntityPlayer p = (EntityPlayer) event.entity;
@@ -24,12 +23,9 @@ public class PlayerEventHandler {
 	@SubscribeEvent
 	public void onFillBucket(FillBucketEvent event) {
 		if (!event.world.isRemote) {
-			Random rnd = new Random();
-			if (rnd.nextDouble() < 0.1) {
-				PlayerTechDataExtendedProps ptdep = PlayerTechDataExtendedProps
-						.get(event.entityPlayer);
-				ptdep.addResearchPoints(TFTExperiments.bucket);
-			}
+			PlayerTechDataExtendedProps ptdep = PlayerTechDataExtendedProps
+					.get(event.entityPlayer);
+			ptdep.addResearchPoints(TFTExperiments.bucket);
 		}
 
 	}
@@ -56,13 +52,10 @@ public class PlayerEventHandler {
 	public void onLivingJump(LivingJumpEvent event) {
 		if (!event.entity.worldObj.isRemote
 				&& event.entity instanceof EntityPlayer) {
-			Random rnd = new Random();
-			if (rnd.nextDouble() < 0.1) {
-				EntityPlayer p = (EntityPlayer) event.entity;
-				PlayerTechDataExtendedProps ptdep = PlayerTechDataExtendedProps
-						.get(p);
-				ptdep.addResearchPoints(TFTExperiments.jump);
-			}
+			EntityPlayer p = (EntityPlayer) event.entity;
+			PlayerTechDataExtendedProps ptdep = PlayerTechDataExtendedProps
+					.get(p);
+			ptdep.addResearchPoints(TFTExperiments.jump);
 		}
 	}
 }
