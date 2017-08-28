@@ -2,4 +2,4 @@
 -rf forge/crucible (CHECK)
 -molten metal
 -proper recipe balancing - when should tech become available?
-   answer: when it's research ofc
+   answer: when it's researched ofc
