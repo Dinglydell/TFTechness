@@ -97,6 +97,7 @@ import dinglydell.techresearch.TechResearchSettings;
 import dinglydell.techresearch.item.TRItems;
 import dinglydell.techresearch.researchtype.ResearchType;
 import dinglydell.techresearch.techtree.TechNode;
+import dinglydell.techresearch.techtree.TechNode.TechNodeTier;
 import dinglydell.techresearch.techtree.TechNodeType;
 import dinglydell.techresearch.techtree.TechTree;
 import dinglydell.techresearch.util.MapBuilder;
@@ -220,69 +221,118 @@ public class TFTechness {
 	}
 
 	private void setupTechTree() {
+		//tier 0
+		TechNodeTier.createNextTier(2);
+
+		//tier 1
+		TechNodeTier.createNextTier(3);
+
+		//tier 2
+		TechNodeTier.createNextTier(3);
+
+		//tier 3
+		TechNodeTier.createNextTier(3);
+
+		//tier 4
+		TechNodeTier.createNextTier(3);
+
+		//tier 5
+		TechNodeTier.createNextTier(3);
 
 		TechNode notebook = TechTree.addTechNode(new TechNode("notebook",
 				TechNodeType.types.get("application"),
 				(new MapBuilder<ResearchType, Double>()
 						.put(ResearchType.research, 10.0).getMap()))
-				.addItemUnlocked(TRItems.notebook));
-
+				.addItemUnlocked(TRItems.notebook).setTier(TechNodeTier
+						.getTier(1)));
+		//metallurgy
 		TechNode metallurgy = TechTree.addTechNode(ResearchType.metallurgy
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
-						.put(ResearchType.research, 20.0).getMap()));
+						.put(ResearchType.research, 20.0).getMap())
+				.setTier(TechNodeTier.getTier(0)));
+
+		//ferrous metallurgy 
+		TechNode ferrousMetallurgy = TechTree
+				.addTechNode(TFTResearchTypes.ferrousMetallurgy
+						.generateTechNode(new MapBuilder<ResearchType, Double>()
+								.put(ResearchType.metallurgy, 20.0).getMap())
+						.setTier(TechNodeTier.getTier(1)));
+
+		//smithing
 		TechNode smithing = TechTree.addTechNode(ResearchType.smithing
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
-						.put(ResearchType.research, 20.0).getMap()));
+						.put(ResearchType.research, 20.0).getMap())
+				.setTier(TechNodeTier.getTier(0)));
 
 		TechNode motion = TechTree.addTechNode(ResearchType.motion
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
-						.put(ResearchType.research, 20.0).getMap()));
+						.put(ResearchType.research, 20.0).getMap())
+				.setTier(TechNodeTier.getTier(0)));
 		TechTree.addTechNode(ResearchType.science
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
 						.put(ResearchType.research, 20.0).getMap())
-				.addRequirementAny(motion).addRequirementAny(metallurgy));
+				.addRequirementAny(motion).addRequirementAny(metallurgy)
+				.setTier(TechNodeTier.getTier(2)));
+		//physics
 		TechTree.addTechNode(ResearchType.physics
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
-						.put(ResearchType.science, 20.0).getMap()));
+						.put(ResearchType.science, 20.0).getMap())
+				.setTier(TechNodeTier.getTier(3)));
+		//biology
 		TechTree.addTechNode(ResearchType.biology
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
-						.put(ResearchType.science, 20.0).getMap()));
+						.put(ResearchType.science, 20.0).getMap())
+				.setTier(TechNodeTier.getTier(3)));
 
 		TechTree.addTechNode(TFTResearchTypes.fluidDynamics
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
-						.put(ResearchType.physics, 20.0).getMap()));
+						.put(ResearchType.physics, 20.0).getMap())
+				.setTier(TechNodeTier.getTier(3)));
 
 		TechTree.addTechNode(ResearchType.electrics
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
-						.put(ResearchType.physics, 20.0).getMap()));
+						.put(ResearchType.physics, 20.0).getMap())
+				.setTier(TechNodeTier.getTier(3)));
 
 		TechTree.addTechNode(ResearchType.zoology
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
-						.put(ResearchType.biology, 20.0).getMap()));
+						.put(ResearchType.biology, 20.0).getMap())
+				.setTier(TechNodeTier.getTier(3)));
 		TechTree.addTechNode(ResearchType.botany
 				.generateTechNode(new MapBuilder<ResearchType, Double>()
-						.put(ResearchType.biology, 20.0).getMap()));
+						.put(ResearchType.biology, 20.0).getMap())
+				.setTier(TechNodeTier.getTier(3)));
+
+		TechTree.addTechNode(ResearchType.processing
+				.generateTechNode(new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.research, 20.0).getMap())
+				.addRequirementAny(smithing).setTier(TechNodeTier.getTier(1)));
 
 		TechTree.addTechNode(new TechNodePlan("gears", TechNodeType.types
 				.get("application"), new MapBuilder<ResearchType, Double>()
 				.put(ResearchType.metallurgy, 5.0)
 				.put(ResearchType.smithing, 5.0).put(ResearchType.motion, 5.0)
-				.getMap()).addPlan(AnvilRecipeHandler.gearPlan));
+				.getMap()).addPlan(AnvilRecipeHandler.gearPlan)
+				.setTier(TechNodeTier.getTier(2)));
 		TechTree.addTechNode(new TechNodePlan("tanks", TechNodeType.types
 				.get("application"), new MapBuilder<ResearchType, Double>()
 				.put(ResearchType.metallurgy, 5.0)
 				.put(ResearchType.smithing, 5.0).getMap())
-				.addPlan(AnvilRecipeHandler.tankPlan));
+				.addPlan(AnvilRecipeHandler.tankPlan).setTier(TechNodeTier
+						.getTier(3)));
 
-		TechTree.addTechNode(new TechNode("coke", TechNodeType.types
-				.get("application"), new MapBuilder<ResearchType, Double>()
-				.put(ResearchType.processing, 10.0).getMap())
-				.addItemUnlocked(EnumMachineAlpha.COKE_OVEN.getItem()));
+		TechNode coke = TechTree.addTechNode(new TechNode("coke",
+				TechNodeType.types.get("application"),
+				new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.processing, 10.0).getMap())
+				.addItemUnlocked(EnumMachineAlpha.COKE_OVEN.getItem())
+				.setTier(TechNodeTier.getTier(2)));
 
 		TechNode steam = new TechNode("steam",
 				TechNodeType.types.get("theory"),
 				new MapBuilder<ResearchType, Double>()
-						.put(TFTResearchTypes.fluidDynamics, 10.0).getMap());
+						.put(TFTResearchTypes.fluidDynamics, 10.0).getMap())
+				.setTier(TechNodeTier.getTier(4));
 		TechTree.addTechNode(steam);
 
 		TechNode lowBoilers = TechTree
@@ -295,13 +345,14 @@ public class TFTechness {
 						.addItemUnlocked(EnumMachineBeta.BOILER_FIREBOX_SOLID
 								.getItem())
 						.addItemUnlocked(EnumMachineBeta.BOILER_TANK_LOW_PRESSURE
-								.getItem()));
+								.getItem()).setTier(TechNodeTier.getTier(4)));
 
 		TechTree.addTechNode(new TechNode("liquidFirebox", TechNodeType.types
 				.get("application"), new MapBuilder<ResearchType, Double>()
 				.put(TFTResearchTypes.fluidDynamics, 15.0).getMap())
 				.addRequirementAll(lowBoilers)
-				.addItemUnlocked(EnumMachineBeta.BOILER_FIREBOX_FLUID.getItem()));
+				.addItemUnlocked(EnumMachineBeta.BOILER_FIREBOX_FLUID.getItem())
+				.setTier(TechNodeTier.getTier(4)));
 
 		TechNode highBoilers = TechTree.addTechNode(new TechNode("highBoilers",
 				TechNodeType.types.get("application"),
@@ -309,19 +360,21 @@ public class TFTechness {
 						.put(TFTResearchTypes.fluidDynamics, 10.0).getMap())
 				.addRequirementAll(lowBoilers)
 				.addItemUnlocked(EnumMachineBeta.BOILER_TANK_HIGH_PRESSURE
-						.getItem()));
+						.getItem()).setTier(TechNodeTier.getTier(4)));
 		TechTree.addTechNode(new TechNode("steamLocomotive", TechNodeType.types
 				.get("application"), new MapBuilder<ResearchType, Double>()
 				.put(TFTResearchTypes.fluidDynamics, 10.0)
 				.put(ResearchType.motion, 10.0).getMap())
 				.addRequirementAll(highBoilers)
-				.addItemUnlocked(EnumCart.LOCO_STEAM_SOLID.getCartItem()));
+				.addItemUnlocked(EnumCart.LOCO_STEAM_SOLID.getCartItem())
+				.setTier(TechNodeTier.getTier(4)));
 		//TODO: Method of obtaining electrics
 		TechNode induction = TechTree.addTechNode(new TechNode("induction",
 				TechNodeType.types.get("theory"),
 				new MapBuilder<ResearchType, Double>()
 						.put(ResearchType.electrics, 10.0)
-						.put(ResearchType.motion, 10.0).getMap()));
+						.put(ResearchType.motion, 10.0).getMap())
+				.setTier(TechNodeTier.getTier(4)));
 
 		TechNode steamEngine = TechTree.addTechNode(new TechNode("steamEngine",
 				TechNodeType.types.get("prototype"),
@@ -330,7 +383,8 @@ public class TFTechness {
 						.put(ResearchType.motion, 10.0)
 						.put(ResearchType.electrics, 10.0).getMap())
 				.addRequirementAll(induction)
-				.addItemUnlocked(EnumMachineBeta.ENGINE_STEAM_LOW.getItem()));
+				.addItemUnlocked(EnumMachineBeta.ENGINE_STEAM_HOBBY.getItem())
+				.setTier(TechNodeTier.getTier(4)));
 
 		TechNode turbines = TechTree.addTechNode(new TechNode("steamTurbine",
 				TechNodeType.types.get("application"),
@@ -346,14 +400,40 @@ public class TFTechness {
 				.addItemUnlocked(TFTMeta.brTurbineRotorBearing)
 				.addItemUnlocked(TFTMeta.brTurbineRotorShaft)
 				.addItemUnlocked(TFTMeta.brTurbineRotorBlade)
-				.addItemUnlocked(TFTMeta.brTurbinePowerPort));
+				.addItemUnlocked(TFTMeta.brTurbinePowerPort)
+				.setTier(TechNodeTier.getTier(5)));
 
 		//tracks
 		TechNode woodTrack = TechTree.addTechNode(new TechNode("woodTrack",
 				TechNodeType.types.get("application"),
 				new MapBuilder<ResearchType, Double>().put(ResearchType.motion,
 						10.0).getMap()).addItemUnlocked(TFTMeta.trackWood)
-				.addItemUnlocked(TFTMeta.trackWoodJunction));
+				.addItemUnlocked(TFTMeta.trackWoodJunction)
+				.addRequirementAll(coke).setTier(TechNodeTier.getTier(3)));
+
+		//TFC
+		TechNode bloomery = TechTree.addTechNode(new TechNode("bloomery",
+				TechNodeType.types.get("application"),
+				new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.metallurgy, 10.0).getMap())
+				.addItemUnlocked(new ItemStack(TFCBlocks.bloomery))
+				.setTier(TechNodeTier.getTier(1)));
+
+		TechNode crucible = TechTree.addTechNode(new TechNode("crucible",
+				TechNodeType.types.get("application"),
+				new MapBuilder<ResearchType, Double>()
+						.put(ResearchType.metallurgy, 10.0).getMap())
+				.addItemUnlocked(new ItemStack(TFCBlocks.crucible))
+				.setTier(TechNodeTier.getTier(1)));
+
+		TechNode blastFurnace = TechTree
+				.addTechNode(new TechNode("blastFurnace", TechNodeType.types
+						.get("application"),
+						new MapBuilder<ResearchType, Double>()
+								.put(TFTResearchTypes.ferrousMetallurgy, 10.0)
+								.getMap()).addItemUnlocked(new ItemStack(
+						TFCBlocks.blastFurnace)).setTier(TechNodeTier
+						.getTier(2)));
 
 		//		TechNode switches = TechTree.addTechNode(new TechNode("switches",
 		//				TechNodeType.types.get("application"),
@@ -517,6 +597,7 @@ public class TFTechness {
 	}
 
 	private void removeRailcraftRecipes(RemoveBatch batch) {
+		//batch.addCrafting(new ItemStack(Items.minecart));
 		batch.addCrafting(EnumMachineBeta.BOILER_TANK_LOW_PRESSURE.getItem());
 		batch.addCrafting(EnumMachineBeta.BOILER_TANK_HIGH_PRESSURE.getItem());
 		batch.addCrafting(BlockRCAnvil.getStack());
@@ -761,8 +842,8 @@ public class TFTechness {
 
 	private void techResearchRecipes() {
 		//TODO: better recipe
-		GameRegistry.addRecipe(new ShapelessOreRecipe(TRItems.notebook,
-				Items.book, "dustRedstone"));
+		//GameRegistry.addRecipe(new ShapelessOreRecipe(TRItems.notebook,
+		//		Items.book, "dustRedstone"));
 
 	}
 

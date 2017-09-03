@@ -4,7 +4,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 
+import com.bioxx.tfc.Core.Metal.MetalRegistry;
+import com.bioxx.tfc.api.Metal;
+import com.bioxx.tfc.api.TFCItems;
 import com.bioxx.tfc.api.Events.AnvilCraftEvent;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -16,16 +20,29 @@ public class PlayerEventHandler {
 	@SubscribeEvent
 	public void onAnvilCraft(AnvilCraftEvent event) {
 		EntityPlayer p = (EntityPlayer) event.entity;
+		Metal metal = MetalRegistry.instance.getMetalFromItem(event.input1
+				.getItem());
 		PlayerTechDataExtendedProps ptdep = PlayerTechDataExtendedProps.get(p);
-		ptdep.addResearchPoints(TFTExperiments.anvil);
+		if (metal != null
+				&& (metal.ingot == TFCItems.wroughtIronIngot
+						|| metal.ingot == TFCItems.pigIronIngot || metal.ingot == TFCItems.steelIngot)) {
+			//iron!
+			ptdep.addResearchPoints(TFTExperiments.anvilIron);
+		} else {
+
+			ptdep.addResearchPoints(TFTExperiments.anvil);
+		}
 	}
 
 	@SubscribeEvent
 	public void onFillBucket(FillBucketEvent event) {
 		if (!event.world.isRemote) {
-			PlayerTechDataExtendedProps ptdep = PlayerTechDataExtendedProps
-					.get(event.entityPlayer);
-			ptdep.addResearchPoints(TFTExperiments.bucket);
+
+			if (FluidContainerRegistry.isEmptyContainer(event.current)) {
+				PlayerTechDataExtendedProps ptdep = PlayerTechDataExtendedProps
+						.get(event.entityPlayer);
+				ptdep.addResearchPoints(TFTExperiments.bucket);
+			}
 		}
 
 	}

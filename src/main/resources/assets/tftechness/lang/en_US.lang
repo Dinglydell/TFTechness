@@ -93,6 +93,11 @@ item.metalRod=Rod
 item.blueSteelBucket.name=Blue Steel Bucket
 item.redSteelBucket.name=Red Steel Bucket
 
+gui.techresearch.techtype.prototype=Prototype
+
+tech.techresearch.notebook=Researcher's Notebook
+tech.techresearch.notebook.desc=While the mind is indeed a powerful thing, it is limited in capacity. If I start writing my findings down it may well help progress my research significantly.
+
 tech.tftechness.gears=Gears
 tech.tftechness.tanks=Portable Tanks
 
@@ -120,6 +125,7 @@ experiment.techresearch.hurtHot=Burning
 experiment.techresearch.hurtCactus=Prickling
 experiment.techresearch.hurtStarve=Starving
 experiment.techresearch.hurtSuffocate=Suffocating
+experiment.techresearch.redstone=Redstone
 
 gui.tftechness.anvilplan=Anvil Plan
 
